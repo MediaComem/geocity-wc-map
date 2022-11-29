@@ -1,12 +1,10 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, query } from 'lit/decorators.js'
+import { LitElement, css, html } from 'lit';
+import { customElement, query } from 'lit/decorators.js';
 
 import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
-
-import { olStyle } from './ol-style.js';
 
 /**
  * An example element.
@@ -16,9 +14,8 @@ import { olStyle } from './ol-style.js';
  */
 @customElement('openlayers-element')
 export class OpenLayersElement extends LitElement {
-
   @query('div')
-  public mapElement!: HTMLDivElement
+  public mapElement!: HTMLDivElement;
 
   constructor() {
     super();
@@ -41,35 +38,29 @@ export class OpenLayersElement extends LitElement {
 
   render() {
     return html`
+      <link rel="stylesheet" href="../node_modules/ol/ol.css" />
       <div id="map"></div>
-    `
+    `;
   }
 
+  static styles = css`
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+    }
 
-  static get styles() {
-    return [
-      olStyle,
-      css`
-        html,
-        body {
-          margin: 0;
-          height: 100%;
-        }
-    
-        #map {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 100%;
-        }
-      `
-    ]
-  }
-
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'openlayers-element': OpenLayersElement
+    'openlayers-element': OpenLayersElement;
   }
 }
