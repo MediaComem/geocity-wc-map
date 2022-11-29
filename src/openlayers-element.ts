@@ -6,6 +6,8 @@ import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
 
+import { olStyle } from './ol-style.js';
+
 /**
  * An example element.
  *
@@ -43,20 +45,27 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = css`
-    html,
-    body {
-      margin: 0;
-      height: 100%;
-    }
 
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-  `
+  static get styles() {
+    return [
+      olStyle,
+      css`
+        html,
+        body {
+          margin: 0;
+          height: 100%;
+        }
+    
+        #map {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 100%;
+        }
+      `
+    ]
+  }
+
 }
 
 declare global {
