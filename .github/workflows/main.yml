@@ -24,8 +24,17 @@ jobs:
       - name: Rebuild the index.js file
         run: npm run build
       
-      - name: Create Tags From
-        uses: jaywcjlove/create-tag-action@main
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.SSH_SECRET }} # This token is provided by Actions, you do not need to create your own token
         with:
-          token: ${{ secrets.SSH_SECRET }}
-          package-path: package.json
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
