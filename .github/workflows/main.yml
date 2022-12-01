@@ -25,7 +25,7 @@ jobs:
         run: npm run build
       
       - name: Create Tags From
-        uses: jaywcjlove/create-tag-action@v1.3.14
+        uses: jaywcjlove/create-tag-action@main
         with:
           token: ${{ secrets.SSH_SECRET }}
           package-path: package.json
