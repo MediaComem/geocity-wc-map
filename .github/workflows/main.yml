@@ -23,3 +23,13 @@ jobs:
 
       - name: Rebuild the index.js file
         run: npm run build
+      
+      - name: Create Release
+        uses: ./
+        with:
+          package-path: ./package.json
+          release: true
+        outputs:
+          version: ${{ steps.changelog.outputs.version }}
+          tag: ${{ steps.changelog.outputs.tag }}
+          successful: ${{steps.create_tag.outputs.successful }}
