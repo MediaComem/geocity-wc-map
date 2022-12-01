@@ -26,3 +26,6 @@ jobs:
       
       - name: Create Tags From
         uses: jaywcjlove/create-tag-action@v1.3.14
+        with:
+          token: ${{ secrets.SSH_SECRET }}
+          package-path: package.json
