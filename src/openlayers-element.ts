@@ -1,4 +1,5 @@
 import { LitElement, css, html } from 'lit';
+import {cache} from 'lit/directives/cache.js';
 import { customElement, query, property, state } from 'lit/decorators.js';
 
 import Map from 'ol/Map.js';
@@ -9,6 +10,7 @@ import { Geolocation } from 'ol';
 import { Zoom, ScaleLine, FullScreen } from 'ol/control';
 
 import GelolocaliseCenter from './components/geolicalise-center';
+import Drawer from './components/drawer';
 
 
 /**
@@ -35,6 +37,7 @@ export class OpenLayersElement extends LitElement {
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: true,
     enableCenterButton: false,
+    enableDraw: false,
   }
 
   constructor() {
@@ -77,12 +80,22 @@ export class OpenLayersElement extends LitElement {
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
+    if (this.options.enableDraw) new Drawer(map);
   }
 
   render() {
     return html`
       <link rel="stylesheet" href="../node_modules/ol/ol.css" />
       <div id="map"></div>
+      ${cache(this.options.enableDraw ? html`<form>
+        <label for="type">Geometry type &nbsp;</label>
+        <select id="type">
+          <option value="Point">Point</option>
+          <option value="LineString">LineString</option>
+          <option value="Polygon">Polygon</option>
+          <option value="Circle">Circle</option>
+        </select>
+      </form>` : ``)}
     `;
   }
 
@@ -95,9 +108,10 @@ export class OpenLayersElement extends LitElement {
 
     #map {
       position: absolute;
-      top: 0;
+      top: 20%;
       bottom: 0;
       width: 100%;
+      height: 80%;
     }
 
     .center-control {
