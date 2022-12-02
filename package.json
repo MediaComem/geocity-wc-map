@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "test": "vitest run"
   },
   "dependencies": {
     "lit": "^2.4.0",
@@ -24,7 +25,9 @@
   },
   "devDependencies": {
     "gh-pages": "^4.0.0",
+    "happy-dom": "^7.7.0",
     "typescript": "^4.6.4",
-    "vite": "^3.2.3"
+    "vite": "^3.2.3",
+    "vitest": "^0.25.3"
   }
 }
