@@ -11,6 +11,7 @@ import { Zoom, ScaleLine, FullScreen } from 'ol/control';
 
 import GelolocaliseCenter from './components/geolicalise-center';
 import Drawer from './components/drawer';
+import GeojsonLoader from './components/geojson-loader';
 
 
 /**
@@ -38,6 +39,9 @@ export class OpenLayersElement extends LitElement {
     enableGeolocation: true,
     enableCenterButton: false,
     enableDraw: false,
+    geojson: {
+      url: "http://127.0.0.1:5173/data/export_poi.json",
+    },
   }
 
   constructor() {
@@ -49,6 +53,7 @@ export class OpenLayersElement extends LitElement {
   }
 
   firstUpdated() {
+    // useGeographic(); To USE LONG and LAT
     this.view = new View({
       center: this.options.defaultCenter,
       zoom: this.options.zoom,
@@ -81,6 +86,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
     if (this.options.enableDraw) new Drawer(map);
+    if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
   }
 
   render() {
