@@ -12,6 +12,7 @@ import { Zoom, ScaleLine, FullScreen } from 'ol/control';
 import GelolocaliseCenter from './components/geolicalise-center';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
+import WFSLoader from './components/wfs-loader';
 
 
 /**
@@ -30,7 +31,7 @@ export class OpenLayersElement extends LitElement {
 
   @property({type: Object, attribute: 'options'}) options = {
     zoom: 15,
-    minZoom: 5,
+    minZoom: 1,
     maxZoom: 18,
     displayZoom: true,
     displayScaleLine: true,
@@ -40,8 +41,13 @@ export class OpenLayersElement extends LitElement {
     enableCenterButton: false,
     enableDraw: false,
     geojson: {
-      url: "http://127.0.0.1:5173/data/export_poi.json",
+      url: "http://localhost:5173/data/export_poi.json",
     },
+    wfs: {
+      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
+      projection: "EPSG:2056",
+      projectionDefinition: "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
+    }
   }
 
   constructor() {
@@ -87,6 +93,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.fullscreen) map.addControl(new FullScreen())
     if (this.options.enableDraw) new Drawer(map);
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
+    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
   }
 
   render() {
