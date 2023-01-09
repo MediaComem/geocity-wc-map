@@ -13,6 +13,7 @@ import GelolocaliseCenter from './components/geolicalise-center';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
+import WMTSLoader from './components/wmts-loader';
 
 
 /**
@@ -94,6 +95,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableDraw) new Drawer(map);
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
+    //new WMTSLoader(map);
   }
 
   render() {

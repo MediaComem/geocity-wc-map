@@ -15,14 +15,14 @@ export default class WFSLoader {
   constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string) {
     this.map = map;
 
-    const vectorLayer = new VectorLayer({
-      source: new Vector(),
-    });
+    const vectorLayer = new VectorLayer();
+    const vectorSource = new Vector;
 
-    const vectorSource = vectorLayer.getSource();
 
-    this.map.addLayer(vectorLayer);
-
+    proj4.defs(
+      'EPSG:3857',
+      '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs'
+    );
     proj4.defs('SR-ORG:6864', "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     proj4.defs(projectionSource, projectionDefinition);
 
@@ -59,6 +59,9 @@ export default class WFSLoader {
           );
           vectorSource?.addFeature(marker);
         }
+        
+        vectorLayer.setSource(vectorSource)
+        this.map.addLayer(vectorLayer);
       });
   }
 }
