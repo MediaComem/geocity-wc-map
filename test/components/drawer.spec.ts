@@ -5,7 +5,7 @@ import Drawer from '../../src/components/drawer';
 describe('Drawer class test suite', () => {
   it('Ensure that the interaction is enabled', () => {
     const map = new Map({target: 'test'});
-    const drawer = new Drawer(map);
+    const drawer = new Drawer(map, document.documentElement);
     drawer.typeSelect = new HTMLInputElement();
     drawer.typeSelect.value = 'Point';
     drawer.addInteraction();
@@ -15,7 +15,7 @@ describe('Drawer class test suite', () => {
 
   it('Interaction is not available when parameter is wrong', () => {
     const map = new Map({target: 'test'});
-    const drawer = new Drawer(map);
+    const drawer = new Drawer(map, document.documentElement);
     drawer.addInteraction();
     expect(drawer.draw).toBeUndefined()
     expect(drawer.snap).toBeUndefined()
