@@ -13,7 +13,7 @@ export default class Drawer {
   source: VectorSource | undefined;
   modify: Modify | undefined;
 
-  constructor(map: Map) {
+  constructor(map: Map, renderRoot: HTMLElement | ShadowRoot) {
     this.map = map;
     this.source = new VectorSource();
     const vector = new VectorLayer({
@@ -35,9 +35,9 @@ export default class Drawer {
       }),
     });
     this.map.addLayer(vector);
-    this.typeSelect = document.getElementById('type') as HTMLInputElement;
     this.modify = new Modify({ source: this.source });
     this.map.addInteraction(this.modify);
+    this.typeSelect = renderRoot.querySelector('#drawer') as HTMLInputElement;
     this.addInteraction();
     if (this.typeSelect) {
       this.typeSelect.addEventListener('change', () => {

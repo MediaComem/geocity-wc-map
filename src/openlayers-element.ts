@@ -13,7 +13,7 @@ import GelolocaliseCenter from './components/geolicalise-center';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
-import WMTSLoader from './components/wmts-loader';
+//import WMTSLoader from './components/wmts-loader';
 
 
 /**
@@ -40,7 +40,7 @@ export class OpenLayersElement extends LitElement {
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: true,
     enableCenterButton: false,
-    enableDraw: false,
+    enableDraw: true,
     geojson: {
       url: "http://localhost:5173/data/export_poi.json",
     },
@@ -92,7 +92,7 @@ export class OpenLayersElement extends LitElement {
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
-    if (this.options.enableDraw) new Drawer(map);
+    if (this.options.enableDraw) new Drawer(map, this.renderRoot);
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
     //new WMTSLoader(map);
@@ -103,8 +103,8 @@ export class OpenLayersElement extends LitElement {
       <link rel="stylesheet" href="../node_modules/ol/ol.css" />
       <div id="map"></div>
       ${cache(this.options.enableDraw ? html`<form>
-        <label for="type">Geometry type &nbsp;</label>
-        <select id="type">
+        <label for="drawer">Geometry type &nbsp;</label>
+        <select id="drawer" class="drawer">
           <option value="Point">Point</option>
           <option value="LineString">LineString</option>
           <option value="Polygon">Polygon</option>
