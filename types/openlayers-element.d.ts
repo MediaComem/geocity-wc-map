@@ -22,12 +22,20 @@ export declare class OpenLayersElement extends LitElement {
         enableGeolocation: boolean;
         enableCenterButton: boolean;
         enableDraw: boolean;
+        geojson: {
+            url: string;
+        };
+        wfs: {
+            url: string;
+            projection: string;
+            projectionDefinition: string;
+        };
     };
     constructor();
     connectedCallback(): void;
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;
-    static styles: import("lit").CSSResult;
+    static styles: import("lit").CSSResult[];
 }
 declare global {
     interface HTMLElementTagNameMap {

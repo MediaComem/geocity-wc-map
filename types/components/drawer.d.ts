@@ -8,6 +8,6 @@ export default class Drawer {
     snap: Snap | undefined;
     source: VectorSource | undefined;
     modify: Modify | undefined;
-    constructor(map: Map);
+    constructor(map: Map, renderRoot: HTMLElement | ShadowRoot);
     addInteraction(): void;
 }

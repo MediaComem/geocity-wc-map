@@ -8,6 +8,7 @@ import { Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 
 import proj4 from 'proj4';
+import { GeocityEvent } from '../utils/geocity-event';
 
 export default class WFSLoader {
   map: Map;
@@ -45,9 +46,11 @@ export default class WFSLoader {
           
           const newProjection = proj4('EPSG:2056', 'SR-ORG:6864', [Number(coordinates[0]), Number(coordinates[1])])
           const geomPoint = new Point(newProjection);
-          const marker = new Feature(
-            geomPoint
-          );
+          const marker = new Feature({
+            geometry: geomPoint,
+            name: i,
+            myCustomeValue: layers[i]
+          });
           marker.setStyle(
             new Style({
               image: new CircleStyle({
@@ -62,6 +65,16 @@ export default class WFSLoader {
         
         vectorLayer.setSource(vectorSource)
         this.map.addLayer(vectorLayer);
+        this.map.on('click', function (evt) {
+          const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+            return feature;
+          });
+          if (!feature) {
+            return;
+          }
+          GeocityEvent.sendEvent(feature);
+        });
+
       });
   }
 }
