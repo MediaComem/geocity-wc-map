@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, css, html, unsafeCSS } from 'lit';
 import {cache} from 'lit/directives/cache.js';
 import { customElement, query, property, state } from 'lit/decorators.js';
 
@@ -13,6 +13,8 @@ import GelolocaliseCenter from './components/geolicalise-center';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
+
+import styles from '../node_modules/ol/ol.css?inline';
 //import WMTSLoader from './components/wmts-loader';
 
 
@@ -38,11 +40,11 @@ export class OpenLayersElement extends LitElement {
     displayScaleLine: true,
     fullscreen: true,
     defaultCenter: [739867.251358, 5905800.079386],
-    enableGeolocation: true,
+    enableGeolocation: false,
     enableCenterButton: false,
-    enableDraw: true,
+    enableDraw: false,
     geojson: {
-      url: "http://localhost:5173/data/export_poi.json",
+      url: "",
     },
     wfs: {
       url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
@@ -74,6 +76,7 @@ export class OpenLayersElement extends LitElement {
         },
         projection: this.view.getProjection(),
       });
+      this.geolocation.setTracking(true);
     }
     const map = new Map({
       target: this.mapElement,
@@ -100,7 +103,6 @@ export class OpenLayersElement extends LitElement {
 
   render() {
     return html`
-      <link rel="stylesheet" href="../node_modules/ol/ol.css" />
       <div id="map"></div>
       ${cache(this.options.enableDraw ? html`<form>
         <label for="drawer">Geometry type &nbsp;</label>
@@ -114,7 +116,7 @@ export class OpenLayersElement extends LitElement {
     `;
   }
 
-  static styles = css`
+  static styles = [unsafeCSS(styles), css`
     html,
     body {
       margin: 0;
@@ -133,7 +135,7 @@ export class OpenLayersElement extends LitElement {
       top: 95%;
       left: 0.5em;
     }
-  `;
+  `];
 }
 
 declare global {
