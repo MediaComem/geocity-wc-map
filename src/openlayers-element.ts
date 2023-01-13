@@ -15,6 +15,7 @@ import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
+import GeolocaliseMarker from './components/geolocation-marker';
 //import WMTSLoader from './components/wmts-loader';
 
 
@@ -42,7 +43,8 @@ export class OpenLayersElement extends LitElement {
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: false,
     enableCenterButton: false,
-    enableDraw: false,
+    enableDraw: true,
+    onlyOneDraw: true,
     geojson: {
       url: "",
     },
@@ -69,15 +71,6 @@ export class OpenLayersElement extends LitElement {
       minZoom: this.options.minZoom,
       maxZoom: this.options.maxZoom,
     });
-    if (this.options.enableGeolocation) {
-      this.geolocation = new Geolocation({
-        trackingOptions: {
-          enableHighAccuracy: true,
-        },
-        projection: this.view.getProjection(),
-      });
-      this.geolocation.setTracking(true);
-    }
     const map = new Map({
       target: this.mapElement,
       controls: [],
@@ -89,13 +82,23 @@ export class OpenLayersElement extends LitElement {
       ],
       view: this.view,
     });
+    if (this.options.enableGeolocation) {
+      this.geolocation = new Geolocation({
+        trackingOptions: {
+          enableHighAccuracy: true,
+        },
+        projection: this.view.getProjection(),
+      });
+      this.geolocation.setTracking(true);
+      new GeolocaliseMarker(map, this.geolocation);
+    }
     const controls = [];
     if (this.options.displayZoom) controls.push(new Zoom())
     if (this.options.enableCenterButton) controls.push(new GelolocaliseCenter(map, this.view, this.geolocation));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
-    if (this.options.enableDraw) new Drawer(map, this.renderRoot);
+    if (this.options.enableDraw) new Drawer(map, this.renderRoot, this.options.onlyOneDraw);
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
     //new WMTSLoader(map);

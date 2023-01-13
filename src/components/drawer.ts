@@ -12,9 +12,11 @@ export default class Drawer {
   snap: Snap | undefined;
   source: VectorSource | undefined;
   modify: Modify | undefined;
+  onlyOneDraw: Boolean;
 
-  constructor(map: Map, renderRoot: HTMLElement | ShadowRoot) {
+  constructor(map: Map, renderRoot: HTMLElement | ShadowRoot, onlyOneDraw: Boolean) {
     this.map = map;
+    this.onlyOneDraw = onlyOneDraw;
     this.source = new VectorSource();
     const vector = new VectorLayer({
       source: this.source,
@@ -40,12 +42,20 @@ export default class Drawer {
     this.typeSelect = renderRoot.querySelector('#drawer') as HTMLInputElement;
     this.addInteraction();
     if (this.typeSelect) {
-      this.typeSelect.addEventListener('change', () => {
-        if (this.draw) this.map.removeInteraction(this.draw);
-        if (this.snap) this.map.removeInteraction(this.snap);
-        this.addInteraction();
-      });
+      this.typeSelect.addEventListener('change', this.setupInteraction.bind(this));
     }
+  }
+
+  setupInteraction() {
+    if (this.draw) this.map.removeInteraction(this.draw);
+    if (this.snap) this.map.removeInteraction(this.snap);
+    this.addInteraction();
+  }
+
+  removeInteraction() {
+    this.typeSelect?.removeEventListener('change', this.setupInteraction.bind(this));
+    if (this.draw) this.map.removeInteraction(this.draw);
+    if (this.snap) this.map.removeInteraction(this.snap);
   }
 
   addInteraction() {
@@ -57,6 +67,7 @@ export default class Drawer {
       this.map.addInteraction(this.draw);
       this.snap = new Snap({ source: this.source });
       this.map.addInteraction(this.snap);
+      if (this.onlyOneDraw && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
     }
   }
 }

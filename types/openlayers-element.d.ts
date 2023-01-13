@@ -22,6 +22,7 @@ export declare class OpenLayersElement extends LitElement {
         enableGeolocation: boolean;
         enableCenterButton: boolean;
         enableDraw: boolean;
+        onlyOneDraw: boolean;
         geojson: {
             url: string;
         };
