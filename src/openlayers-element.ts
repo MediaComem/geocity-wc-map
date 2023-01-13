@@ -16,6 +16,7 @@ import WFSLoader from './components/wfs-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import GeolocationMarker from './components/geolocation-marker';
+import ResetRotationControl from './components/reset-rotation-control';
 //import WMTSLoader from './components/wmts-loader';
 
 
@@ -45,7 +46,7 @@ export class OpenLayersElement extends LitElement {
     enableCenterButton: false,
     enableDraw: true,
     onlyOneDraw: true,
-    enableRotation: false,
+    enableRotation: true,
     geojson: {
       url: "",
     },
@@ -97,7 +98,7 @@ export class OpenLayersElement extends LitElement {
     const controls = [];
     if (this.options.displayZoom) controls.push(new Zoom())
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
-    if (this.options.enableRotation) 
+    if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
