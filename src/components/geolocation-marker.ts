@@ -9,7 +9,7 @@ import Point from 'ol/geom/Point';
 import VectorLayer from 'ol/layer/Vector';
 import Vector from 'ol/source/Vector';
 
-export default class GeolocaliseMarker {
+export default class GeolocationMarker {
     map: Map;
     geolocation: Geolocation;
 

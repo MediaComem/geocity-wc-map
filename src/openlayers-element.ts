@@ -9,13 +9,13 @@ import View from 'ol/View.js';
 import { Geolocation } from 'ol';
 import { Zoom, ScaleLine, FullScreen } from 'ol/control';
 
-import GelolocaliseCenter from './components/geolicalise-center';
+import GeolocationCenter from './components/geolocation-center';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
-import GeolocaliseMarker from './components/geolocation-marker';
+import GeolocationMarker from './components/geolocation-marker';
 //import WMTSLoader from './components/wmts-loader';
 
 
@@ -45,6 +45,7 @@ export class OpenLayersElement extends LitElement {
     enableCenterButton: false,
     enableDraw: true,
     onlyOneDraw: true,
+    enableRotation: false,
     geojson: {
       url: "",
     },
@@ -70,6 +71,7 @@ export class OpenLayersElement extends LitElement {
       zoom: this.options.zoom,
       minZoom: this.options.minZoom,
       maxZoom: this.options.maxZoom,
+      enableRotation: this.options.enableRotation
     });
     const map = new Map({
       target: this.mapElement,
@@ -90,11 +92,12 @@ export class OpenLayersElement extends LitElement {
         projection: this.view.getProjection(),
       });
       this.geolocation.setTracking(true);
-      new GeolocaliseMarker(map, this.geolocation);
+      new GeolocationMarker(map, this.geolocation);
     }
     const controls = [];
     if (this.options.displayZoom) controls.push(new Zoom())
-    if (this.options.enableCenterButton) controls.push(new GelolocaliseCenter(map, this.view, this.geolocation));
+    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
+    if (this.options.enableRotation) 
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
