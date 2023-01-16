@@ -3,8 +3,6 @@ import {cache} from 'lit/directives/cache.js';
 import { customElement, query, property, state } from 'lit/decorators.js';
 
 import Map from 'ol/Map.js';
-import OSM from 'ol/source/OSM.js';
-import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
 import { Geolocation } from 'ol';
 import { Zoom, ScaleLine, FullScreen } from 'ol/control';
@@ -17,7 +15,7 @@ import WFSLoader from './components/wfs-loader';
 import styles from '../node_modules/ol/ol.css?inline';
 import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
-//import WMTSLoader from './components/wmts-loader';
+import WMTSLoader from './components/wmts-loader';
 
 
 /**
@@ -54,6 +52,11 @@ export class OpenLayersElement extends LitElement {
       url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
       projection: "EPSG:2056",
       projectionDefinition: "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
+    },
+    wmts: {
+      capability: "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+      layer: "ch.swisstopo.swissimage",
+      projection: "EPSG:3857"
     }
   }
 
@@ -77,12 +80,7 @@ export class OpenLayersElement extends LitElement {
     const map = new Map({
       target: this.mapElement,
       controls: [],
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-          visible: true,
-        }),
-      ],
+      layers: [],
       view: this.view,
     });
     if (this.options.enableGeolocation) {
@@ -96,16 +94,16 @@ export class OpenLayersElement extends LitElement {
       new GeolocationMarker(map, this.geolocation);
     }
     const controls = [];
+    if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
     if (this.options.displayZoom) controls.push(new Zoom())
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
-    if (this.options.enableDraw) new Drawer(map, this.renderRoot, this.options.onlyOneDraw);
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
-    //new WMTSLoader(map);
+    if (this.options.enableDraw) new Drawer(map, this.renderRoot, this.options.onlyOneDraw);
   }
 
   render() {
