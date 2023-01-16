@@ -62,10 +62,8 @@ export default class Drawer {
     if (this.snap) this.map.removeInteraction(this.snap);
   }
 
-  updateVectorPosition() {
+  updateNbDraw() {
     this.nbDraw += 1;
-    this.map.removeLayer(this.vector);
-    this.map.addLayer(this.vector);
   }
 
   addInteraction() {
@@ -77,9 +75,7 @@ export default class Drawer {
       this.map.addInteraction(this.draw);
       this.snap = new Snap({ source: this.source });
       this.map.addInteraction(this.snap);
-      // Ensures that when the drawing starts, the layer is in the top position.
-      // If the layer is not in the top position, the drawn element will not be displayed. 
-      this.draw.addEventListener('drawstart', this.updateVectorPosition.bind(this));   
+      this.draw.addEventListener('drawstart', this.updateNbDraw.bind(this));   
       if (this.onlyOneDraw && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
     }
   }

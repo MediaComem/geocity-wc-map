@@ -28,7 +28,7 @@ export default class WMTSLoader {
           opacity: 1,
           source: new WMTS(wmtsOptions)
         });
-        map.addLayer(wmtsLayer);
+        map.getLayers().insertAt(0, wmtsLayer);
       }
     })
   }
