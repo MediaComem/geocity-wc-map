@@ -32,6 +32,11 @@ export declare class OpenLayersElement extends LitElement {
             projection: string;
             projectionDefinition: string;
         };
+        wmts: {
+            capability: string;
+            layer: string;
+            projection: string;
+        };
     };
     constructor();
     connectedCallback(): void;

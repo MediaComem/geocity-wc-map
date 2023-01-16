@@ -1,6 +1,10 @@
 import { Map } from 'ol';
-export default class WMTSLoader {
-    map: Map;
-    extent: Array<number>;
-    constructor(map: Map);
+interface wmtsLayerConfiguration {
+    capability: string;
+    layer: string;
+    projection: string;
 }
+export default class WMTSLoader {
+    constructor(map: Map, options: wmtsLayerConfiguration);
+}
+export {};
