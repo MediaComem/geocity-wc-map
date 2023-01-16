@@ -19,7 +19,6 @@ export default class WMTSLoader {
     })
     .then(function (text) {
       const result = parser.read(text);
-      console.log(result);
       const wmtsOptions = optionsFromCapabilities(result, {
         layer: options.layer,
         matrixSet: options.projection,
