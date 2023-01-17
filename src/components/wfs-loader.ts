@@ -72,7 +72,7 @@ export default class WFSLoader {
           if (!feature) {
             return;
           }
-          GeocityEvent.sendEvent(feature);
+          GeocityEvent.sendEvent('geocity-wfs-event', feature);
         });
 
       });

@@ -1,0 +1,35 @@
+.custom-popup-element {
+  position: relative;
+  top: 5px;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  z-index: 10;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.custom-popup-title {
+  display: flex;
+}
+
+.custom-popup-title-text {
+  width: 90%;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.custom-popup-title-svg {
+  width: 10%;
+  justify-content: flex-end;
+  display: flex;
+}
+
+.custom-popup-content {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+}

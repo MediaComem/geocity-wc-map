@@ -7,7 +7,7 @@ import { Type } from 'ol/geom/Geometry';
 
 export default class Drawer {
   map: Map;
-  typeSelect: HTMLInputElement | null;
+  drawElement: string;
   draw: Draw | undefined;
   snap: Snap | undefined;
   source: VectorSource | undefined;
@@ -16,8 +16,9 @@ export default class Drawer {
   vector: VectorLayer<VectorSource>;
   nbDraw: number = 0;
 
-  constructor(map: Map, renderRoot: HTMLElement | ShadowRoot, onlyOneDraw: Boolean) {
+  constructor(map: Map, drawElement: string, onlyOneDraw: Boolean) {
     this.map = map;
+    this.drawElement = drawElement;
     this.onlyOneDraw = onlyOneDraw;
     this.source = new VectorSource();
     this.vector = new VectorLayer({
@@ -41,11 +42,7 @@ export default class Drawer {
     this.map.addLayer(this.vector);
     this.modify = new Modify({ source: this.source });
     this.map.addInteraction(this.modify);
-    this.typeSelect = renderRoot.querySelector('#drawer') as HTMLInputElement;
     this.addInteraction();
-    if (this.typeSelect) {
-      this.typeSelect.addEventListener('change', this.setupInteraction.bind(this));
-    }
   }
 
   setupInteraction() {
@@ -57,7 +54,6 @@ export default class Drawer {
   }
 
   removeInteraction() {
-    this.typeSelect?.removeEventListener('change', this.setupInteraction.bind(this));
     if (this.draw) this.map.removeInteraction(this.draw);
     if (this.snap) this.map.removeInteraction(this.snap);
   }
@@ -67,16 +63,14 @@ export default class Drawer {
   }
 
   addInteraction() {
-    if (this.typeSelect) {
-      this.draw = new Draw({
-        source: this.source,
-        type: this.typeSelect.value as Type,
-      });
-      this.map.addInteraction(this.draw);
-      this.snap = new Snap({ source: this.source });
-      this.map.addInteraction(this.snap);
-      this.draw.addEventListener('drawstart', this.updateNbDraw.bind(this));   
-      if (this.onlyOneDraw && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
-    }
+    this.draw = new Draw({
+      source: this.source,
+      type: this.drawElement as Type,
+    });
+    this.map.addInteraction(this.draw);
+    this.snap = new Snap({ source: this.source });
+    this.map.addInteraction(this.snap);
+    this.draw.addEventListener('drawstart', this.updateNbDraw.bind(this));   
+    if (this.onlyOneDraw && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
   }
 }

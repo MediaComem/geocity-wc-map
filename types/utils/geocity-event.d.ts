@@ -1,3 +1,3 @@
 export declare class GeocityEvent {
-    static sendEvent(feature: any): void;
+    static sendEvent(event: string, feature: any): void;
 }

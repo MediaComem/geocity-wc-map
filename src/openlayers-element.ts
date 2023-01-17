@@ -1,5 +1,4 @@
-import { LitElement, css, html, unsafeCSS } from 'lit';
-import {cache} from 'lit/directives/cache.js';
+import { LitElement, html, unsafeCSS } from 'lit';
 import { customElement, query, property, state } from 'lit/decorators.js';
 
 import Map from 'ol/Map.js';
@@ -12,11 +11,15 @@ import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
 
-import styles from '../node_modules/ol/ol.css?inline';
 import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
+import InformationControl from './components/information-control';
 
+import styles from '../node_modules/ol/ol.css?inline';
+import popupStyle from './styles/popup-information.css?inline';
+import mapStyle from './styles/map.css?inline';
+import controlsStyle from './styles/controls.css?inline';
 
 /**
  * An example element.
@@ -26,10 +29,10 @@ import WMTSLoader from './components/wmts-loader';
  */
 @customElement('openlayers-element')
 export class OpenLayersElement extends LitElement {
-  @query('div')
+  @query('#map')
   public mapElement!: HTMLDivElement;
 
-  @state() view:View | undefined;;
+  @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
   @property({type: Object, attribute: 'options'}) options = {
@@ -43,8 +46,13 @@ export class OpenLayersElement extends LitElement {
     enableGeolocation: false,
     enableCenterButton: false,
     enableDraw: true,
+    drawElement: 'Point',
     onlyOneDraw: true,
     enableRotation: true,
+    information: {
+      title: "This is a title",
+      content: "This is a content",
+    },
     geojson: {
       url: "",
     },
@@ -98,49 +106,23 @@ export class OpenLayersElement extends LitElement {
     if (this.options.displayZoom) controls.push(new Zoom())
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
+    controls.push(new InformationControl(map, this.options.information))
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
-    if (this.options.enableDraw) new Drawer(map, this.renderRoot, this.options.onlyOneDraw);
+    if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.onlyOneDraw);
   }
 
   render() {
     return html`
-      <div id="map"></div>
-      ${cache(this.options.enableDraw ? html`<form>
-        <label for="drawer">Geometry type &nbsp;</label>
-        <select id="drawer" class="drawer">
-          <option value="Point">Point</option>
-          <option value="LineString">LineString</option>
-          <option value="Polygon">Polygon</option>
-          <option value="Circle">Circle</option>
-        </select>
-      </form>` : ``)}
-    `;
+    <div id="map">
+    </div>   
+    `
   }
 
-  static styles = [unsafeCSS(styles), css`
-    html,
-    body {
-      margin: 0;
-      height: 100%;
-    }
-
-    #map {
-      position: absolute;
-      top: 20%;
-      bottom: 0;
-      width: 100%;
-      height: 80%;
-    }
-
-    .center-control {
-      top: 95%;
-      left: 0.5em;
-    }
-  `];
+  static styles = [unsafeCSS(styles), unsafeCSS(popupStyle), unsafeCSS(mapStyle), unsafeCSS(controlsStyle)];
 }
 
 declare global {
