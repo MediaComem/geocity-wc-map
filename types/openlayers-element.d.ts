@@ -26,6 +26,7 @@ export declare class OpenLayersElement extends LitElement {
         onlyOneDraw: boolean;
         enableRotation: boolean;
         information: {
+            duration: number;
             title: string;
             content: string;
         };

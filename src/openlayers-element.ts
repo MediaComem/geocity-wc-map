@@ -50,6 +50,7 @@ export class OpenLayersElement extends LitElement {
     onlyOneDraw: true,
     enableRotation: true,
     information: {
+      duration: 5,
       title: "This is a title",
       content: "This is a content",
     },
