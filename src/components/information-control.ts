@@ -1,7 +1,6 @@
 import { Map } from 'ol';
 import Control from "ol/control/Control";
 import InformationElement from '../types/information-element';
-import OpenLayersUtils from '../utils/openlayers-utils';
 import InformationBox from './information-box';
 
 export default class InformationControl extends Control {
@@ -23,14 +22,24 @@ export default class InformationControl extends Control {
         this.map = map;
         this.information = information;
         button.addEventListener('click', this.toogleInformationBox.bind(this), false);
+        window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
+      }
+
+      closeInformationBox() {
+        this.map.getControls().forEach((control) => {
+            if (control instanceof InformationBox) {
+              this.map.removeControl(control);
+            }
+        });
+        this.informationIsOpen = !this.informationIsOpen;
       }
     
       toogleInformationBox() {
-        if (OpenLayersUtils.informationIsOpen) {
-            OpenLayersUtils.closeInformationBox(this.map);
+        if (this.informationIsOpen) {
+            this.closeInformationBox();
         } else {
             this.map.addControl(new InformationBox(this.map, this.information));
+            this.informationIsOpen = !this.informationIsOpen;
         }
-        OpenLayersUtils.informationIsOpen = !OpenLayersUtils.informationIsOpen;
       }
     }

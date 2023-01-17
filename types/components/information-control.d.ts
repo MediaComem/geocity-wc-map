@@ -6,5 +6,6 @@ export default class InformationControl extends Control {
     information: InformationElement;
     informationIsOpen: Boolean;
     constructor(map: Map, information: InformationElement);
+    closeInformationBox(): void;
     toogleInformationBox(): void;
 }

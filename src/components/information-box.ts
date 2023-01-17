@@ -1,7 +1,7 @@
 import { Map } from 'ol';
 import { Control } from 'ol/control';
 import InformationElement from '../types/information-element';
-import OpenLayersUtils from '../utils/openlayers-utils';
+import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
 
 export default class InformationBox extends Control {
@@ -29,10 +29,10 @@ export default class InformationBox extends Control {
     });
 
     this.map = map;
-    cross.addEventListener('click', this.closeBox.bind(this), false);
+    cross.addEventListener('click', this.closeBox.bind(this), true);
   }
 
   closeBox() {
-    OpenLayersUtils.closeInformationBox(this.map)
+    GeocityEvent.sendEvent('close-information-box', {});
   }
 }
