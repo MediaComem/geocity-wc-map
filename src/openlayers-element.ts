@@ -22,6 +22,8 @@ import popupStyle from './styles/popup-information.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
+import ErrorNotification from './components/notification/error-notification';
+import InfoNotification from './components/notification/info-notification';
 
 /**
  * An example element.
@@ -56,12 +58,26 @@ export class OpenLayersElement extends LitElement {
       title: "This is a title",
       content: "This is a content",
     },
+    info: {
+      configuration: {
+        textColor: '#1D4ED8',
+        backgroundColor: '#DBEAFE',
+      },
+      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
+    },
     warning: {
       configuration: {
         textColor: '#B45309',
         backgroundColor: '#FEF3C7',
       },
       message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
+    },
+    error: {
+      configuration: {
+        textColor: '#B91C1C',
+        backgroundColor: '#FEE2E2',
+      },
+      message: "Une erreur est survenue lors du chargement de votre positiont",
     },
     geojson: {
       url: "",
@@ -116,7 +132,9 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    controls.push(new WarningNotification(this.options.warning));
+    if (false) controls.push(new InfoNotification(this.options.info));
+    if (false) controls.push(new WarningNotification(this.options.warning));
+    if (false) controls.push(new ErrorNotification(this.options.error));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())

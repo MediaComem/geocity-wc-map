@@ -7,7 +7,6 @@ interface WarningConfiguration {
 }
 
 interface WarningElement {
-
   configuration: WarningConfiguration;
   message: string;
 }
@@ -20,12 +19,12 @@ export default class WarningNotification extends Control {
       const titleText = document.createElement('div');
       titleText.innerHTML = warningConfiguration.message;
       const warning = SVGCreator.warningCreator(warningConfiguration.configuration.textColor);
-      element.className = 'warning-notification-element';
-      title.className = 'warning-notification-title';
-      titleText.className = 'warning-notification-title-text';
+      element.className = 'notification-element';
+      title.className = 'notification-title';
+      titleText.className = 'notification-title-text';
 
-      element.style.setProperty('--waring-background-color', warningConfiguration.configuration.backgroundColor)
-      titleText.style.setProperty('--warning-text-color', warningConfiguration.configuration.textColor)
+      element.style.setProperty('--notification-background-color', warningConfiguration.configuration.backgroundColor)
+      titleText.style.setProperty('--notification-text-color', warningConfiguration.configuration.textColor)
 
       title.appendChild(warning);
       title.appendChild(titleText);

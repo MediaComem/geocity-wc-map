@@ -30,7 +30,21 @@ export declare class OpenLayersElement extends LitElement {
             title: string;
             content: string;
         };
+        info: {
+            configuration: {
+                textColor: string;
+                backgroundColor: string;
+            };
+            message: string;
+        };
         warning: {
+            configuration: {
+                textColor: string;
+                backgroundColor: string;
+            };
+            message: string;
+        };
+        error: {
             configuration: {
                 textColor: string;
                 backgroundColor: string;

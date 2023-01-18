@@ -1,7 +1,7 @@
-.warning-notification-element {
+.notification-element {
   position: absolute;
   bottom: 5%;
-  background-color: var(--waring-background-color);
+  background-color: var(--notification-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   border-radius: 10px;
@@ -13,17 +13,17 @@
   width: 100%;
 }
 
-.warning-notification-title {
+.notification-title {
   display: flex;
 } 
 
-.warning-notification-title-text {
+.notification-title-text {
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
-  color: var(--warning-text-color);
+  color: var(--notification-text-color);
 }
 
-.warning-notification-title-svg {
+.notification-title-svg {
   margin-right: 10px;
 }
