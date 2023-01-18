@@ -15,11 +15,13 @@ import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
+import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import popupStyle from './styles/popup-information.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
+import notificationStyle from './styles/notification.css?inline';
 
 /**
  * An example element.
@@ -40,7 +42,7 @@ export class OpenLayersElement extends LitElement {
     minZoom: 1,
     maxZoom: 18,
     displayZoom: true,
-    displayScaleLine: true,
+    displayScaleLine: false,
     fullscreen: true,
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: false,
@@ -53,6 +55,9 @@ export class OpenLayersElement extends LitElement {
       duration: 5,
       title: "This is a title",
       content: "This is a content",
+    },
+    warning: {
+      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
     },
     geojson: {
       url: "",
@@ -108,6 +113,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
+    controls.push(new WarningNotification(this.options.warning.message));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
@@ -123,7 +129,7 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(popupStyle), unsafeCSS(mapStyle), unsafeCSS(controlsStyle)];
+  static styles = [unsafeCSS(styles), unsafeCSS(popupStyle), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
 }
 
 declare global {

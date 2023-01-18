@@ -30,6 +30,9 @@ export declare class OpenLayersElement extends LitElement {
             title: string;
             content: string;
         };
+        warning: {
+            message: string;
+        };
         geojson: {
             url: string;
         };
