@@ -15,7 +15,7 @@ import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
-//import WarningNotification from './components/notification/warning-notification';
+import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import popupStyle from './styles/popup-information.css?inline';
@@ -57,6 +57,10 @@ export class OpenLayersElement extends LitElement {
       content: "This is a content",
     },
     warning: {
+      configuration: {
+        textColor: '#B45309',
+        backgroundColor: '#FEF3C7',
+      },
       message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
     },
     geojson: {
@@ -83,7 +87,6 @@ export class OpenLayersElement extends LitElement {
   }
 
   firstUpdated() {
-    // useGeographic(); To USE LONG and LAT
     this.view = new View({
       center: this.options.defaultCenter,
       zoom: this.options.zoom,
@@ -113,7 +116,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    //controls.push(new WarningNotification(this.options.warning.message));
+    controls.push(new WarningNotification(this.options.warning));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())

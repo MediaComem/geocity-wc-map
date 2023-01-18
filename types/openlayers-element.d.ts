@@ -31,6 +31,10 @@ export declare class OpenLayersElement extends LitElement {
             content: string;
         };
         warning: {
+            configuration: {
+                textColor: string;
+                backgroundColor: string;
+            };
             message: string;
         };
         geojson: {

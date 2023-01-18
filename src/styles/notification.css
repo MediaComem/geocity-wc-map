@@ -1,7 +1,7 @@
 .warning-notification-element {
   position: absolute;
   bottom: 5%;
-  background-color: #FEF3C7;
+  background-color: var(--waring-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   border-radius: 10px;
@@ -21,7 +21,7 @@
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
-  color: #B45309;
+  color: var(--warning-text-color);
 }
 
 .warning-notification-title-svg {
