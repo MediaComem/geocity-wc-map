@@ -1,6 +1,7 @@
 import { Map } from 'ol';
 import Control from "ol/control/Control";
 import InformationElement from '../types/information-element';
+import { GeocityEvent } from '../utils/geocity-event';
 import InformationBox from './information-box';
 
 export default class InformationControl extends Control {
@@ -28,7 +29,7 @@ export default class InformationControl extends Control {
       }
 
       closeInformationBox() {
-        clearTimeout(this.timout);
+        GeocityEvent.sendEvent('clear-information-box-interval', {});
         this.map.getControls().forEach((control) => {
             if (control instanceof InformationBox) {
               this.map.removeControl(control);
@@ -38,9 +39,8 @@ export default class InformationControl extends Control {
       }
 
       openInformationBox() {
-        this.map.addControl(new InformationBox(this.map, this.information));
+        this.map.addControl(new InformationBox(this.information));
         this.informationIsOpen = true;
-        this.timout = setTimeout(() => this.closeInformationBox(), this.information.duration * 1000);
       }
     
       toogleInformationBox() {
