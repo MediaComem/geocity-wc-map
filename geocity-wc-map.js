@@ -19161,9 +19161,7 @@ as = Za([
 class Ll extends Ae {
   constructor(t) {
     const e = document.createElement("information-box");
-    e.information = t;
-    const n = document.createElement("div");
-    n.style.setProperty("background", "red"), n.style.width = "100px", n.style.height = "100px", super({ element: e });
+    e.information = t, super({ element: e });
   }
 }
 class $M extends Ae {
