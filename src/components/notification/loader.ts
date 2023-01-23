@@ -1,28 +1,40 @@
-import Control from "ol/control/Control";
+import { html, LitElement, unsafeCSS } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 
-export default class Loader extends Control {
-  
-    constructor(message: string) {
+import Control from 'ol/control/Control';
 
-      const element = document.createElement('div');
-      const text = document.createElement('div');
-      const loaderContainer = document.createElement('div');
-      const loader = document.createElement('span');
+import style from '../../styles/loader.css?inline';
 
-      element.className = 'loader-element';
-      loaderContainer.className = 'loader-container';
-      loader.className = 'loader';
-      text.className = 'loader-text';
+@customElement('loader-box')
+class LoaderBox extends LitElement {
+  @state() message = '';
 
-      text.innerHTML = message;
-
-      loaderContainer.appendChild(loader)
-      element.appendChild(loaderContainer);
-      element.appendChild(text);
-
-      super({
-        element: element,
-      });
-
-    }
+  constructor(message: string) {
+    super();
+    this.message = message;
   }
+
+  static styles = [unsafeCSS(style)];
+
+  render() {
+    return html`
+      <div class="loader-element" style="pointer-events: auto;">
+        <div class="loader-container">
+          <span class="loader"></span>
+        </div>
+        <div class="loader-text">${this.message}</div>
+      </div>
+    `;
+  }
+}
+
+export default class LoaderBoxControl extends Control {
+  constructor(message: string) {
+    const loadingBox = document.createElement('loader-box') as LoaderBox;
+    loadingBox.message = message;
+
+    super({
+      element: loadingBox,
+    });
+  }
+}

@@ -64,6 +64,6 @@ export default class InformationBoxControl extends Control {
   constructor(information: InformationElement) {
     const infoBox = document.createElement('information-box') as InformationBox;
     infoBox.information = information;
-    super({ element: infoBox});
+    super({ element: infoBox });
   }
 }

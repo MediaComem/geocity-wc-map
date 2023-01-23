@@ -21,11 +21,10 @@ import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import loaderStyle from './styles/loader.css?inline';
 
 import ErrorNotification from './components/notification/error-notification';
 import InfoNotification from './components/notification/info-notification';
-import Loader from './components/notification/loader';
+import LoaderBoxControl from './components/notification/loader';
 
 /**
  * An example element.
@@ -127,12 +126,12 @@ export class OpenLayersElement extends LitElement {
       });
       this.geolocation.setTracking(true);
       new GeolocationMarker(map, this.geolocation);
-      map.addControl(new Loader("Chargement des données GPS"));
+      map.addControl(new LoaderBoxControl("Chargement des données GPS"));
       const waitGeolocation = setInterval(() => {
         if (this.geolocation?.getPosition()) {
           clearInterval(waitGeolocation);
           map.getControls().forEach((control) => {
-            if (control instanceof Loader) {
+            if (control instanceof LoaderBoxControl) {
               map.removeControl(control);
             }
         });
@@ -168,8 +167,8 @@ export class OpenLayersElement extends LitElement {
     unsafeCSS(styles), 
     unsafeCSS(mapStyle), 
     unsafeCSS(controlsStyle), 
-    unsafeCSS(notificationStyle), 
-    unsafeCSS(loaderStyle)];
+    unsafeCSS(notificationStyle),
+  ]
 }
 
 declare global {
