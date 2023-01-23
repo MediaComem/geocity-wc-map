@@ -18,7 +18,6 @@ import InformationControl from './components/information-control';
 import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
-import popupStyle from './styles/popup-information.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
@@ -150,7 +149,7 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(popupStyle), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
 }
 
 declare global {
