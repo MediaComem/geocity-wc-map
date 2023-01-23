@@ -21,8 +21,11 @@ import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
+import loaderStyle from './styles/loader.css?inline';
+
 import ErrorNotification from './components/notification/error-notification';
 import InfoNotification from './components/notification/info-notification';
+import Loader from './components/notification/loader';
 
 /**
  * An example element.
@@ -46,7 +49,7 @@ export class OpenLayersElement extends LitElement {
     displayScaleLine: false,
     fullscreen: true,
     defaultCenter: [739867.251358, 5905800.079386],
-    enableGeolocation: false,
+    enableGeolocation: true,
     enableCenterButton: false,
     enableDraw: true,
     drawElement: 'Point',
@@ -124,6 +127,18 @@ export class OpenLayersElement extends LitElement {
       });
       this.geolocation.setTracking(true);
       new GeolocationMarker(map, this.geolocation);
+      map.addControl(new Loader("Chargement des données GPS"));
+      const waitGeolocation = setInterval(() => {
+        if (this.geolocation?.getPosition()) {
+          clearInterval(waitGeolocation);
+          map.getControls().forEach((control) => {
+            if (control instanceof Loader) {
+              map.removeControl(control);
+            }
+        });
+        }
+      }, 200)
+      
     }
     const controls = [];
     if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
@@ -149,7 +164,12 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
+  static styles = [
+    unsafeCSS(styles), 
+    unsafeCSS(mapStyle), 
+    unsafeCSS(controlsStyle), 
+    unsafeCSS(notificationStyle), 
+    unsafeCSS(loaderStyle)];
 }
 
 declare global {
