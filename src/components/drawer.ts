@@ -12,14 +12,14 @@ export default class Drawer {
   snap: Snap | undefined;
   source: VectorSource | undefined;
   modify: Modify | undefined;
-  onlyOneDraw: Boolean;
   vector: VectorLayer<VectorSource>;
   nbDraw: number = 0;
+  maxNbDrwa: number = -1;
 
-  constructor(map: Map, drawElement: string, onlyOneDraw: Boolean) {
+  constructor(map: Map, drawElement: string, maxNbDraw: number) {
     this.map = map;
     this.drawElement = drawElement;
-    this.onlyOneDraw = onlyOneDraw;
+    this.maxNbDrwa = maxNbDraw;
     this.source = new VectorSource();
     this.vector = new VectorLayer({
       source: this.source,
@@ -45,21 +45,16 @@ export default class Drawer {
     this.addInteraction();
   }
 
-  setupInteraction() {
-    if ((this.onlyOneDraw && this.nbDraw < 1) || !this.onlyOneDraw) {
-      if (this.draw) this.map.removeInteraction(this.draw);
-      if (this.snap) this.map.removeInteraction(this.snap);
-      this.addInteraction();
-    }
-  }
-
   removeInteraction() {
     if (this.draw) this.map.removeInteraction(this.draw);
     if (this.snap) this.map.removeInteraction(this.snap);
   }
 
-  updateNbDraw() {
-    this.nbDraw += 1;
+  couldContinueToDraw() {
+    if (this.maxNbDrwa != -1) {
+      this.nbDraw += 1;
+      if (this.nbDraw >= this.maxNbDrwa && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
+    }
   }
 
   addInteraction() {
@@ -70,7 +65,6 @@ export default class Drawer {
     this.map.addInteraction(this.draw);
     this.snap = new Snap({ source: this.source });
     this.map.addInteraction(this.snap);
-    this.draw.addEventListener('drawstart', this.updateNbDraw.bind(this));   
-    if (this.onlyOneDraw && this.draw) this.draw.addEventListener('drawend', this.removeInteraction.bind(this));      
+    this.draw.addEventListener('drawstart', this.couldContinueToDraw.bind(this));   
   }
 }

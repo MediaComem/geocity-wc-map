@@ -50,7 +50,7 @@ export class OpenLayersElement extends LitElement {
     enableCenterButton: false,
     enableDraw: true,
     drawElement: 'Point',
-    onlyOneDraw: true,
+    maxNbDraw: 3,
     enableRotation: true,
     information: {
       duration: 5,
@@ -139,7 +139,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.fullscreen) map.addControl(new FullScreen())
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
-    if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.onlyOneDraw);
+    if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
   }
 
   render() {
