@@ -1,19 +1,4 @@
 export default class SVGCreator {
-    static crossCreator() {
-        const cross = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-    
-        cross.setAttributeNS(null, "width", "20");
-        cross.setAttributeNS(null, "height", "20");
-        cross.setAttributeNS(null, "fill", "none");
-        cross.setAttributeNS(null, "viewBox", "0 0 20 20");
-        cross.setAttribute('class','custom-popup-title-svg');
-        cross.innerHTML = ` 
-                            <path d="M15.4 4.59998L4.60004 15.4" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M15.4 15.4L4.60004 4.59998" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          `;
-        return cross;
-    }
-
     static infoCreator(logoColor:string) {
         const info = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
     

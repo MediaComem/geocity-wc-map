@@ -1,8 +1,5 @@
 import { Control } from 'ol/control';
 import InformationElement from '../types/information-element';
-export default class InformationBox extends Control {
-    interval: any;
+export default class InformationBoxControl extends Control {
     constructor(information: InformationElement);
-    clear(): void;
-    closeBox(): void;
 }

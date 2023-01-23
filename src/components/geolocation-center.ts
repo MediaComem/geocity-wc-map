@@ -1,14 +1,10 @@
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
 import { Control } from 'ol/control'
 import Geolocation from 'ol/Geolocation';
 
 export default class GeolocationCenter extends Control {
-    map:Map;
-    view:View;
     geolocaliseElement: Geolocation | undefined;
 
-    constructor(map:Map ,view:View, geolociliseElement:Geolocation | undefined) {
+    constructor(geolociliseElement:Geolocation | undefined) {
       const button = document.createElement('button');
       button.innerHTML = 'C';
   
@@ -19,8 +15,6 @@ export default class GeolocationCenter extends Control {
       super({
         element: element,
       });
-      this.map = map;
-      this.view = view;
       this.geolocaliseElement = geolociliseElement;
       button.addEventListener('click', this.centerMap.bind(this), false);
     }
@@ -28,8 +22,13 @@ export default class GeolocationCenter extends Control {
     centerMap() {
       if (this.geolocaliseElement) {
         const coordinate = this.geolocaliseElement.getPosition();
-        const size = this.map.getSize();
-        if (coordinate && size) this.view.centerOn(coordinate, size, [570, 500]);
+        const map = this.getMap();
+        if (map) {
+          const size = map.getSize();
+          const view = map.getView();
+          if (coordinate && size) view.centerOn(coordinate, size, [570, 500]);
+        }
+        
       }
     }
   }

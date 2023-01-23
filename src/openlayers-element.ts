@@ -18,7 +18,6 @@ import InformationControl from './components/information-control';
 import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
-import popupStyle from './styles/popup-information.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
@@ -129,7 +128,7 @@ export class OpenLayersElement extends LitElement {
     const controls = [];
     if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
     if (this.options.displayZoom) controls.push(new Zoom())
-    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(map, this.view, this.geolocation));
+    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
     if (false) controls.push(new InfoNotification(this.options.info));
@@ -150,7 +149,7 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(popupStyle), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
 }
 
 declare global {
