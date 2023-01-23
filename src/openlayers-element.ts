@@ -169,6 +169,7 @@ export class OpenLayersElement extends LitElement {
     unsafeCSS(controlsStyle), 
     unsafeCSS(notificationStyle),
   ]
+
 }
 
 declare global {
