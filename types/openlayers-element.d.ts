@@ -23,7 +23,7 @@ export declare class OpenLayersElement extends LitElement {
         enableCenterButton: boolean;
         enableDraw: boolean;
         drawElement: string;
-        onlyOneDraw: boolean;
+        maxNbDraw: number;
         enableRotation: boolean;
         information: {
             duration: number;

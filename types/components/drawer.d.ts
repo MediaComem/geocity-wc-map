@@ -9,12 +9,11 @@ export default class Drawer {
     snap: Snap | undefined;
     source: VectorSource | undefined;
     modify: Modify | undefined;
-    onlyOneDraw: Boolean;
     vector: VectorLayer<VectorSource>;
     nbDraw: number;
-    constructor(map: Map, drawElement: string, onlyOneDraw: Boolean);
-    setupInteraction(): void;
+    maxNbDrwa: number;
+    constructor(map: Map, drawElement: string, maxNbDraw: number);
     removeInteraction(): void;
-    updateNbDraw(): void;
+    couldContinueToDraw(): void;
     addInteraction(): void;
 }
