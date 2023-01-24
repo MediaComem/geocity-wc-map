@@ -9,6 +9,7 @@ import { Geolocation } from 'ol';
  */
 export declare class OpenLayersElement extends LitElement {
     mapElement: HTMLDivElement;
+    mode: string;
     view: View | undefined;
     geolocation: Geolocation | undefined;
     options: {
@@ -30,27 +31,14 @@ export declare class OpenLayersElement extends LitElement {
             title: string;
             content: string;
         };
-        info: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
-            };
+        notification: {
+            type: string;
             message: string;
-        };
-        warning: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
+            rule: {
+                type: string;
+                minZoom: number;
             };
-            message: string;
-        };
-        error: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
-            };
-            message: string;
-        };
+        }[];
         geojson: {
             url: string;
         };
@@ -67,6 +55,7 @@ export declare class OpenLayersElement extends LitElement {
     };
     constructor();
     connectedCallback(): void;
+    getTheme(options: any): "light" | "dark";
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;
     static styles: import("lit").CSSResult[];
