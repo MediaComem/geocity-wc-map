@@ -33,6 +33,7 @@ export class OpenLayersElement extends LitElement {
   @query('#map')
   public mapElement!: HTMLDivElement;
 
+  @state() mode:string = "";
   @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
@@ -55,27 +56,16 @@ export class OpenLayersElement extends LitElement {
       title: "This is a title",
       content: "This is a content",
     },
-    info: {
-      configuration: {
-        textColor: '#1D4ED8',
-        backgroundColor: '#DBEAFE',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    warning: {
-      configuration: {
-        textColor: '#B45309',
-        backgroundColor: '#FEF3C7',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    error: {
-      configuration: {
-        textColor: '#B91C1C',
-        backgroundColor: '#FEE2E2',
-      },
-      message: "Une erreur est survenue lors du chargement de votre positiont",
-    },
+    notification: [
+      {
+        type: "warning",
+        message: "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+        rule: {
+          type: "ZOOM_CONSTRAINT",
+          minZoom: 16
+        }
+      }
+    ],
     geojson: {
       url: "",
     },
@@ -99,7 +89,26 @@ export class OpenLayersElement extends LitElement {
     super.connectedCallback();
   }
 
+  getTheme(options:any) {
+    if (options.darkMode) {
+      return 'dark';
+    }
+    else if (options.lightMode) {
+      return 'light';
+    }
+    else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) { 
+      return 'dark';
+    }
+    else {
+      return 'light';
+    }
+  }
+
   firstUpdated() {
+    this.mode = this.getTheme(this.options);
     this.view = new View({
       center: this.options.defaultCenter,
       zoom: this.options.zoom,
@@ -129,7 +138,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    controls.push(new NotificationBoxControl());
+    controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())

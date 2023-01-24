@@ -13,17 +13,22 @@
   width: 100%;
 }
 
+.notification-title > svg {
+  stroke: var(--notification-stroke-color);
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-width: 2px;
+  padding-right: 10px;
+}
+
 .notification-title {
   display: flex;
-} 
+}
 
 .notification-title-text {
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
   color: var(--notification-text-color);
-}
-
-.notification-title-svg {
-  margin-right: 10px;
 }
