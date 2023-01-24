@@ -21,14 +21,17 @@ export default class GeolocationCenter extends Control {
   
     centerMap() {
       if (this.geolocaliseElement) {
-        const coordinate = this.geolocaliseElement.getPosition();
-        const map = this.getMap();
-        if (map) {
-          const size = map.getSize();
-          const view = map.getView();
-          if (coordinate && size) view.centerOn(coordinate, size, [570, 500]);
-        }
-        
+        navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+          if (result.state === 'granted') {
+            const coordinate = this.geolocaliseElement?.getPosition();
+            const map = this.getMap();
+            if (map) {
+              const size = map.getSize();
+              const view = map.getView();
+              if (coordinate && size) view.centerOn(coordinate, size, [570, 500]);
+            }
+          }
+        });
       }
     }
   }

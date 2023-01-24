@@ -10,40 +10,45 @@ import VectorLayer from 'ol/layer/Vector';
 import Vector from 'ol/source/Vector';
 
 export default class GeolocationMarker {
-    map: Map;
-    geolocation: Geolocation;
+  map: Map;
+  geolocation: Geolocation;
 
-    vectorLayer = new VectorLayer();
-    vectorSource = new Vector;
+  vectorLayer = new VectorLayer();
+  vectorSource = new Vector();
 
-    constructor(map: Map, geolocation: Geolocation) {
-        this.map = map;
-        this.geolocation = geolocation;
+  removeMarker() {
+    this.map.removeLayer(this.vectorLayer);
+  }
 
-        const positionFeature = new Feature();
-        positionFeature.setStyle(
-        new Style({
-            image: new CircleStyle({
-            radius: 6,
-            fill: new Fill({
-                color: '#3399CC',
-            }),
-            stroke: new Stroke({
-                color: '#fff',
-                width: 2,
-            }),
-            }),
-        })
-        );
+  constructor(map: Map, geolocation: Geolocation) {
+    this.map = map;
+    this.geolocation = geolocation;
 
-        geolocation.on('change:position', function () {
-            const coordinates = geolocation.getPosition();
-            positionFeature.setGeometry(coordinates ? new Point(coordinates) : undefined);
-        });
+    const positionFeature = new Feature();
+    positionFeature.setStyle(
+      new Style({
+        image: new CircleStyle({
+          radius: 6,
+          fill: new Fill({
+            color: '#3399CC',
+          }),
+          stroke: new Stroke({
+            color: '#fff',
+            width: 2,
+          }),
+        }),
+      })
+    );
 
-        this.vectorSource?.addFeature(positionFeature);
-        this.vectorLayer.setSource(this.vectorSource)
-        this.map.addLayer(this.vectorLayer);
-    }
+    geolocation.on('change:position', function () {
+      const coordinates = geolocation.getPosition();
+      positionFeature.setGeometry(
+        coordinates ? new Point(coordinates) : undefined
+      );
+    });
 
+    this.vectorSource?.addFeature(positionFeature);
+    this.vectorLayer.setSource(this.vectorSource);
+    this.map.addLayer(this.vectorLayer);
+  }
 }

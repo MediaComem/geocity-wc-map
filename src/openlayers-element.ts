@@ -3,7 +3,6 @@ import { customElement, query, property, state } from 'lit/decorators.js';
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
-import { Geolocation } from 'ol';
 import { Zoom, ScaleLine, FullScreen } from 'ol/control';
 
 import GeolocationCenter from './components/geolocation-center';
@@ -11,7 +10,6 @@ import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import WFSLoader from './components/wfs-loader';
 
-import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
@@ -24,7 +22,7 @@ import notificationStyle from './styles/notification.css?inline';
 
 import ErrorNotification from './components/notification/error-notification';
 import InfoNotification from './components/notification/info-notification';
-import LoaderBoxControl from './components/notification/loader';
+import GeolocationManager from './utils/geolocation-manager';
 
 /**
  * An example element.
@@ -38,7 +36,7 @@ export class OpenLayersElement extends LitElement {
   public mapElement!: HTMLDivElement;
 
   @state() view:View | undefined;
-  @state() geolocation:Geolocation | undefined;
+  @state() geolocation:GeolocationManager | undefined;
 
   @property({type: Object, attribute: 'options'}) options = {
     zoom: 15,
@@ -49,11 +47,11 @@ export class OpenLayersElement extends LitElement {
     fullscreen: true,
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: true,
-    enableCenterButton: false,
+    enableCenterButton: true,
     enableDraw: true,
     drawElement: 'Point',
     maxNbDraw: 3,
-    enableRotation: true,
+    enableRotation: false,
     information: {
       duration: 5,
       title: "This is a title",
@@ -118,31 +116,12 @@ export class OpenLayersElement extends LitElement {
       view: this.view,
     });
     if (this.options.enableGeolocation) {
-      this.geolocation = new Geolocation({
-        trackingOptions: {
-          enableHighAccuracy: true,
-        },
-        projection: this.view.getProjection(),
-      });
-      this.geolocation.setTracking(true);
-      new GeolocationMarker(map, this.geolocation);
-      map.addControl(new LoaderBoxControl("Chargement des données GPS"));
-      const waitGeolocation = setInterval(() => {
-        if (this.geolocation?.getPosition()) {
-          clearInterval(waitGeolocation);
-          map.getControls().forEach((control) => {
-            if (control instanceof LoaderBoxControl) {
-              map.removeControl(control);
-            }
-        });
-        }
-      }, 200)
-      
+      this.geolocation = new GeolocationManager(map, this.view);
     }
     const controls = [];
     if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
     if (this.options.displayZoom) controls.push(new Zoom())
-    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
+    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation?.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
     if (false) controls.push(new InfoNotification(this.options.info));
