@@ -15,14 +15,12 @@ import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
-import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import ErrorNotification from './components/notification/error-notification';
-import InfoNotification from './components/notification/info-notification';
+import NotificationBoxControl from './components/notification/notification';
 
 /**
  * An example element.
@@ -131,9 +129,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    if (false) controls.push(new InfoNotification(this.options.info));
-    if (false) controls.push(new WarningNotification(this.options.warning));
-    if (false) controls.push(new ErrorNotification(this.options.error));
+    controls.push(new NotificationBoxControl());
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
