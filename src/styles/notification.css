@@ -1,4 +1,5 @@
 .notification-element {
+  --icon-size: 32px;
   position: absolute;
   bottom: 5%;
   background-color: var(--notification-background-color);
@@ -14,12 +15,17 @@
 }
 
 .notification-title > svg {
-  stroke: var(--notification-stroke-color);
+  width: var(--icon-size);
+  height: var(--icon-size);
+  padding-right: 10px;
+}
+
+.icon {
   fill: none;
+  stroke: var(--notification-stroke-color);
+  stroke-width: 2px;
   stroke-linejoin: round;
   stroke-linecap: round;
-  stroke-width: 2px;
-  padding-right: 10px;
 }
 
 .notification-title {
