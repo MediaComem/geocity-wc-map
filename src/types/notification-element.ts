@@ -1,8 +1,5 @@
-
-
 export default interface NotificationElement {
-    type: string;
-    message: string;
-    rule: Object;
-  }
-  
+  type: string;
+  message: string;
+  rule: Object;
+}
