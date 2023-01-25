@@ -12,7 +12,9 @@ import NotificationElement from '../../types/notification-element';
 @customElement('notification-box')
 class NotificationBox extends LitElement {
   @property()
-  notification: NotificationElement = { type: '', message: '', rule: {} };
+  type: string = 'info';
+  @property()
+  message: string = '';
   @property()
   mode: string = 'light';
 
@@ -26,18 +28,18 @@ class NotificationBox extends LitElement {
   }
 
   firstUpdated(): void {
-    switch (this.notification.type) {
+    switch (this.type) {
       case 'info':
         this.icon = SVGCreator.info;
-        this.theme = this.mode === 'light' ? 'notification-element-info-light' : 'notification-element-info-dark';
+        this.theme = `notification-element-info-${this.mode}`;
         break;
       case 'warning':
         this.icon = SVGCreator.warning;
-        this.theme = this.mode === 'light' ? 'notification-element-warning-light' : 'notification-element-warning-dark';
+        this.theme = `notification-element-warning-${this.mode}`;
         break;
       case 'error':
         this.icon = SVGCreator.error;
-        this.theme = this.mode === 'light' ? 'notification-element-error-light' : 'notification-element-error-dark';
+        this.theme = `notification-element-error-${this.mode}`;
         break;
     }
   }
@@ -47,7 +49,7 @@ class NotificationBox extends LitElement {
       <div class="notification-element ${this.theme}">
         <div class="notification-title">
           ${unsafeSVG(this.icon)}
-          <div class="notification-title-text">${this.notification.message}</div>
+          <div class="notification-title-text">${this.message}</div>
         </div>  
       </div>
     `;
@@ -59,7 +61,8 @@ export default class NotificationBoxControl extends Control {
     const notificationBox = document.createElement(
       'notification-box'
     ) as NotificationBox;
-    notificationBox.notification = notification;
+    notificationBox.type = notification.type;
+    notificationBox.message = notification.message;
     notificationBox.mode = mode;
     super({ element: notificationBox });
   }
