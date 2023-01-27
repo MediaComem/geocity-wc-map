@@ -11,10 +11,15 @@ import proj4 from 'proj4';
 import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
 
+interface ClusterOptions {
+  distance: number;
+  minDistance: number;
+}
+
 export default class WFSLoader {
   map: Map;
 
-  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string) {
+  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions) {
     this.map = map;
 
     const vectorLayer = new VectorLayer();
@@ -56,8 +61,8 @@ export default class WFSLoader {
         }
         
         const clusterSource = new Cluster({
-          distance: 50,
-          minDistance: 20,
+          distance: clusterOptions.distance,
+          minDistance: clusterOptions.minDistance,
           source: vectorSource,
         });
         
