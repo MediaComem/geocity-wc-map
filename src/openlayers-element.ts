@@ -21,6 +21,7 @@ import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
 import NotificationBoxControl from './components/notification/notification';
+import TargetElement from './components/target';
 
 /**
  * An example element.
@@ -47,7 +48,7 @@ export class OpenLayersElement extends LitElement {
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: false,
     enableCenterButton: false,
-    enableDraw: true,
+    enableDraw: false,
     drawElement: 'Point',
     maxNbDraw: 3,
     enableRotation: true,
@@ -145,6 +146,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
     if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
     if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
+    new TargetElement(map);
   }
 
   render() {
