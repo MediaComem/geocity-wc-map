@@ -1,7 +1,7 @@
 import { Feature, Map } from 'ol';
 import { Vector } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import { Point } from 'ol/geom';
+import { Circle, Point } from 'ol/geom';
 
 import { parse } from 'ol/xml';
 import { Stroke, Style } from 'ol/style';
@@ -76,5 +76,13 @@ export default class WFSLoader {
         });
 
       });
+    window.addEventListener('current-center-position', ((event: CustomEvent) => {
+      const nearestPoint = vectorSource.getClosestFeatureToCoordinate(event.detail);
+      const circle = new Circle(event.detail, 10);
+      if (nearestPoint.getGeometry()?.getType() === 'Point') {
+        const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
+        circle.intersectsCoordinate(nearestPointCoordinate) ? GeocityEvent.sendEvent('nearest-poi-position', nearestPointCoordinate) : GeocityEvent.sendEvent('nearest-poi-position', undefined);
+      }
+    }) as EventListener)
   }
 }
