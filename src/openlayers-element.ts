@@ -20,7 +20,7 @@ import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import NotificationBoxControl from './components/notification/notification';
+import NotificationManager from './components/notification-manager';
 
 /**
  * An example element.
@@ -63,6 +63,13 @@ export class OpenLayersElement extends LitElement {
         rule: {
           type: "ZOOM_CONSTRAINT",
           minZoom: 16
+        }
+      },
+      {
+        type: "info",
+        message: "Appuyez longuement sur l'écran pour cibler l'endroit souhaité",
+        rule: {
+          type: "LONG_CLICK",
         }
       }
     ],
@@ -138,7 +145,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
+    new NotificationManager(map, this.options.notification, this.mode);
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
