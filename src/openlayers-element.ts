@@ -20,7 +20,9 @@ import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import NotificationBoxControl from './components/notification/notification';
+//import NotificationBoxControl from './components/notification/notification';
+import TargetController from './components/target';
+import TargetInformationBoxElement from './components/target-information-box';
 
 /**
  * An example element.
@@ -47,10 +49,14 @@ export class OpenLayersElement extends LitElement {
     defaultCenter: [739867.251358, 5905800.079386],
     enableGeolocation: false,
     enableCenterButton: false,
-    enableDraw: true,
+    enableDraw: false,
     drawElement: 'Point',
     maxNbDraw: 3,
     enableRotation: true,
+    mode: {
+      type: 'target',
+      radius: 40
+    },
     information: {
       duration: 5,
       title: "This is a title",
@@ -138,7 +144,10 @@ export class OpenLayersElement extends LitElement {
     }
     const controls = [];
     if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
-    if (this.options.displayZoom) controls.push(new Zoom())
+    if (this.options.displayZoom)
+      controls.push(new Zoom({
+        className: this.options.mode.type === 'target' ? 'ol-zoom-custom' : 'ol-zoom'
+      }))
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) this.view.on('change:rotation', (event) => {
       map.getControls().forEach((control) => {
@@ -150,13 +159,19 @@ export class OpenLayersElement extends LitElement {
         map.addControl(new ResetRotationControl());
       }
     });
-    controls.push(new InformationControl(map, this.options.information))
-    controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
+    controls.push(new InformationControl(map, this.options.information, this.options.mode.type === 'target'))
+    if (this.options.mode.type === 'target') {
+      controls.push(new TargetController(map))
+      controls.push(new TargetInformationBoxElement(this.options.defaultCenter));
+    }
+    //controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
-    if (this.options.fullscreen) map.addControl(new FullScreen())
+    if (this.options.fullscreen) map.addControl(new FullScreen({
+      className: this.options.mode.type === 'target' ? 'ol-full-screen-custom' : 'ol-full-screen'
+    }))
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
-    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.cluster);
+    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.cluster, this.options.mode.radius);
     if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
   }
 

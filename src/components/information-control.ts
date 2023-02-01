@@ -10,12 +10,12 @@ export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
     timeout: any;
 
-    constructor(map: Map, information: InformationElement) {
+    constructor(map: Map, information: InformationElement, customPosition: boolean) {
         const button = document.createElement('button');
         button.innerHTML = 'i';
     
         const element = document.createElement('div');
-        element.className = 'information-control ol-unselectable ol-control';
+        element.className = customPosition ? 'information-control-custom ol-unselectable ol-control' : 'information-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({

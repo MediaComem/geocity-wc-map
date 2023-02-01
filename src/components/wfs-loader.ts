@@ -1,7 +1,7 @@
 import { Feature, Map } from 'ol';
 import { Cluster, Vector } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import { Point } from 'ol/geom';
+import { Circle, Point } from 'ol/geom';
 
 import { parse } from 'ol/xml';
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
@@ -19,7 +19,7 @@ interface ClusterOptions {
 export default class WFSLoader {
   map: Map;
 
-  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions) {
+  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions, intersectionRadius: number) {
     this.map = map;
 
     const vectorLayer = new VectorLayer();
@@ -118,5 +118,16 @@ export default class WFSLoader {
         });
 
       });
+
+    window.addEventListener('current-center-position', ((event: CustomEvent) => {
+      const nearestPoint = vectorSource.getClosestFeatureToCoordinate(event.detail);
+      const circle = new Circle(event.detail, intersectionRadius);
+      if (nearestPoint.getGeometry()?.getType() === 'Point') {
+        const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
+        // This event will use by the notification manager to inform about an nearest POI.
+        console.log(nearestPoint);
+        if (circle.intersectsCoordinate(nearestPointCoordinate)) GeocityEvent.sendEvent('nearest-poi-position', nearestPointCoordinate);
+      }
+    }) as EventListener)
   }
 }

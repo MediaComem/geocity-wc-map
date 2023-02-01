@@ -6,7 +6,7 @@ export default class InformationControl extends Control {
     information: InformationElement;
     informationIsOpen: Boolean;
     timeout: any;
-    constructor(map: Map, information: InformationElement);
+    constructor(map: Map, information: InformationElement, customPosition: boolean);
     closeInformationBox(): void;
     openInformationBox(): void;
     toogleInformationBox(): void;
