@@ -42,7 +42,7 @@ export class OpenLayersElement extends LitElement {
   @property({type: Object, attribute: 'options'}) options = {
     zoom: 15,
     minZoom: 1,
-    maxZoom: 18,
+    maxZoom: 20,
     displayZoom: true,
     displayScaleLine: false,
     fullscreen: true,
@@ -75,8 +75,12 @@ export class OpenLayersElement extends LitElement {
     geojson: {
       url: "",
     },
+    cluster: {
+      distance: 30,
+      minDistance: 20,
+    },
     wfs: {
-      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
+      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco",
       projection: "EPSG:2056",
       projectionDefinition: "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
     },
@@ -145,7 +149,16 @@ export class OpenLayersElement extends LitElement {
         className: this.options.mode.type === 'target' ? 'ol-zoom-custom' : 'ol-zoom'
       }))
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
-    if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
+    if (this.options.enableRotation) this.view.on('change:rotation', (event) => {
+      map.getControls().forEach((control) => {
+        if (control instanceof ResetRotationControl) {
+          map.removeControl(control);
+        }
+      });
+      if (event.target.getRotation() !== 0) {
+        map.addControl(new ResetRotationControl());
+      }
+    });
     controls.push(new InformationControl(map, this.options.information, this.options.mode.type === 'target'))
     if (this.options.mode.type === 'target') {
       controls.push(new TargetController(map))
@@ -158,7 +171,7 @@ export class OpenLayersElement extends LitElement {
       className: this.options.mode.type === 'target' ? 'ol-full-screen-custom' : 'ol-full-screen'
     }))
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
-    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.mode.radius);
+    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.cluster, this.options.mode.radius);
     if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
   }
 

@@ -1,12 +1,8 @@
 import Control from "ol/control/Control";
-import Map from 'ol/Map.js';
-import View from "ol/View";
 
 export default class ResetRotationControl extends Control {
-    map:Map;
-    view:View;
 
-    constructor(map:Map, view:View) {
+    constructor() {
         const button = document.createElement('button');
         button.innerHTML = 'R';
     
@@ -17,12 +13,10 @@ export default class ResetRotationControl extends Control {
         super({
             element: element,
         });
-        this.map = map;
-        this.view = view;
         button.addEventListener('click', this.resetRotation.bind(this), false);
     }
 
     resetRotation() {
-        this.view.setRotation(0);
+        this.getMap()?.getView().setRotation(0);
     }
 }
