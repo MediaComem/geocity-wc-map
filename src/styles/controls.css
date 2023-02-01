@@ -1,11 +1,48 @@
 .center-control {
-  top: 95%;
+  top: 6.5em;
   left: 0.5em;
 }
 
 .information-control {
   right: 0.5em;
   top: 2.5em;
+}
+
+.rotation-control {
+  top: 9.5em;
+  left: 0.5em;
+}
+
+.ol-zoom-in,
+.ol-zoom-out,
+.ol-zoom-custom-in,
+.ol-zoom-custom-out,
+.information-control,
+.information-control-custom,
+.center-control,
+.center-control-custom,
+.rotation-control,
+.rotation-control-custom,
+.ol-full-screen,
+.ol-full-screen-custom-true,
+.ol-full-screen-custom-false {
+  width: 36px !important;
+  height: 36px !important;
+  background-color: rgb(30 41 59 / 75%) !important;
+}
+
+.ol-zoom-in > div > svg > g > .icon,
+.ol-zoom-out > div > svg > g > .icon,
+.ol-zoom-custom-in > div > svg > g > .icon,
+.ol-zoom-custom-out > div > svg > g > .icon,
+.ol-full-screen > div > svg > g > .icon,
+.ol-full-screen-custom-true > div > svg > g > .icon,
+.ol-full-screen-custom-false > div > svg > g > .icon {
+    fill: none;
+    stroke: white;
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
 }
 
 @media only screen and (min-width: 420px) {
@@ -16,13 +53,23 @@
   }
 
   .ol-full-screen-custom {
-    top: 0.5em;
+    top: 3.5em;
     right: 0.5em;
   }
 
   .information-control-custom {
     right: 0.5em;
-    top: 2.5em;
+    top: 0.5em;
+  }
+
+  .center-control-custom {
+    top: 6.5em;
+    left: 0.5em;
+  }
+
+  .rotation-control-custom {
+    top: 9.5em;
+    left: 0.5em;
   }
 
 }
@@ -35,13 +82,23 @@
   }
 
   .ol-full-screen-custom {
-    top: calc(0.5em + 79px + 10px);
+    top: calc(3.5em + 79px + 10px);
     right: 0.5em;
   }
 
   .information-control-custom {
     right: 0.5em;
-    top: calc(2.5em + 79px + 10px);
+    top: calc(0.5em + 79px + 10px);
+  }
+
+  .center-control-custom {
+    top: calc(6.5em + 79px + 10px);
+    left: 0.5em;
+  }
+
+  .rotation-control-custom {
+    top: calc(9.5em + 79px + 10px);
+    left: 0.5em;
   }
 
 }
