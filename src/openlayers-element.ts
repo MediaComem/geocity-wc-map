@@ -129,7 +129,16 @@ export class OpenLayersElement extends LitElement {
     if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
     if (this.options.displayZoom) controls.push(new Zoom())
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
-    if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
+    if (this.options.enableRotation) this.view.on('change:rotation', (event) => {
+      map.getControls().forEach((control) => {
+        if (control instanceof ResetRotationControl) {
+          map.removeControl(control);
+        }
+      });
+      if (event.target.getRotation() !== 0) {
+        map.addControl(new ResetRotationControl());
+      }
+    });
     controls.push(new InformationControl(map, this.options.information))
     if (false) controls.push(new InfoNotification(this.options.info));
     if (false) controls.push(new WarningNotification(this.options.warning));
