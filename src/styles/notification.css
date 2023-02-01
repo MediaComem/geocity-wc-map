@@ -1,4 +1,5 @@
 .notification-element {
+  --icon-size: 32px;
   position: absolute;
   bottom: 5%;
   background-color: var(--notification-background-color);
@@ -13,17 +14,27 @@
   width: 100%;
 }
 
+.notification-title > svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  padding-right: 10px;
+}
+
+.icon {
+  fill: none;
+  stroke: var(--notification-stroke-color);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
 .notification-title {
   display: flex;
-} 
+}
 
 .notification-title-text {
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
   color: var(--notification-text-color);
-}
-
-.notification-title-svg {
-  margin-right: 10px;
 }

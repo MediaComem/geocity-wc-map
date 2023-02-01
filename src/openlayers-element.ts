@@ -15,14 +15,12 @@ import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
-import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import ErrorNotification from './components/notification/error-notification';
-import InfoNotification from './components/notification/info-notification';
+import NotificationBoxControl from './components/notification/notification';
 
 /**
  * An example element.
@@ -35,6 +33,7 @@ export class OpenLayersElement extends LitElement {
   @query('#map')
   public mapElement!: HTMLDivElement;
 
+  @state() mode:string = "";
   @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
@@ -57,27 +56,16 @@ export class OpenLayersElement extends LitElement {
       title: "This is a title",
       content: "This is a content",
     },
-    info: {
-      configuration: {
-        textColor: '#1D4ED8',
-        backgroundColor: '#DBEAFE',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    warning: {
-      configuration: {
-        textColor: '#B45309',
-        backgroundColor: '#FEF3C7',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    error: {
-      configuration: {
-        textColor: '#B91C1C',
-        backgroundColor: '#FEE2E2',
-      },
-      message: "Une erreur est survenue lors du chargement de votre positiont",
-    },
+    notification: [
+      {
+        type: "warning",
+        message: "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+        rule: {
+          type: "ZOOM_CONSTRAINT",
+          minZoom: 16
+        }
+      }
+    ],
     geojson: {
       url: "",
     },
@@ -101,7 +89,26 @@ export class OpenLayersElement extends LitElement {
     super.connectedCallback();
   }
 
+  getTheme(options:any) {
+    if (options.darkMode) {
+      return 'dark';
+    }
+    else if (options.lightMode) {
+      return 'light';
+    }
+    else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) { 
+      return 'dark';
+    }
+    else {
+      return 'light';
+    }
+  }
+
   firstUpdated() {
+    this.mode = this.getTheme(this.options);
     this.view = new View({
       center: this.options.defaultCenter,
       zoom: this.options.zoom,
@@ -131,9 +138,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
     controls.push(new InformationControl(map, this.options.information))
-    if (false) controls.push(new InfoNotification(this.options.info));
-    if (false) controls.push(new WarningNotification(this.options.warning));
-    if (false) controls.push(new ErrorNotification(this.options.error));
+    controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
     controls.forEach(control => map.addControl(control));
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
