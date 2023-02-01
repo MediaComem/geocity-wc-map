@@ -1,8 +1,26 @@
+import { html, LitElement, unsafeCSS } from 'lit';
+import { customElement } from 'lit/decorators.js';
+
 import { Map } from 'ol';
 import Control from "ol/control/Control";
+
 import InformationElement from '../types/information-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import InformationBoxControl from './information-box';
+
+import style from '../styles/svg-control.css?inline';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+import SVGCreator from '../utils/svg-creator';
+
+@customElement('information-control-button')
+class InformationControlButton extends LitElement {
+
+  static styles = [unsafeCSS(style)];
+
+  render() {
+    return html`${unsafeSVG(SVGCreator.information)}`;
+  }
+}
 
 export default class InformationControl extends Control {
     map:Map;
@@ -11,8 +29,10 @@ export default class InformationControl extends Control {
     timeout: any;
 
     constructor(map: Map, information: InformationElement, customPosition: boolean) {
-        const button = document.createElement('button');
-        button.innerHTML = 'i';
+        const button = document.createElement('div');
+
+        const icon = document.createElement('information-control-button') as InformationControlButton;
+        button.appendChild(icon);
     
         const element = document.createElement('div');
         element.className = customPosition ? 'information-control-custom ol-unselectable ol-control' : 'information-control ol-unselectable ol-control';

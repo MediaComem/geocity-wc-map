@@ -1,0 +1,12 @@
+svg {
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+svg > g > .icon {
+  fill: none;
+  stroke: white;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
