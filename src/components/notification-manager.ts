@@ -3,10 +3,10 @@ import NotificationElement from '../types/notification-element';
 import NotificationBoxControl from './notification/notification';
 
 /* 
-    ZOOM_CONSTRAINT
-    AREA_CONSTRAINT
-    PROXIMITY_INFORMATION
-    MAX_SELECTION
+    ZOOM_CONSTRAINT 1
+    AREA_CONSTRAINT 2
+    PROXIMITY_INFORMATION 3
+    MAX_SELECTION 4
 */
 
 export default class NotificationManager {
