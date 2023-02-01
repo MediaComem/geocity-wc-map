@@ -13,7 +13,7 @@ import { GeocityEvent } from '../utils/geocity-event';
 export default class WFSLoader {
   map: Map;
 
-  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string) {
+  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, intersectionRadius: number) {
     this.map = map;
 
     const vectorLayer = new VectorLayer();
@@ -76,12 +76,15 @@ export default class WFSLoader {
         });
 
       });
+
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
       const nearestPoint = vectorSource.getClosestFeatureToCoordinate(event.detail);
-      const circle = new Circle(event.detail, 10);
+      const circle = new Circle(event.detail, intersectionRadius);
       if (nearestPoint.getGeometry()?.getType() === 'Point') {
         const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
-        circle.intersectsCoordinate(nearestPointCoordinate) ? GeocityEvent.sendEvent('nearest-poi-position', nearestPointCoordinate) : GeocityEvent.sendEvent('nearest-poi-position', undefined);
+        // This event will use by the notification manager to inform about an nearest POI.
+        console.log(nearestPoint);
+        if (circle.intersectsCoordinate(nearestPointCoordinate)) GeocityEvent.sendEvent('nearest-poi-position', nearestPointCoordinate);
       }
     }) as EventListener)
   }

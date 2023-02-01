@@ -22,7 +22,7 @@ import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
 //import NotificationBoxControl from './components/notification/notification';
 import TargetController from './components/target';
-import LightInformationBoxController from './components/light-information-box';
+import TargetInformationBoxElement from './components/target-information-box';
 
 /**
  * An example element.
@@ -55,7 +55,7 @@ export class OpenLayersElement extends LitElement {
     enableRotation: true,
     mode: {
       type: 'target',
-      radius: 10
+      radius: 40
     },
     information: {
       duration: 5,
@@ -149,7 +149,7 @@ export class OpenLayersElement extends LitElement {
     controls.push(new InformationControl(map, this.options.information, this.options.mode.type === 'target'))
     if (this.options.mode.type === 'target') {
       controls.push(new TargetController(map))
-      controls.push(new LightInformationBoxController(this.options.defaultCenter));
+      controls.push(new TargetInformationBoxElement(this.options.defaultCenter));
     }
     //controls.push(new NotificationBoxControl(this.options.notification[0], this.mode));
     controls.forEach(control => map.addControl(control));
@@ -158,7 +158,7 @@ export class OpenLayersElement extends LitElement {
       className: this.options.mode.type === 'target' ? 'ol-full-screen-custom' : 'ol-full-screen'
     }))
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
-    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
+    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.mode.radius);
     if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
   }
 
