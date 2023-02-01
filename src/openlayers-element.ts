@@ -40,7 +40,7 @@ export class OpenLayersElement extends LitElement {
   @property({type: Object, attribute: 'options'}) options = {
     zoom: 15,
     minZoom: 1,
-    maxZoom: 18,
+    maxZoom: 20,
     displayZoom: true,
     displayScaleLine: false,
     fullscreen: true,
@@ -69,8 +69,12 @@ export class OpenLayersElement extends LitElement {
     geojson: {
       url: "",
     },
+    cluster: {
+      distance: 30,
+      minDistance: 20,
+    },
     wfs: {
-      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
+      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco",
       projection: "EPSG:2056",
       projectionDefinition: "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
     },
@@ -143,7 +147,7 @@ export class OpenLayersElement extends LitElement {
     if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (this.options.fullscreen) map.addControl(new FullScreen())
     if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
-    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
+    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition, this.options.cluster);
     if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
   }
 
