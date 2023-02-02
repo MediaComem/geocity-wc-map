@@ -121,7 +121,7 @@ export class OpenLayersElement extends LitElement {
       controls.push(new TargetController(map))
       controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme));
     }
-    new NotificationManager(map, this.options.notification, this.mode);
+    new NotificationManager(map, options.notification, this.theme);
 
 
     controls.forEach(control => map.addControl(control));

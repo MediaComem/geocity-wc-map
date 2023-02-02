@@ -71,6 +71,13 @@ export default class Options {
             type: "ZOOM_CONSTRAINT",
             minZoom: 16
           }
+        },
+        {
+          type: "info",
+          message: "Appuyez longuement sur l'écran pour cibler l'endroit souhaité",
+          rule: {
+            type: "LONG_CLICK",
+          }
         }
       ],
       wfs: {

@@ -9,64 +9,13 @@ import { Geolocation } from 'ol';
  */
 export declare class OpenLayersElement extends LitElement {
     mapElement: HTMLDivElement;
-    mode: string;
+    theme: string;
     view: View | undefined;
     geolocation: Geolocation | undefined;
-    options: {
-        zoom: number;
-        minZoom: number;
-        maxZoom: number;
-        displayZoom: boolean;
-        displayScaleLine: boolean;
-        fullscreen: boolean;
-        defaultCenter: number[];
-        enableGeolocation: boolean;
-        enableCenterButton: boolean;
-        enableDraw: boolean;
-        drawElement: string;
-        maxNbDraw: number;
-        enableRotation: boolean;
-        mode: {
-            type: string;
-            radius: number;
-        };
-        information: {
-            duration: number;
-            title: string;
-            content: string;
-        };
-        notification: ({
-            type: string;
-            message: string;
-            rule: {
-                type: string;
-                minZoom: number;
-            };
-        } | {
-            type: string;
-            message: string;
-            rule: {
-                type: string;
-                minZoom?: undefined;
-            };
-        })[];
-        geojson: {
-            url: string;
-        };
-        wfs: {
-            url: string;
-            projection: string;
-            projectionDefinition: string;
-        };
-        wmts: {
-            capability: string;
-            layer: string;
-            projection: string;
-        };
-    };
+    options: {};
     constructor();
     connectedCallback(): void;
-    getTheme(options: any): "dark" | "light";
+    getTheme(options: any): "light" | "dark";
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;
     static styles: import("lit").CSSResult[];

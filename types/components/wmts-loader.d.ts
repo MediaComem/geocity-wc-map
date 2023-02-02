@@ -1,5 +1,5 @@
 import { Map } from 'ol';
-interface wmtsLayerConfiguration {
+export default interface wmtsLayerConfiguration {
     capability: string;
     layer: string;
     projection: string;
@@ -7,4 +7,3 @@ interface wmtsLayerConfiguration {
 export default class WMTSLoader {
     constructor(map: Map, options: wmtsLayerConfiguration);
 }
-export {};
