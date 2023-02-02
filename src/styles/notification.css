@@ -12,6 +12,7 @@
   margin-right: 5px;
   max-width: 302px;
   width: 100%;
+  left: calc((100% - 334px) / 2);
 }
 
 .notification-title > svg {

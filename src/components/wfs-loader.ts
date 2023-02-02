@@ -125,7 +125,6 @@ export default class WFSLoader {
       if (nearestPoint.getGeometry()?.getType() === 'Point') {
         const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
         // This event will use by the notification manager to inform about an nearest POI.
-        console.log(nearestPoint);
         if (circle.intersectsCoordinate(nearestPointCoordinate)) GeocityEvent.sendEvent('nearest-poi-position', nearestPointCoordinate);
       }
     }) as EventListener)

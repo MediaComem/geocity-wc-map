@@ -5,17 +5,20 @@ import InformationElement from '../types/information-element';
 import { GeocityEvent } from '../utils/geocity-event';
 
 import popupStyle from '../styles/popup-information.css?inline';
+import themeStyle from '../styles/theme.css?inline';
 
 @customElement('information-box')
 class InformationBox extends LitElement {
   @property()
   information: InformationElement = { duration: 0, title: '', content: ''};
+  @property()
+  theme: string = 'light';
 
   @state() _width = 100;
 
   interval: any;
 
-  static styles = [unsafeCSS(popupStyle)];
+  static styles = [unsafeCSS(popupStyle), unsafeCSS(themeStyle)];
 
   firstUpdated(): void {
     const intervalDuration = this.information.duration / 100;
@@ -36,7 +39,7 @@ class InformationBox extends LitElement {
 
   render() {
     return html`
-      <div class="custom-popup-element" style="--progress-width: ${this._width}%">
+      <div class="information-box-${this.theme} custom-popup-element" style="--progress-width: ${this._width}%">
         <div class="custom-popup-title">
           <div class="custom-popup-title-text">${this.information.title}</div>
           <svg _width="20" height="20" fill="none" viewBox="0 0 20 20" class="custom-popup-title-svg" @click="${this.closeBox}">
@@ -61,9 +64,10 @@ class InformationBox extends LitElement {
 }
 
 export default class InformationBoxControl extends Control {
-  constructor(information: InformationElement) {
+  constructor(information: InformationElement, theme: string) {
     const infoBox = document.createElement('information-box') as InformationBox;
     infoBox.information = information;
+    infoBox.theme = theme;
     super({ element: infoBox});
   }
 }

@@ -5,7 +5,7 @@ svg {
 
 svg > g > .icon {
   fill: none;
-  stroke: white;
+  stroke: var(--control-icon-color);
   stroke-width: 2px;
   stroke-linejoin: round;
   stroke-linecap: round;

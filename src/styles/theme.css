@@ -1,3 +1,13 @@
+.control-light {
+    --control-background-color: rgb(30 41 59 / 75%);
+    --control-icon-color: white;
+}
+
+.control-dark {
+    --control-background-color: rgb(255 255 255 / 75%);
+    --control-icon-color: #1E293B;
+}
+
 .notification-element-info-light {
     --notification-background-color: #DBEAFE;
     --notification-stroke-color: #1D4ED8;
@@ -32,4 +42,16 @@
     --notification-background-color: #DC2626;
     --notification-stroke-color: #FFFFFF;
     --notification-text-color: #FFFFFF;
+}
+
+.information-box-light {
+    --information-box-background-color: white;
+    --information-box-title-color: #1E293B;
+    --information-box-text-color: #334155;
+}
+
+.information-box-dark {
+    --information-box-background-color: #1F2937;
+    --information-box-title-color: #F3F4F6;
+    --information-box-text-color: #9CA3AF;
 }
