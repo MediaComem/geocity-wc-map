@@ -28,7 +28,7 @@
 .ol-full-screen-custom-false {
   width: 36px !important;
   height: 36px !important;
-  background-color: rgb(30 41 59 / 75%) !important;
+  background-color: var(--control-background-color) !important;
 }
 
 .ol-zoom-in > div > svg > g > .icon,
@@ -39,7 +39,7 @@
 .ol-full-screen-custom-true > div > svg > g > .icon,
 .ol-full-screen-custom-false > div > svg > g > .icon {
     fill: none;
-    stroke: white;
+    stroke: var(--control-icon-color);
     stroke-width: 2px;
     stroke-linejoin: round;
     stroke-linecap: round;

@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 import { Map } from 'ol';
 import Control from "ol/control/Control";
@@ -15,23 +15,27 @@ import SVGCreator from '../utils/svg-creator';
 @customElement('information-control-button')
 class InformationControlButton extends LitElement {
 
+  @property() theme = 'light';
+
   static styles = [unsafeCSS(style)];
 
   render() {
-    return html`${unsafeSVG(SVGCreator.information)}`;
+    return html`<div class="control-${this.theme}">${unsafeSVG(SVGCreator.information)}</div>`;
   }
 }
 
 export default class InformationControl extends Control {
     map:Map;
+    theme: string;
     information: InformationElement;
     informationIsOpen: Boolean = true;
     timeout: any;
 
-    constructor(map: Map, information: InformationElement, customPosition: boolean) {
+    constructor(map: Map, information: InformationElement, theme:string, customPosition: boolean) {
         const button = document.createElement('div');
 
         const icon = document.createElement('information-control-button') as InformationControlButton;
+        icon.theme = theme;
         button.appendChild(icon);
     
         const element = document.createElement('div');
@@ -43,6 +47,7 @@ export default class InformationControl extends Control {
         });
         this.map = map;
         this.information = information;
+        this.theme = theme;
         button.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
         this.openInformationBox();
@@ -59,7 +64,7 @@ export default class InformationControl extends Control {
       }
 
       openInformationBox() {
-        this.map.addControl(new InformationBoxControl(this.information));
+        this.map.addControl(new InformationBoxControl(this.information, this.theme));
         this.informationIsOpen = true;
       }
     

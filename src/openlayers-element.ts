@@ -20,6 +20,7 @@ import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
+import theme from './styles/theme.css?inline';
 //import NotificationBoxControl from './components/notification/notification';
 import TargetController from './components/target';
 import TargetInformationBoxElement from './components/target-information-box';
@@ -39,7 +40,7 @@ export class OpenLayersElement extends LitElement {
   @query('#map')
   public mapElement!: HTMLDivElement;
 
-  @state() mode:string = "";
+  @state() theme:string = "";
   @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
@@ -73,7 +74,7 @@ export class OpenLayersElement extends LitElement {
 
   firstUpdated() {
     const options = Options.getOptions(this.options as IOption);
-    this.mode = this.getTheme(options);
+    this.theme = this.getTheme(options);
     this.view = new View({
       center: options.defaultCenter,
       zoom: options.zoom,
@@ -103,31 +104,31 @@ export class OpenLayersElement extends LitElement {
       controls.push(new Zoom({
         zoomInLabel: SVGCreator.zoomInLabel(),
         zoomOutLabel: SVGCreator.zoomOutLabel(),
-        className: options.mode.type === 'target' ? 'ol-zoom-custom' : 'ol-zoom'
+        className: options.mode.type === 'target' ? `ol-zoom-custom` : `ol-zoom`
       }))
-    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation, options.mode.type === 'target'));
-    if (options.enableRotation) map.addControl(new ResetRotationControl(options.mode.type === 'target'));/*this.view.on('change:rotation', (event) => {
+    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation, this.theme, options.mode.type === 'target'));
+    if (options.enableRotation) this.view.on('change:rotation', (event) => {
       map.getControls().forEach((control) => {
         if (control instanceof ResetRotationControl) {
           map.removeControl(control);
         }
       });
       if (event.target.getRotation() !== 0) {
-        map.addControl(new ResetRotationControl());
+        map.addControl(new ResetRotationControl(this.theme, options.mode.type === 'target'));
       }
-    });*/
-    controls.push(new InformationControl(map, options.information, options.mode.type === 'target'))
+    });
+    controls.push(new InformationControl(map, options.information, this.theme, options.mode.type === 'target'))
     if (options.mode.type === 'target') {
       controls.push(new TargetController(map))
-      controls.push(new TargetInformationBoxElement(options.defaultCenter));
+      controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme));
     }
-    controls.push(new NotificationBoxControl(options.notification[0], this.mode));
+    controls.push(new NotificationBoxControl(options.notification[0], this.theme));
     controls.forEach(control => map.addControl(control));
     if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (options.fullscreen) map.addControl(new FullScreen({
       label: SVGCreator.fullScreenLabel(),
       labelActive: SVGCreator.fullScreenLabelActive(),
-      className: options.mode.type === 'target' ? 'ol-full-screen-custom' : 'ol-full-screen'
+      className: options.mode.type === 'target' ? `ol-full-screen-custom` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
     if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
@@ -136,12 +137,12 @@ export class OpenLayersElement extends LitElement {
 
   render() {
     return html`
-    <div id="map">
+    <div id="map" class="control-${this.theme}">
     </div>   
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme)];
 }
 
 declare global {
