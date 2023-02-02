@@ -57,6 +57,8 @@ class NotificationBox extends LitElement {
 }
 
 export default class NotificationBoxControl extends Control {
+  ruleType: string;
+
   constructor(notification: NotificationElement, mode:string) {
     const notificationBox = document.createElement(
       'notification-box'
@@ -65,5 +67,6 @@ export default class NotificationBoxControl extends Control {
     notificationBox.message = notification.message;
     notificationBox.mode = mode;
     super({ element: notificationBox });
+    this.ruleType = notification.rule.type;
   }
 }

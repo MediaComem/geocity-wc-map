@@ -35,14 +35,21 @@ export declare class OpenLayersElement extends LitElement {
             title: string;
             content: string;
         };
-        notification: {
+        notification: ({
             type: string;
             message: string;
             rule: {
                 type: string;
                 minZoom: number;
             };
-        }[];
+        } | {
+            type: string;
+            message: string;
+            rule: {
+                type: string;
+                minZoom?: undefined;
+            };
+        })[];
         geojson: {
             url: string;
         };
