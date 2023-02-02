@@ -28,8 +28,9 @@ export default class ResetRotationControl extends Control {
 
         const icon = document.createElement('rotation-control-button') as RotationControlButton;
         icon.theme = theme;
+        
         button.appendChild(icon);
-    
+
         const element = document.createElement('div');
         element.className = customPosition ? 'rotation-control-custom ol-unselectable ol-control' : 'rotation-control ol-unselectable ol-control';
         element.appendChild(button);
