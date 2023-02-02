@@ -22,6 +22,7 @@ import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
 import NotificationManager from './components/notification-manager';
 import theme from './styles/theme.css?inline';
+
 import TargetController from './components/target';
 import TargetInformationBoxElement from './components/target-information-box';
 import Options from './utils/options';
@@ -122,8 +123,6 @@ export class OpenLayersElement extends LitElement {
       controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme));
     }
     new NotificationManager(map, options.notification, this.theme);
-
-
     controls.forEach(control => map.addControl(control));
     if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (options.fullscreen) map.addControl(new FullScreen({

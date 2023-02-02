@@ -71,6 +71,7 @@ export default class Options {
             type: "ZOOM_CONSTRAINT",
             minZoom: 16
           }
+<<<<<<< HEAD
         },
         {
           type: "info",
@@ -78,6 +79,8 @@ export default class Options {
           rule: {
             type: "LONG_CLICK",
           }
+=======
+>>>>>>> 0d04262446af2fff099117dbe46faef04a3da27f
         }
       ],
       wfs: {
