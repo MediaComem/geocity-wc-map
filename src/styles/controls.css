@@ -5,12 +5,17 @@
 
 .information-control {
   right: 0.5em;
-  top: 2.5em;
+  top: 0.5em;
 }
 
 .rotation-control {
   top: 9.5em;
   left: 0.5em;
+}
+
+.ol-full-screen {
+  top: 3.5em;
+  right: 0.5em;
 }
 
 .ol-zoom-in,
@@ -23,7 +28,8 @@
 .center-control-custom,
 .rotation-control,
 .rotation-control-custom,
-.ol-full-screen,
+.ol-full-screen-true,
+.ol-full-screen-false,
 .ol-full-screen-custom-true,
 .ol-full-screen-custom-false {
   width: 36px !important;
@@ -35,7 +41,8 @@
 .ol-zoom-out > div > svg > g > .icon,
 .ol-zoom-custom-in > div > svg > g > .icon,
 .ol-zoom-custom-out > div > svg > g > .icon,
-.ol-full-screen > div > svg > g > .icon,
+.ol-full-screen-true > div > svg > g > .icon,
+.ol-full-screen-false > div > svg > g > .icon,
 .ol-full-screen-custom-true > div > svg > g > .icon,
 .ol-full-screen-custom-false > div > svg > g > .icon {
     fill: none;

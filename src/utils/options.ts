@@ -40,10 +40,10 @@ export default class Options {
       displayScaleLine: false,
       fullscreen: true,
       defaultCenter: [739867.251358, 5905800.079386],
-      enableGeolocation: true,
+      enableGeolocation: false,
       enableCenterButton: true,
       enableDraw: false,
-      maxNbDraw: 3,
+      maxNbDraw: 0,
       drawElement: 'Point',
       onlyOneDraw: false,
       enableRotation: true,
@@ -53,7 +53,7 @@ export default class Options {
         content: 'This is a content',
       },
       mode: {
-          type: 'target',
+          type: '',
           radius: 40
       },
       cluster: {
@@ -63,25 +63,9 @@ export default class Options {
       geojson: {
         url: '',
       },
-      notification: [
-        {
-          type: "warning",
-          message: "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
-          rule: {
-            type: "ZOOM_CONSTRAINT",
-            minZoom: 16
-          }
-        },
-        {
-          type: "info",
-          message: "Appuyez longuement sur l'écran pour cibler l'endroit souhaité",
-          rule: {
-            type: "LONG_CLICK",
-          }
-        }
-      ],
+      notification: [],
       wfs: {
-        url: 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle',
+        url: '',
         projection: 'EPSG:2056',
         projectionDefinition:
           '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
