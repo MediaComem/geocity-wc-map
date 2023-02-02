@@ -11,8 +11,8 @@
 
 body {
   margin: 0px;
-  width: 348px;
-  height: 520px;
+  width: 100%;
+  height: 95vh;
   margin-left: auto;
   margin-right: auto;
 }

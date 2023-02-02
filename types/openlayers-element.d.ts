@@ -26,6 +26,10 @@ export declare class OpenLayersElement extends LitElement {
         drawElement: string;
         maxNbDraw: number;
         enableRotation: boolean;
+        mode: {
+            type: string;
+            radius: number;
+        };
         information: {
             duration: number;
             title: string;
@@ -62,7 +66,7 @@ export declare class OpenLayersElement extends LitElement {
     };
     constructor();
     connectedCallback(): void;
-    getTheme(options: any): "light" | "dark";
+    getTheme(options: any): "dark" | "light";
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;
     static styles: import("lit").CSSResult[];
