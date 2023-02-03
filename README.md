@@ -46,11 +46,11 @@
 ### Information parameters
 
 | Parameter | Description                         | Type   | Default           |
-| -------- | ----------------------------------- | ------ | ----------------- |
-| duration | The duration display time in second | number | 5                 |
-| title    | Title of the information            | string | This is a title   |
-| content  | Content of the                      | string | This is a content |
-|          |                                     |        |                   |
+| --------- | ----------------------------------- | ------ | ----------------- |
+| duration  | The duration display time in second | number | 5                 |
+| title     | Title of the information            | string | This is a title   |
+| content   | Content of the information block    | string | This is a content |
+|           |                                     |        |                   |
 
 ### Mode parameters
 
