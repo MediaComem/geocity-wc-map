@@ -5,6 +5,7 @@ import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import NotificationElement from '../types/notification-element';
+import GeolocationInformation from '../types/geolocation-information';
 
 export default interface IOption {
   zoom: number;
@@ -25,7 +26,8 @@ export default interface IOption {
   mode: ModeConfig;
   cluster: ClusterConfig;
   geojson: GeojsonConfig;
-  notification: Array<NotificationElement>;
+  geolocationInformation: GeolocationInformation;
+  notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
   wmts: wmtsLayerConfiguration;
 }
@@ -48,7 +50,7 @@ export default class Options {
       onlyOneDraw: false,
       enableRotation: true,
       information: {
-        duration: 5,
+        duration: 5000,
         title: 'This is a title',
         content: 'This is a content',
       },
@@ -63,7 +65,12 @@ export default class Options {
       geojson: {
         url: '',
       },
-      notification: [],
+      geolocationInformation: {
+        displayBox: true,
+        reverseLocation: true,
+        currentLocation: true,
+      },
+      notifications: [],
       wfs: {
         url: '',
         projection: 'EPSG:2056',
@@ -94,10 +101,11 @@ export default class Options {
     if (options.onlyOneDraw) result.onlyOneDraw = options.onlyOneDraw;
     if (options.enableRotation) result.enableRotation = options.enableRotation;
     if (options.information) result.information = options.information;
-    if (options.notification && options.notification.length > 0) result.notification = options.notification;
+    if (options.notifications && options.notifications.length > 0) result.notifications = options.notifications;
     if (options.mode) result.mode = options.mode;
     if (options.cluster) result.cluster = options.cluster;
     if (options.geojson) result.geojson = options.geojson;
+    if (options.geolocationInformation) result.geolocationInformation = options.geolocationInformation;
     if (options.wfs) result.wfs = options.wfs;
     if (options.wmts) result.wmts = options.wmts;
     return result;

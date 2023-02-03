@@ -74,6 +74,7 @@ export default class WFSLoader {
           if (!style) {
             if (size === 1) {
               style = new Style({
+                zIndex: 1,
                 image: new Icon({
                   src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( SVGCreator.mapPin ),
                   // the svg height is 54px. It's the reason why the anchor is set like that
@@ -85,7 +86,7 @@ export default class WFSLoader {
             } else {
               style = new Style({
                 image: new CircleStyle({
-                  radius: 10,
+                  radius: 15,
                   stroke: new Stroke({
                     color: '#fff',
                   }),
@@ -95,6 +96,7 @@ export default class WFSLoader {
                 }),
                 text: new Text({
                   text: size.toString(),
+                  font: "14px sans-serif",
                   fill: new Fill({
                     color: '#fff',
                   }),

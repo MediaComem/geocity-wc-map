@@ -23,7 +23,7 @@ class RotationControlButton extends LitElement {
 
 export default class ResetRotationControl extends Control {
 
-    constructor(theme:string, customPosition: boolean) {
+    constructor(theme:string, customPosition: boolean, controlSize: string) {
         const button = document.createElement('div');
 
         const icon = document.createElement('rotation-control-button') as RotationControlButton;
@@ -32,7 +32,7 @@ export default class ResetRotationControl extends Control {
         button.appendChild(icon);
 
         const element = document.createElement('div');
-        element.className = customPosition ? 'rotation-control-custom ol-unselectable ol-control' : 'rotation-control ol-unselectable ol-control';
+        element.className = customPosition ? `rotation-control-custom-${controlSize} ol-unselectable ol-control` : 'rotation-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({

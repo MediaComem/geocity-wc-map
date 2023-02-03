@@ -28,6 +28,7 @@ import TargetInformationBoxElement from './components/target-information-box';
 import Options from './utils/options';
 import IOption from './utils/options';
 import SVGCreator from './utils/svg-creator';
+import GeolocationInformation from './types/geolocation-information';
 
 /**
  * An example element.
@@ -72,6 +73,12 @@ export class OpenLayersElement extends LitElement {
     }
   }
 
+  getTargetBoxSize(geolocationInformation: GeolocationInformation) {
+    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) return 'large';
+    if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) return 'medium';
+    return 'small';
+  }
+
   firstUpdated() {
     const options = Options.getOptions(this.options as IOption);
     this.theme = this.getTheme(options);
@@ -98,15 +105,20 @@ export class OpenLayersElement extends LitElement {
       this.geolocation.setTracking(true);
       new GeolocationMarker(map, this.geolocation);
     }
+
     const controls = [];
+    if (options.mode.type === 'target') {
+      controls.push(new TargetController(map))
+      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme, options.geolocationInformation));
+    }
     if (options.wmts.capability != "") new WMTSLoader(map, options.wmts);
     if (options.displayZoom)
       controls.push(new Zoom({
         zoomInLabel: SVGCreator.zoomInLabel(),
         zoomOutLabel: SVGCreator.zoomOutLabel(),
-        className: options.mode.type === 'target' ? `ol-zoom-custom` : `ol-zoom`
+        className: options.mode.type === 'target' && options.geolocationInformation.displayBox ? `ol-zoom-custom-${this.getTargetBoxSize(options.geolocationInformation)}` : `ol-zoom`
       }))
-    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation, this.theme, options.mode.type === 'target'));
+    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation, this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)));
     if (options.enableRotation) this.view.on('change:rotation', (event) => {
       map.getControls().forEach((control) => {
         if (control instanceof ResetRotationControl) {
@@ -114,21 +126,17 @@ export class OpenLayersElement extends LitElement {
         }
       });
       if (event.target.getRotation() !== 0) {
-        map.addControl(new ResetRotationControl(this.theme, options.mode.type === 'target'));
+        map.addControl(new ResetRotationControl(this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)));
       }
     });
-    controls.push(new InformationControl(map, options.information, this.theme, options.mode.type === 'target'))
-    if (options.mode.type === 'target') {
-      controls.push(new TargetController(map))
-      controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme));
-    }
-    new NotificationManager(map, options.notification, this.theme);
+    controls.push(new InformationControl(map, options.information, this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)))
+    new NotificationManager(map, options.notifications, this.theme);
     controls.forEach(control => map.addControl(control));
     if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (options.fullscreen) map.addControl(new FullScreen({
       label: SVGCreator.fullScreenLabel(),
       labelActive: SVGCreator.fullScreenLabelActive(),
-      className: options.mode.type === 'target' ? `ol-full-screen-custom` : `ol-full-screen`
+      className: options.mode.type === 'target' && options.geolocationInformation.displayBox ? `ol-full-screen-custom-${this.getTargetBoxSize(options.geolocationInformation)}` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
     if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);

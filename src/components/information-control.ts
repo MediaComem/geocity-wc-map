@@ -31,7 +31,7 @@ export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
     timeout: any;
 
-    constructor(map: Map, information: InformationElement, theme:string, customPosition: boolean) {
+    constructor(map: Map, information: InformationElement, theme:string, customPosition: boolean, controlSize: string) {
         const button = document.createElement('div');
 
         const icon = document.createElement('information-control-button') as InformationControlButton;
@@ -39,7 +39,7 @@ export default class InformationControl extends Control {
         button.appendChild(icon);
     
         const element = document.createElement('div');
-        element.className = customPosition ? 'information-control-custom ol-unselectable ol-control' : 'information-control ol-unselectable ol-control';
+        element.className = customPosition ? `information-control-custom-${controlSize} ol-unselectable ol-control` : 'information-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({

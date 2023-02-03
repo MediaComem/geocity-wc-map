@@ -29,7 +29,7 @@ class InformationBox extends LitElement {
       } else {
         this.closeBox();
       }
-    }, intervalDuration * 1000);
+    }, intervalDuration);
   }
 
   constructor() {
@@ -42,9 +42,9 @@ class InformationBox extends LitElement {
       <div class="information-box-${this.theme} custom-popup-element" style="--progress-width: ${this._width}%">
         <div class="custom-popup-title">
           <div class="custom-popup-title-text">${this.information.title}</div>
-          <svg _width="20" height="20" fill="none" viewBox="0 0 20 20" class="custom-popup-title-svg" @click="${this.closeBox}">
-            <path d="M15.4 4.59998L4.60004 15.4" stroke="#1E293B" stroke-_width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M15.4 15.4L4.60004 4.59998" stroke="#1E293B" stroke-_width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+          <svg _width="20" height="20" viewBox="0 0 20 20" class="custom-popup-title-svg" @click="${this.closeBox}">
+            <path d="M15.4 4.59998L4.60004 15.4"></path>
+            <path d="M15.4 15.4L4.60004 4.59998"></path>
           </svg>
         </div>
         <div class="custom-popup-content">${this.information.content}</div>

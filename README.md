@@ -40,17 +40,17 @@
 | geojson            | Information needed to import data via a geojson file                                                                       | Object           | Look at Information parameters table for more details [Geojson parameters](#geojson-parameters)             |
 | wfs                | Information needed to import data via a WFS service                                                                        | Object           | Look at Information parameters table for more details [WFS parameters](#wfs-parameters)                     |
 | wmts               | Information needed to use WMTS layer                                                                                       | Object           | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
-| notification       | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
+| notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
 |                    |                                                                                                                            |                  |                                                                                                             |
 
 ### Information parameters
 
-| Parameter | Description                         | Type   | Default           |
-| --------- | ----------------------------------- | ------ | ----------------- |
-| duration  | The duration display time in second | number | 5                 |
-| title     | Title of the information            | string | This is a title   |
-| content   | Content of the information block    | string | This is a content |
-|           |                                     |        |                   |
+| Parameter | Description                              | Type   | Default           |
+| --------- | ---------------------------------------- | ------ | ----------------- |
+| duration  | The duration display time in millisecond | number | 5                 |
+| title     | Title of the information                 | string | This is a title   |
+| content   | Content of the information block         | string | This is a content |
+|           |                                          |        |                   |
 
 ### Mode parameters
 

@@ -24,7 +24,7 @@ class GeolocationControlButton extends LitElement {
 export default class GeolocationCenter extends Control {
     geolocaliseElement: Geolocation | undefined;
 
-    constructor(geolociliseElement:Geolocation | undefined, theme:string, customPosition: boolean) {
+    constructor(geolociliseElement:Geolocation | undefined, theme:string, customPosition: boolean, controlSize: string) {
       const button = document.createElement('div');
 
       const icon = document.createElement('geolocation-control-button') as GeolocationControlButton;
@@ -32,7 +32,7 @@ export default class GeolocationCenter extends Control {
       button.appendChild(icon);
   
       const element = document.createElement('div');
-      element.className = customPosition ? 'center-control-custom ol-unselectable ol-control' : 'center-control ol-unselectable ol-control';
+      element.className = customPosition ? `center-control-custom-${controlSize} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
       element.className += theme === 'light' ? ' control-light' : ' control-dark';
       element.appendChild(button);
   
