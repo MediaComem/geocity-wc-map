@@ -116,43 +116,49 @@ The notification setting is a special case and depends on the notification level
 
 To activate this mode, add in your HTML code the web component with the following parameters:
 
-`<openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 7, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville. Ceux déjà signalés sont indiqués en orange." },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
-                                        "mode": {
-                                            "type": "target",
-                                            "radius": 40
-                                        },
-                                        "notification": [
-                                            {
-                                                "type": "warning",
-                                                "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
-                                                "rule": {
-                                                    "type": "ZOOM_CONSTRAINT",
-                                                    "minZoom": 16
-                                                }
-                                            },
-                                            {
-                                                "type": "info",
-                                                "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
-                                                    "rule": {
-                                                    "type": "MOVE_TARGET"
-                                                }
-                                            }
-                                        ],
-                                        "wfs": {
-                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
-                                            "projection": "EPSG:2056",
-                                            "projectionDefinition":
-                                              "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
-                                        },
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
-                                        }
-                                    }'
-    >
-    </openlayers-element>`
+```
+<openlayers-element
+    options='{
+        "enableDraw": false, 
+        "information": {
+            "duration": 7,
+            "title": "Signaler un éclairage public",
+            "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville. Ceux déjà signalés sont indiqués en orange." },
+            "enableGeolocation": true,
+            "enableCenterButton": true,
+            "enableRotation": true,
+            "mode": {
+                "type": "target",
+                "radius": 40
+            },
+            "notification": [
+                {
+                    "type": "warning",
+                    "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                    "rule": {
+                        "type": "ZOOM_CONSTRAINT",
+                        "minZoom": 16
+                    }
+                },
+                {
+                    "type": "info",
+                    "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                        "rule": {
+                        "type": "MOVE_TARGET"
+                    }
+                }
+            ],
+            "wfs": {
+                "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
+                "projection": "EPSG:2056",
+                "projectionDefinition":
+                  "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
+            },
+            "wmts": {
+                "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+                "layer": "ch.swisstopo.swissimage",
+                "projection": "EPSG:3857"
+            }
+            
+/>
+```
