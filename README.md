@@ -23,7 +23,7 @@
 
 ### General parameters
 
-| Parameter           | Description                                                                                                                | Type             | Default                                                                                                     |
+| Parameter          | Description                                                                                                                | Type             | Default                                                                                                     |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- |
 | zoom               | Zoom level applied when opening the map                                                                                    | number           | 15                                                                                                          |
 | minZoom            | Minimum zoom value available for the openlayers instance. You cannot zoom below this value                                 | number           | 1                                                                                                           |
@@ -55,14 +55,14 @@
 ### Mode parameters
 
 | Parameter | Description                                                              | Type   | Default |
-| -------- | ------------------------------------------------------------------------ | ------ | ------- |
-| type     | Mode type: target means a target in the center of the map                | string | target  |
-| radius   | Distance between the center and another point to detect a nearby element | number | 40      |
-|          |                                                                          |        |         |
+| --------- | ------------------------------------------------------------------------ | ------ | ------- |
+| type      | Mode type: target means a target in the center of the map                | string | target  |
+| radius    | Distance between the center and another point to detect a nearby element | number | 40      |
+|           |                                                                          |        |         |
 
 ### Cluster parameters
 
-| Parameter    | Description                                                         | Type   | Default |
+| Parameter   | Description                                                         | Type   | Default |
 | ----------- | ------------------------------------------------------------------- | ------ | ------- |
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
@@ -86,7 +86,7 @@
 
 ### WMTS parameters
 
-| Parameter   | Description                                       | Type   | Default                                                        |
+| Parameter  | Description                                       | Type   | Default                                                        |
 | ---------- | ------------------------------------------------- | ------ | -------------------------------------------------------------- |
 | capability | URL of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
 | layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.swissimage                                        |
@@ -98,11 +98,11 @@
 The notification setting is a special case and depends on the notification level and associated rules. There are two parts. The first one is the same for all rules and the rule part. The latter is specific to the rule. In this section, the first table explains the first part and then there is a specific part for the rule description.
 
 | Parameter | Description                         | Type   | Possible value                                                                  |
-| -------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
-| type     | Type of notification                | string | 'info', 'warning', 'error'                                                      |
-| message  | Message display in the notification | string | 'This is a notification message'                                                |
-| rule     | Description of the rule             | Object | Look at rule section for more details [Rule specification](#rule-specification) |
-|          |                                     |        |                                                                                 |
+| --------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| type      | Type of notification                | string | 'info', 'warning', 'error'                                                      |
+| message   | Message display in the notification | string | 'This is a notification message'                                                |
+| rule      | Description of the rule             | Object | Look at rule section for more details [Rule specification](#rule-specification) |
+|           |                                     |        |                                                                                 |
 
 #### Rule specification
 
