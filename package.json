@@ -16,6 +16,7 @@
     "dev": "vite",
     "dev-expose": "vite --host",
     "build": "tsc && vite build",
+    "demo": "npm run build && mkdir -p demo/lib && cp dist/geocity-wc-map.js demo/lib",
     "deploy": "gh-pages -d dist",
     "test": "vitest run"
   },
