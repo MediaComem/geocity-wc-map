@@ -13,7 +13,7 @@
     * Run `npm run build` to build the Web Component
 
 * Test on static HTML page:
-    * Put the builded web component into `demo/lib` folder: `cp dist/gegeocity-wc-map.js demo/lib`
+    * Put the builded web component into `demo/lib` folder: `cp dist/geocity-wc-map.js demo/lib`
     * Run general.html with a local server (like `live-server`)
 
 
