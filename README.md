@@ -70,14 +70,14 @@
 
 ### Geojson parameters
 
-| Prameter | Description                     | Type   | Default |
+| Parameter | Description                     | Type   | Default |
 | -------- | ------------------------------- | ------ | ------- |
 | url      | URL where the geojson is stored | string | ''      |
 |          |                                 |        |         |
 
 ### WFS parameters
 
-| Prameter             | Description                         | Type   | Default                                                                                                                                                                 |
+| Parameter             | Description                         | Type   | Default                                                                                                                                                                 |
 | -------------------- | ----------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | url                  | URL of the WFS service              | string | https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle              |
 | projection           | Target geographic projection        | string | EPSG:2056                                                                                                                                                               |
