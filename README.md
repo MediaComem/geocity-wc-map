@@ -45,7 +45,7 @@
 
 ### Information parameters
 
-| Prameter | Description                         | type   | Default           |
+| Prameter | Description                         | Type   | Default           |
 | -------- | ----------------------------------- | ------ | ----------------- |
 | duration | The duration display time in second | number | 5                 |
 | title    | Title of the information            | string | This is a title   |
@@ -54,7 +54,7 @@
 
 ### Mode parameters
 
-| Prameter | Description                                                              | type   | Default |
+| Prameter | Description                                                              | Type   | Default |
 | -------- | ------------------------------------------------------------------------ | ------ | ------- |
 | type     | Mode type: target means a target in the center of the map                | string | target  |
 | radius   | Distance between the center and another point to detect a nearby element | number | 40      |
@@ -62,7 +62,7 @@
 
 ### Cluster parameters
 
-| Prameter    | Description                                                         | type   | Default |
+| Prameter    | Description                                                         | Type   | Default |
 | ----------- | ------------------------------------------------------------------- | ------ | ------- |
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
@@ -70,14 +70,14 @@
 
 ### Geojson parameters
 
-| Prameter | Description                     | type   | Default |
+| Prameter | Description                     | Type   | Default |
 | -------- | ------------------------------- | ------ | ------- |
 | url      | url where the geojson is stored | string | ''      |
 |          |                                 |        |         |
 
 ### WFS parameters
 
-| Prameter             | Description                         | type   | Default                                                                                                                                                                 |
+| Prameter             | Description                         | Type   | Default                                                                                                                                                                 |
 | -------------------- | ----------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | url                  | url of the WFS service              | string | https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle              |
 | projection           | Target geographic projection        | string | EPSG:2056                                                                                                                                                               |
@@ -86,7 +86,7 @@
 
 ### WMTS parameters
 
-| Prameter   | Description                                       | type   | Default                                                        |
+| Prameter   | Description                                       | Type   | Default                                                        |
 | ---------- | ------------------------------------------------- | ------ | -------------------------------------------------------------- |
 | capability | url of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
 | layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.swissimage                                        |
@@ -97,7 +97,7 @@
 
 The notification setting is a special case and depends on the notification level and associated rules. There are two parts. The first one is the same for all rules and the rule part. The latter is specific to the rule. In this section, the first table explains the first part and then there is a specific part for the rule description.
 
-| Prameter | Description                         | type   | Possible value                                                                  |
+| Prameter | Description                         | Type   | Possible value                                                                  |
 | -------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
 | type     | Type of notification                | string | 'info', 'warning', 'error'                                                      |
 | message  | Message display in the notification | string | 'This is a notification message'                                                |
@@ -111,7 +111,7 @@ The notification setting is a special case and depends on the notification level
   - minZoom: The minimum zoom level to allow creation or selection.
 - Information about the target mode. This is a `info` type of notification. This rule contains only one paramter.
   - type: for this rule, the value is `MOVE_TARGET`
-  
+
 ## Street lamp: Target Mode
 
 To activate this mode, add in your HTML code the web component with the following parameters:
