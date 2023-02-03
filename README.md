@@ -72,14 +72,14 @@
 
 | Prameter | Description                     | Type   | Default |
 | -------- | ------------------------------- | ------ | ------- |
-| url      | url where the geojson is stored | string | ''      |
+| url      | URL where the geojson is stored | string | ''      |
 |          |                                 |        |         |
 
 ### WFS parameters
 
 | Prameter             | Description                         | Type   | Default                                                                                                                                                                 |
 | -------------------- | ----------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url                  | url of the WFS service              | string | https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle              |
+| url                  | URL of the WFS service              | string | https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle              |
 | projection           | Target geographic projection        | string | EPSG:2056                                                                                                                                                               |
 | projectionDefinition | Definition of the target projection | string | +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs |
 |                      |                                     |        |                                                                                                                                                                         |
@@ -88,7 +88,7 @@
 
 | Parameter   | Description                                       | Type   | Default                                                        |
 | ---------- | ------------------------------------------------- | ------ | -------------------------------------------------------------- |
-| capability | url of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
+| capability | URL of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
 | layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.swissimage                                        |
 | projection | Target geographic projection                      | string | EPSG:2056                                                      |
 |            |                                                   |        |                                                                |
