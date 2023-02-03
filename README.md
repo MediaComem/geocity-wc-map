@@ -1,4 +1,4 @@
-# Geocity map webcomponent
+# Geocity Map Web Component
 
 ## Develop locally
 
@@ -23,7 +23,7 @@
 
 ### General parameters
 
-| Prameter           | Description                                                                                                                | type             | Default                                                                                                     |
+| Parameter           | Description                                                                                                                | Type             | Default                                                                                                     |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- |
 | zoom               | Zoom level applied when opening the map                                                                                    | number           | 15                                                                                                          |
 | minZoom            | Minimum zoom value available for the openlayers instance. You cannot zoom below this value                                 | number           | 1                                                                                                           |
@@ -45,7 +45,7 @@
 
 ### Information parameters
 
-| Prameter | Description                         | Type   | Default           |
+| Parameter | Description                         | Type   | Default           |
 | -------- | ----------------------------------- | ------ | ----------------- |
 | duration | The duration display time in second | number | 5                 |
 | title    | Title of the information            | string | This is a title   |
@@ -54,7 +54,7 @@
 
 ### Mode parameters
 
-| Prameter | Description                                                              | Type   | Default |
+| Parameter | Description                                                              | Type   | Default |
 | -------- | ------------------------------------------------------------------------ | ------ | ------- |
 | type     | Mode type: target means a target in the center of the map                | string | target  |
 | radius   | Distance between the center and another point to detect a nearby element | number | 40      |
@@ -62,7 +62,7 @@
 
 ### Cluster parameters
 
-| Prameter    | Description                                                         | Type   | Default |
+| Parameter    | Description                                                         | Type   | Default |
 | ----------- | ------------------------------------------------------------------- | ------ | ------- |
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
@@ -86,7 +86,7 @@
 
 ### WMTS parameters
 
-| Prameter   | Description                                       | Type   | Default                                                        |
+| Parameter   | Description                                       | Type   | Default                                                        |
 | ---------- | ------------------------------------------------- | ------ | -------------------------------------------------------------- |
 | capability | url of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
 | layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.swissimage                                        |
@@ -97,7 +97,7 @@
 
 The notification setting is a special case and depends on the notification level and associated rules. There are two parts. The first one is the same for all rules and the rule part. The latter is specific to the rule. In this section, the first table explains the first part and then there is a specific part for the rule description.
 
-| Prameter | Description                         | Type   | Possible value                                                                  |
+| Parameter | Description                         | Type   | Possible value                                                                  |
 | -------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
 | type     | Type of notification                | string | 'info', 'warning', 'error'                                                      |
 | message  | Message display in the notification | string | 'This is a notification message'                                                |
