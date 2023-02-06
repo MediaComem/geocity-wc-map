@@ -34,7 +34,7 @@
   content: '';
   width: var(--progress-width);
   height: 4px;
-  background: green;
+  background: #008C6F;
   position: absolute;
   bottom: -1px;
   left: 0;
