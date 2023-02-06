@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 
 import Control from "ol/control/Control";
 import Geolocation from 'ol/Geolocation';
@@ -9,31 +9,30 @@ import themeStyle from '../styles/theme.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../utils/svg-creator';
 
+import { useStore } from '../composable/store';
+
 @customElement('geolocation-control-button')
 class GeolocationControlButton extends LitElement {
-
-  @property() theme = 'light';
 
   static styles = [unsafeCSS(style), unsafeCSS(themeStyle)];
 
   render() {
-    return html`<div class="control-${this.theme}">${unsafeSVG(SVGCreator.geolocation)}</div>`;
+    return html`<div class="control-${useStore().getTheme()}">${unsafeSVG(SVGCreator.geolocation)}</div>`;
   }
 }
 
 export default class GeolocationCenter extends Control {
     geolocaliseElement: Geolocation | undefined;
 
-    constructor(geolociliseElement:Geolocation | undefined, theme:string, customPosition: boolean, controlSize: string) {
+    constructor(geolociliseElement:Geolocation | undefined) {
       const button = document.createElement('div');
 
       const icon = document.createElement('geolocation-control-button') as GeolocationControlButton;
-      icon.theme = theme;
       button.appendChild(icon);
   
       const element = document.createElement('div');
-      element.className = customPosition ? `center-control-custom-${controlSize} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
-      element.className += theme === 'light' ? ' control-light' : ' control-dark';
+      element.className = useStore().getIsCustomDisplay() ? `center-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
+      element.className += useStore().getTheme() === 'light' ? ' control-light' : ' control-dark';
       element.appendChild(button);
   
       super({

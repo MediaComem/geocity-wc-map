@@ -54,7 +54,7 @@
   width: 36px !important;
   height: 36px !important;
   background-color: var(--control-background-color) !important;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .ol-zoom-in,
@@ -62,8 +62,8 @@
 .ol-zoom-custom-medium-in,
 .ol-zoom-custom-large-in {
   border-radius: 0px !important;
-  border-top-right-radius: 5px !important;
-  border-top-left-radius: 5px !important;
+  border-top-right-radius: 4px !important;
+  border-top-left-radius: 4px !important;
 }
 
 .ol-zoom-out,
@@ -71,8 +71,8 @@
 .ol-zoom-custom-medium-out,
 .ol-zoom-custom-large-out {
   border-radius: 0px !important;
-  border-bottom-right-radius: 5px !important;
-  border-bottom-left-radius: 5px !important;
+  border-bottom-right-radius: 4px !important;
+  border-bottom-left-radius: 4px !important;
 }
 
 .ol-zoom-in > div > svg,

@@ -1,4 +1,5 @@
 import Map from 'ol/Map.js';
+import { useStore } from '../composable/store';
 import NotificationElement from '../types/notification-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import NotificationBoxControl from './notification/notification';
@@ -17,10 +18,10 @@ export default class NotificationManager {
     hasWarning: boolean = false;
     eventToSend: any = undefined;
 
-    constructor(map: Map, rules: Array<NotificationElement>, theme: string) {
+    constructor(map: Map, rules: Array<NotificationElement>) {
         this.map = map;
         this.rules = rules;
-        this.theme = theme;
+        this.theme = useStore().getTheme();
         this.checkRules()
         window.addEventListener('current-center-position', (event) => {
             this.eventToSend = event;

@@ -30,6 +30,8 @@ import IOption from './utils/options';
 import SVGCreator from './utils/svg-creator';
 import GeolocationInformation from './types/geolocation-information';
 
+import { useStore } from './composable/store';
+
 /**
  * An example element.
  *
@@ -41,7 +43,6 @@ export class OpenLayersElement extends LitElement {
   @query('#map')
   public mapElement!: HTMLDivElement;
 
-  @state() theme:string = "";
   @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
@@ -55,33 +56,39 @@ export class OpenLayersElement extends LitElement {
     super.connectedCallback();
   }
 
-  getTheme(options:any) {
+  setupTheme(options:any) {
     if (options.darkMode) {
-      return 'dark';
+      useStore().setTheme('dark');
     }
     else if (options.lightMode) {
-      return 'light';
+      useStore().setTheme('light');
     }
     else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
+      useStore().setTheme('light');
     }
     else if (window.matchMedia('(prefers-color-scheme: dark)').matches) { 
-      return 'dark';
+      useStore().setTheme('dark');
     }
     else {
-      return 'light';
+      useStore().setTheme('light');
     }
   }
 
-  getTargetBoxSize(geolocationInformation: GeolocationInformation) {
-    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) return 'large';
-    if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) return 'medium';
-    return 'small';
+  setupCustomDisplay(options: IOption) {
+    useStore().setIsCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
+  }
+
+  setupTargetBoxSize(geolocationInformation: GeolocationInformation) {
+    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) useStore().setTargetBoxSize('large');
+    else if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) useStore().setTargetBoxSize('medium');
+    else useStore().setTargetBoxSize('small');
   }
 
   firstUpdated() {
     const options = Options.getOptions(this.options as IOption);
-    this.theme = this.getTheme(options);
+    this.setupTheme(options);
+    this.setupCustomDisplay(options);
+    this.setupTargetBoxSize(options.geolocationInformation);
     this.view = new View({
       center: options.defaultCenter,
       zoom: options.zoom,
@@ -109,16 +116,16 @@ export class OpenLayersElement extends LitElement {
     const controls = [];
     if (options.mode.type === 'target') {
       controls.push(new TargetController(map))
-      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, this.theme, options.geolocationInformation));
+      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, options.geolocationInformation));
     }
     if (options.wmts.capability != "") new WMTSLoader(map, options.wmts);
     if (options.displayZoom)
       controls.push(new Zoom({
         zoomInLabel: SVGCreator.zoomInLabel(),
         zoomOutLabel: SVGCreator.zoomOutLabel(),
-        className: options.mode.type === 'target' && options.geolocationInformation.displayBox ? `ol-zoom-custom-${this.getTargetBoxSize(options.geolocationInformation)}` : `ol-zoom`
+        className: useStore().getIsCustomDisplay() ? `ol-zoom-custom-${useStore().getTargetBoxSize()}` : `ol-zoom`
       }))
-    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation, this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)));
+    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (options.enableRotation) this.view.on('change:rotation', (event) => {
       map.getControls().forEach((control) => {
         if (control instanceof ResetRotationControl) {
@@ -126,17 +133,17 @@ export class OpenLayersElement extends LitElement {
         }
       });
       if (event.target.getRotation() !== 0) {
-        map.addControl(new ResetRotationControl(this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)));
+        map.addControl(new ResetRotationControl());
       }
     });
-    controls.push(new InformationControl(map, options.information, this.theme, options.mode.type === 'target' && options.geolocationInformation.displayBox, this.getTargetBoxSize(options.geolocationInformation)))
-    new NotificationManager(map, options.notifications, this.theme);
+    controls.push(new InformationControl(map, options.information))
+    new NotificationManager(map, options.notifications);
     controls.forEach(control => map.addControl(control));
     if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (options.fullscreen) map.addControl(new FullScreen({
       label: SVGCreator.fullScreenLabel(),
       labelActive: SVGCreator.fullScreenLabelActive(),
-      className: options.mode.type === 'target' && options.geolocationInformation.displayBox ? `ol-full-screen-custom-${this.getTargetBoxSize(options.geolocationInformation)}` : `ol-full-screen`
+      className: useStore().getIsCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
     if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
@@ -145,7 +152,7 @@ export class OpenLayersElement extends LitElement {
 
   render() {
     return html`
-    <div id="map" class="control-${this.theme}">
+    <div id="map" class="control-${useStore().getTheme()}">
     </div>   
     `
   }

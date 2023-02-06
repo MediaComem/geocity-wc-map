@@ -162,3 +162,10 @@ To activate this mode, add in your HTML code the web component with the followin
             
 />
 ```
+
+### Validation events
+
+For this scenario, there are two events to listen:
+
+- `valid-event`: This event is sent when all the rules are met and the position is available. The position is stored in an array in event.detail.
+- `invalid-event`: This event is sent when all the rules are not respected.

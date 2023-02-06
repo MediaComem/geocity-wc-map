@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 
 import { Map } from 'ol';
 import Control from "ol/control/Control";
@@ -11,16 +11,15 @@ import InformationBoxControl from './information-box';
 import style from '../styles/svg-control.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../utils/svg-creator';
+import { useStore } from '../composable/store';
 
 @customElement('information-control-button')
 class InformationControlButton extends LitElement {
 
-  @property() theme = 'light';
-
   static styles = [unsafeCSS(style)];
 
   render() {
-    return html`<div class="control-${this.theme}">${unsafeSVG(SVGCreator.information)}</div>`;
+    return html`<div class="control-${useStore().getTheme()}">${unsafeSVG(SVGCreator.information)}</div>`;
   }
 }
 
@@ -31,15 +30,14 @@ export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
     timeout: any;
 
-    constructor(map: Map, information: InformationElement, theme:string, customPosition: boolean, controlSize: string) {
+    constructor(map: Map, information: InformationElement) {
         const button = document.createElement('div');
 
         const icon = document.createElement('information-control-button') as InformationControlButton;
-        icon.theme = theme;
         button.appendChild(icon);
     
         const element = document.createElement('div');
-        element.className = customPosition ? `information-control-custom-${controlSize} ol-unselectable ol-control` : 'information-control ol-unselectable ol-control';
+        element.className = useStore().getIsCustomDisplay() ? `information-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'information-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({
@@ -47,7 +45,7 @@ export default class InformationControl extends Control {
         });
         this.map = map;
         this.information = information;
-        this.theme = theme;
+        this.theme = useStore().getTheme();
         button.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
         this.openInformationBox();
@@ -64,7 +62,7 @@ export default class InformationControl extends Control {
       }
 
       openInformationBox() {
-        this.map.addControl(new InformationBoxControl(this.information, this.theme));
+        this.map.addControl(new InformationBoxControl(this.information));
         this.informationIsOpen = true;
       }
     

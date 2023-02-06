@@ -1,6 +1,7 @@
 import { html, LitElement, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { Control } from 'ol/control';
+import { useStore } from '../composable/store';
 
 import boxStyle from '../styles/box-information.css?inline';
 import themeStyle from '../styles/theme.css?inline';
@@ -10,8 +11,6 @@ import GeolocationInformation from '../types/geolocation-information';
 class TargetInformationBoxElement extends LitElement {
   @property()
   defaultPosition: Array<number> = [0, 0];
-  @property()
-  theme: string = 'light';
   @property()
   geolocationInformation: GeolocationInformation = { displayBox: true, reverseLocation: true, currentLocation: true};
 
@@ -38,7 +37,7 @@ class TargetInformationBoxElement extends LitElement {
 
   render() {
     return html`
-      <div class="information-box-${this.theme} box-element">
+      <div class="information-box-${useStore().getTheme()} box-element">
         <div class="box-element-title">
           <div class="box-element-title-text">Éclairage signalé</div>
         </div>
@@ -50,10 +49,9 @@ class TargetInformationBoxElement extends LitElement {
 }
 
 export default class LightInformationBoxController extends Control {
-  constructor(defaultPosition: Array<number>, theme: string, geolocationInformation: GeolocationInformation) {
+  constructor(defaultPosition: Array<number>, geolocationInformation: GeolocationInformation) {
     const box = document.createElement('target-information-box-element') as TargetInformationBoxElement;
     box.defaultPosition = defaultPosition;
-    box.theme = theme;
     box.geolocationInformation = geolocationInformation;
     super({ element: box });
   }

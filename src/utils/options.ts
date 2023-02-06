@@ -44,7 +44,7 @@ export default class Options {
       defaultCenter: [739867.251358, 5905800.079386],
       enableGeolocation: false,
       enableCenterButton: true,
-      enableDraw: false,
+      enableDraw: true,
       maxNbDraw: 0,
       drawElement: 'Point',
       onlyOneDraw: false,
@@ -83,31 +83,31 @@ export default class Options {
         projection: 'EPSG:3857',
       },
     };
-    if (options.zoom) result.zoom = options.zoom;
-    if (options.minZoom) result.minZoom = options.minZoom;
-    if (options.maxZoom) result.maxZoom = options.maxZoom;
-    if (options.displayZoom) result.displayZoom = options.displayZoom;
-    if (options.displayScaleLine)
+    if (options.zoom !== undefined) result.zoom = options.zoom;
+    if (options.minZoom !== undefined) result.minZoom = options.minZoom;
+    if (options.maxZoom !== undefined) result.maxZoom = options.maxZoom;
+    if (options.displayZoom !== undefined) result.displayZoom = options.displayZoom;
+    if (options.displayScaleLine !== undefined)
       result.displayScaleLine = options.displayScaleLine;
-    if (options.fullscreen) result.fullscreen = options.fullscreen;
-    if (options.defaultCenter) result.defaultCenter = options.defaultCenter;
-    if (options.enableGeolocation)
+    if (options.fullscreen !== undefined) result.fullscreen = options.fullscreen;
+    if (options.defaultCenter !== undefined) result.defaultCenter = options.defaultCenter;
+    if (options.enableGeolocation !== undefined)
       result.enableGeolocation = options.enableGeolocation;
-    if (options.enableCenterButton)
+    if (options.enableCenterButton !== undefined)
       result.enableCenterButton = options.enableCenterButton;
-    if (options.enableDraw) result.enableDraw = options.enableDraw;
-    if (options.maxNbDraw) result.maxNbDraw = options.maxNbDraw;
-    if (options.drawElement) result.drawElement = options.drawElement;
-    if (options.onlyOneDraw) result.onlyOneDraw = options.onlyOneDraw;
-    if (options.enableRotation) result.enableRotation = options.enableRotation;
-    if (options.information) result.information = options.information;
+    if (options.enableDraw !== undefined) result.enableDraw = options.enableDraw;
+    if (options.maxNbDraw !== undefined) result.maxNbDraw = options.maxNbDraw;
+    if (options.drawElement !== undefined) result.drawElement = options.drawElement;
+    if (options.onlyOneDraw !== undefined) result.onlyOneDraw = options.onlyOneDraw;
+    if (options.enableRotation !== undefined) result.enableRotation = options.enableRotation;
+    if (options.information !== undefined) result.information = options.information;
     if (options.notifications && options.notifications.length > 0) result.notifications = options.notifications;
-    if (options.mode) result.mode = options.mode;
-    if (options.cluster) result.cluster = options.cluster;
-    if (options.geojson) result.geojson = options.geojson;
-    if (options.geolocationInformation) result.geolocationInformation = options.geolocationInformation;
-    if (options.wfs) result.wfs = options.wfs;
-    if (options.wmts) result.wmts = options.wmts;
+    if (options.mode !== undefined) result.mode = options.mode;
+    if (options.cluster !== undefined) result.cluster = options.cluster;
+    if (options.geojson !== undefined) result.geojson = options.geojson;
+    if (options.geolocationInformation !== undefined) result.geolocationInformation = options.geolocationInformation;
+    if (options.wfs !== undefined) result.wfs = options.wfs;
+    if (options.wmts !== undefined) result.wmts = options.wmts;
     return result;
   }
 }
