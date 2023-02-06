@@ -37,7 +37,7 @@ export default class Options {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
-      maxZoom: 18,
+      maxZoom: 20,
       displayZoom: true,
       displayScaleLine: false,
       fullscreen: true,
