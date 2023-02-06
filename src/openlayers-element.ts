@@ -154,7 +154,7 @@ export class OpenLayersElement extends LitElement {
       className: useStore().isCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
-    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
+    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode);
     if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
     new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
   }
