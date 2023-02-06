@@ -37,7 +37,7 @@ export default class InformationControl extends Control {
         button.appendChild(icon);
     
         const element = document.createElement('div');
-        element.className = useStore().getIsCustomDisplay() ? `information-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'information-control ol-unselectable ol-control';
+        element.className = useStore().isCustomDisplay() ? `information-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'information-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({

@@ -2,12 +2,13 @@ import Map from 'ol/Map.js';
 import NotificationElement from '../types/notification-element';
 export default class NotificationManager {
     map: Map;
-    rules: Array<NotificationElement>;
-    theme: string;
-    hasWarning: boolean;
-    eventToSend: any;
-    constructor(map: Map, rules: Array<NotificationElement>);
-    checkRules(): void;
+    validZoomConstraint: boolean;
+    validAreaConstraint: boolean;
+    constructor(map: Map, notifications: Array<NotificationElement>);
+    setup(notifications: Array<NotificationElement>): void;
+    setupZoomContraint(rule: NotificationElement): void;
+    setupInclusionAreaConstraint(rule: NotificationElement): void;
     hasValidZoom(rule: NotificationElement): boolean | 0 | undefined;
-    zoomContraint(rule: NotificationElement, theme: string): void;
+    checkZoomConstraint(rule: NotificationElement): void;
+    checkInclusionAreaConstraint(rule: NotificationElement, isInInclusionArea: boolean): void;
 }

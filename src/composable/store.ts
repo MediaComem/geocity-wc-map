@@ -1,5 +1,5 @@
 let theme: string = '';
-let isCustomDisplay: boolean = false;
+let customDisplay: boolean = false;
 let targetBoxSize: string = '';
 
 function setTheme(newVal: string) {
@@ -10,12 +10,12 @@ function getTheme() {
   return theme;
 }
 
-function setIsCustomDisplay(newVal: boolean) {
-  isCustomDisplay = newVal;
+function setCustomDisplay(newVal: boolean) {
+  customDisplay = newVal;
 }
 
-function getIsCustomDisplay() {
-  return isCustomDisplay;
+function isCustomDisplay() {
+  return customDisplay;
 }
 
 function setTargetBoxSize(newVal: string) {
@@ -30,8 +30,8 @@ export function useStore() {
   return {
     setTheme,
     getTheme,
-    setIsCustomDisplay,
-    getIsCustomDisplay,
+    setCustomDisplay,
+    isCustomDisplay,
     setTargetBoxSize,
     getTargetBoxSize,
   };

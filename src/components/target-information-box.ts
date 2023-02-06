@@ -24,6 +24,7 @@ class TargetInformationBoxElement extends LitElement {
   constructor() {
     super();
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
+      this._reversePosition = event.detail;
       this._currentPosition = event.detail;
     }) as EventListener);
   }

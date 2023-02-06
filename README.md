@@ -57,7 +57,7 @@
 | Parameter | Description                                                              | Type   | Default |
 | --------- | ------------------------------------------------------------------------ | ------ | ------- |
 | type      | Mode type: target means a target in the center of the map                | string | target  |
-| radius    | Distance between the center and another point to detect a nearby element | number | 40      |
+| radius    | Distance between the center and another point to detect a nearby element (unit is based on the projection unit) | number | 40      |
 |           |                                                                          |        |         |
 
 ### Cluster parameters
@@ -165,7 +165,10 @@ To activate this mode, add in your HTML code the web component with the followin
 
 ### Validation events
 
-For this scenario, there are two events to listen:
+For this scenario, there is one events to listen:
 
-- `valid-event`: This event is sent when all the rules are met and the position is available. The position is stored in an array in event.detail.
-- `invalid-event`: This event is sent when all the rules are not respected.
+- `position-selected`: This event is sent in two cases:
+  - When all the rules are met and the position is available. The position is stored in an array in event.detail and the array contains the x_coordinate and y_coordinate coordinates of the target center.
+    - event.detail example: [x_coordinate, y_coordinate]
+  - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
+    - event.detail example: undefined

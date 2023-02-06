@@ -31,6 +31,7 @@ import SVGCreator from './utils/svg-creator';
 import GeolocationInformation from './types/geolocation-information';
 
 import { useStore } from './composable/store';
+import InclusionArea from './components/inclusion-area';
 
 /**
  * An example element.
@@ -75,9 +76,16 @@ export class OpenLayersElement extends LitElement {
   }
 
   setupCustomDisplay(options: IOption) {
-    useStore().setIsCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
+    useStore().setCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
   }
 
+  /*
+    Some boxes are under the control button and some should be under it. We know the size of the box (currently the information of the target box) via an option
+    There are three cases:
+      - geolocationInformation.reverseLocation and geolocationInformation.currentLocation is set to true. This means that there are two lines under the title (maximum size)
+      - geolocationInformation.reverseLocation or geolocationInformation.currentLocation is set to true. This means that there is one line under the title (medium size).
+      - geolocationInformation.reverseLocation and geolocationInformation.currentLocation have the value false. This means that there is no line under the title (small size).
+  */
   setupTargetBoxSize(geolocationInformation: GeolocationInformation) {
     if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) useStore().setTargetBoxSize('large');
     else if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) useStore().setTargetBoxSize('medium');
@@ -123,7 +131,7 @@ export class OpenLayersElement extends LitElement {
       controls.push(new Zoom({
         zoomInLabel: SVGCreator.zoomInLabel(),
         zoomOutLabel: SVGCreator.zoomOutLabel(),
-        className: useStore().getIsCustomDisplay() ? `ol-zoom-custom-${useStore().getTargetBoxSize()}` : `ol-zoom`
+        className: useStore().isCustomDisplay() ? `ol-zoom-custom-${useStore().getTargetBoxSize()}` : `ol-zoom`
       }))
     if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
     if (options.enableRotation) this.view.on('change:rotation', (event) => {
@@ -143,11 +151,12 @@ export class OpenLayersElement extends LitElement {
     if (options.fullscreen) map.addControl(new FullScreen({
       label: SVGCreator.fullScreenLabel(),
       labelActive: SVGCreator.fullScreenLabelActive(),
-      className: useStore().getIsCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
+      className: useStore().isCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
     if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
     if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
+    new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
   }
 
   render() {

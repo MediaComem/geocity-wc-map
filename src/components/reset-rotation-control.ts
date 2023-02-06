@@ -30,7 +30,7 @@ export default class ResetRotationControl extends Control {
         button.appendChild(icon);
 
         const element = document.createElement('div');
-        element.className = useStore().getIsCustomDisplay() ? `rotation-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'rotation-control ol-unselectable ol-control';
+        element.className = useStore().isCustomDisplay() ? `rotation-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'rotation-control ol-unselectable ol-control';
         element.appendChild(button);
     
         super({

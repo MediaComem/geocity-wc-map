@@ -31,7 +31,7 @@ export default class GeolocationCenter extends Control {
       button.appendChild(icon);
   
       const element = document.createElement('div');
-      element.className = useStore().getIsCustomDisplay() ? `center-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
+      element.className = useStore().isCustomDisplay() ? `center-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
       element.className += useStore().getTheme() === 'light' ? ' control-light' : ' control-dark';
       element.appendChild(button);
   

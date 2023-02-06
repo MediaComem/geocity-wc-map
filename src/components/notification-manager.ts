@@ -1,5 +1,4 @@
 import Map from 'ol/Map.js';
-import { useStore } from '../composable/store';
 import NotificationElement from '../types/notification-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import NotificationBoxControl from './notification/notification';
@@ -13,32 +12,44 @@ import NotificationBoxControl from './notification/notification';
 
 export default class NotificationManager {
     map: Map;
-    rules: Array<NotificationElement>;
-    theme: string;
-    hasWarning: boolean = false;
-    eventToSend: any = undefined;
+    validZoomConstraint: boolean = true;
+    validAreaConstraint: boolean = true;
 
-    constructor(map: Map, rules: Array<NotificationElement>) {
+    constructor(map: Map, notifications: Array<NotificationElement>) {
         this.map = map;
-        this.rules = rules;
-        this.theme = useStore().getTheme();
-        this.checkRules()
-        window.addEventListener('current-center-position', (event) => {
-            this.eventToSend = event;
-            if (!this.hasWarning) {
-                GeocityEvent.sendEvent('valid-event', this.eventToSend);
+
+        window.addEventListener('current-center-position', ((event: CustomEvent) => {
+            if (this.validZoomConstraint && this.validAreaConstraint) {
+                GeocityEvent.sendEvent('position-selected', event.detail);
             }
+        }) as EventListener)
+
+        this.setup(notifications)
+    }
+
+    setup(notifications: Array<NotificationElement>) {
+        notifications.forEach((notification: NotificationElement) => {
+            if (notification.rule.type === 'ZOOM_CONSTRAINT') this.setupZoomContraint(notification)
+            if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
+            if (notification.type === 'info') this.map.addControl(new NotificationBoxControl(notification, 1))
         })
     }
 
-    checkRules() {
-        this.rules.forEach((rule: NotificationElement) => {
-            if (rule.rule.type === 'ZOOM_CONSTRAINT') this.zoomContraint(rule, this.theme)
-            if (rule.type === 'info' && !this.hasWarning) this.map.addControl(new NotificationBoxControl(rule, this.theme))
-            if (!this.hasWarning && this.eventToSend !== undefined) {
-                GeocityEvent.sendEvent('valid-event', this.eventToSend);
-            }
+    setupZoomContraint(rule: NotificationElement) {
+        if (this.hasValidZoom(rule)) {
+            this.map.addControl(new NotificationBoxControl(rule, 3))
+            this.validZoomConstraint = false;
+        } 
+        
+        this.map.getView().on('change:resolution', () => {
+            this.checkZoomConstraint(rule)
         })
+    }
+
+    setupInclusionAreaConstraint(rule: NotificationElement) {
+        window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
+            this.checkInclusionAreaConstraint(rule, event.detail)
+        }) as EventListener);
     }
 
     hasValidZoom(rule: NotificationElement) {
@@ -46,29 +57,39 @@ export default class NotificationManager {
         return currentZoom && rule.rule.minZoom && currentZoom < rule.rule.minZoom
     }
 
-    zoomContraint(rule: NotificationElement, theme: string) {
-        if (this.hasValidZoom(rule)) {
-            this.map.addControl(new NotificationBoxControl(rule, theme))
-            this.hasWarning = true;
-        } 
-        
-        this.map.getView().on('change:resolution', () => {
-            if (!this.hasValidZoom(rule)) {
-                this.map.getControls().forEach((control) => {
-                    if (control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') {
-                        this.map.removeControl(control);
-                        this.hasWarning = false;
-                        this.checkRules();
-                    }
-                });
-            }
-            else {
-                if (this.map.getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') === undefined) {
-                    this.map.addControl(new NotificationBoxControl(rule, theme))
-                    this.hasWarning = true;
-                    GeocityEvent.sendEvent('invalid-event', {});
-                }   
-            }
-        })
+    checkZoomConstraint(rule: NotificationElement) {
+        if (!this.hasValidZoom(rule)) {
+            this.map.getControls().forEach((control) => {
+                if (control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') {
+                    this.map.removeControl(control);
+                    this.validZoomConstraint = true;
+                }
+            });
+        }
+        else {
+            if (this.map.getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') === undefined) {
+                this.map.addControl(new NotificationBoxControl(rule, 3))
+                this.validZoomConstraint = false;
+                GeocityEvent.sendEvent('position-selected', undefined);
+            }   
+        }
+    }
+
+    checkInclusionAreaConstraint(rule: NotificationElement, isInInclusionArea: boolean) {
+        if (isInInclusionArea) {
+            this.map.getControls().forEach((control) => {
+                if (control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') {
+                    this.map.removeControl(control);
+                    this.validAreaConstraint = true;
+                }
+            });
+        }
+        else {
+            if (this.map.getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') === undefined) {
+                this.map.addControl(new NotificationBoxControl(rule, 2))
+                this.validAreaConstraint = false;
+                GeocityEvent.sendEvent('position-selected', undefined);
+            }   
+        }
     }
 }
