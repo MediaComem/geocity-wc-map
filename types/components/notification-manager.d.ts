@@ -6,7 +6,7 @@ export default class NotificationManager {
     theme: string;
     hasWarning: boolean;
     eventToSend: any;
-    constructor(map: Map, rules: Array<NotificationElement>, theme: string);
+    constructor(map: Map, rules: Array<NotificationElement>);
     checkRules(): void;
     hasValidZoom(rule: NotificationElement): boolean | 0 | undefined;
     zoomContraint(rule: NotificationElement, theme: string): void;

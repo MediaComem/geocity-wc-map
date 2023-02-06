@@ -5,6 +5,7 @@ import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import NotificationElement from '../types/notification-element';
+import GeolocationInformation from '../types/geolocation-information';
 export default interface IOption {
     zoom: number;
     minZoom: number;
@@ -24,7 +25,8 @@ export default interface IOption {
     mode: ModeConfig;
     cluster: ClusterConfig;
     geojson: GeojsonConfig;
-    notification: Array<NotificationElement>;
+    geolocationInformation: GeolocationInformation;
+    notifications: Array<NotificationElement>;
     wfs: WFSConfiguration;
     wmts: wmtsLayerConfiguration;
 }
