@@ -131,7 +131,7 @@ To activate this mode, add in your HTML code the web component with the followin
                 "type": "target",
                 "radius": 40
             },
-            "notification": [
+            "notifications": [
                 {
                     "type": "warning",
                     "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",

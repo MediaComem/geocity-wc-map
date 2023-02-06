@@ -101,7 +101,7 @@ export default class Options {
     if (options.onlyOneDraw !== undefined) result.onlyOneDraw = options.onlyOneDraw;
     if (options.enableRotation !== undefined) result.enableRotation = options.enableRotation;
     if (options.information !== undefined) result.information = options.information;
-    if (options.notifications && options.notifications.length > 0) result.notifications = options.notifications;
+    if (options.notifications !== undefined && options.notifications.length > 0) result.notifications = options.notifications;
     if (options.mode !== undefined) result.mode = options.mode;
     if (options.cluster !== undefined) result.cluster = options.cluster;
     if (options.geojson !== undefined) result.geojson = options.geojson;
