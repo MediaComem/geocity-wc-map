@@ -146,7 +146,7 @@ export class OpenLayersElement extends LitElement {
       className: useStore().getIsCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
     }))
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
-    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
+    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode);
     if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
   }
 

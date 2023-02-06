@@ -10,6 +10,7 @@ import CircleStyle from 'ol/style/Circle';
 import proj4 from 'proj4';
 import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
+import ModeConfig from '../types/mode';
 
 interface ClusterOptions {
   distance: number;
@@ -19,7 +20,7 @@ interface ClusterOptions {
 export default class WFSLoader {
   map: Map;
 
-  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions, intersectionRadius: number) {
+  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions, mode: ModeConfig) {
     this.map = map;
 
     const vectorLayer = new VectorLayer();
@@ -55,7 +56,8 @@ export default class WFSLoader {
           const marker = new Feature({
             geometry: geomPoint,
             name: i,
-            myCustomeValue: layers[i]
+            myCustomeValue: layers[i],
+            isClick: false,
           });
           vectorSource?.addFeature(marker);
         }
@@ -67,12 +69,24 @@ export default class WFSLoader {
         });
         
         vectorLayer.setSource(clusterSource)
-        const styleCache: Style[] = [];
         vectorLayer.setStyle(function (feature) {
           const size = feature.get('features').length;
-          let style = styleCache[size];
-          if (!style) {
-            if (size === 1) {
+          let style;
+          if(size === 1 && feature.get('features')[0].get('isClick'))
+            {
+              style = new Style({
+                zIndex: 1,
+                image: new Icon({
+                  src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent( SVGCreator.mapPinSelect ),
+                  // the svg height is 54px. It's the reason why the anchor is set like that
+                  anchor: [0.5, 54],
+                  anchorXUnits: 'fraction',
+                  anchorYUnits: 'pixels',
+                })
+              })
+            }
+          else if (size === 1 && !feature.get('features')[0].get('isClick'))
+            {
               style = new Style({
                 zIndex: 1,
                 image: new Icon({
@@ -83,47 +97,47 @@ export default class WFSLoader {
                   anchorYUnits: 'pixels',
                 })
               })
-            } else {
-              style = new Style({
-                image: new CircleStyle({
-                  radius: 15,
-                  stroke: new Stroke({
-                    color: '#fff',
-                  }),
-                  fill: new Fill({
-                    color: '#334155',
-                  }),
-                }),
-                text: new Text({
-                  text: size.toString(),
-                  font: "14px sans-serif",
-                  fill: new Fill({
-                    color: '#fff',
-                  }),
-                }),
-              });
             }
-            
-            styleCache[size] = style;
+          else {
+            style = new Style({
+              image: new CircleStyle({
+                radius: 15,
+                stroke: new Stroke({
+                  color: '#fff',
+                }),
+                fill: new Fill({
+                  color: '#334155',
+                }),
+              }),
+              text: new Text({
+                text: size.toString(),
+                font: "14px sans-serif",
+                fill: new Fill({
+                  color: '#fff',
+                }),
+              }),
+            });
           }
           return style;
         },)
         this.map.addLayer(vectorLayer);
-        this.map.on('click', function (evt) {
-          const feature = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-            return feature;
+        if (mode.type === 'select') {
+          this.map.on('click', function (evt) {
+            map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+              if (feature) {
+                if (feature.getProperties().features.length === 1) {
+                  const currentState = feature.getProperties().features[0].get('isClick')
+                  feature.getProperties().features[0].set('isClick', !currentState)
+                }
+              }
+            });
           });
-          if (!feature) {
-            return;
-          }
-          GeocityEvent.sendEvent('geocity-wfs-event', feature);
-        });
-
+        }
       });
 
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
       const nearestPoint = vectorSource.getClosestFeatureToCoordinate(event.detail);
-      const circle = new Circle(event.detail, intersectionRadius);
+      const circle = new Circle(event.detail, mode.radius);
       if (nearestPoint.getGeometry()?.getType() === 'Point') {
         const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
         // This event will use by the notification manager to inform about an nearest POI.
