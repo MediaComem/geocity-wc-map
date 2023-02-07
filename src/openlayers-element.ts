@@ -145,7 +145,7 @@ export class OpenLayersElement extends LitElement {
       }
     });
     controls.push(new InformationControl(map, options.information))
-    new NotificationManager(map, options.notifications);
+    new NotificationManager(map, options.notifications, options.mode.type);
     controls.forEach(control => map.addControl(control));
     if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
     if (options.fullscreen) map.addControl(new FullScreen({

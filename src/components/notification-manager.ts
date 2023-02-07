@@ -15,15 +15,27 @@ export default class NotificationManager {
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
 
-    constructor(map: Map, notifications: Array<NotificationElement>) {
+    constructor(map: Map, notifications: Array<NotificationElement>, mode: string) {
         this.map = map;
 
-        window.addEventListener('current-center-position', ((event: CustomEvent) => {
-            if (this.validZoomConstraint && this.validAreaConstraint) {
-                GeocityEvent.sendEvent('position-selected', event.detail);
-            }
-        }) as EventListener)
-
+        if (mode === 'target') {
+            window.addEventListener('current-center-position', ((event: CustomEvent) => {
+                if (this.validZoomConstraint && this.validAreaConstraint) {
+                    GeocityEvent.sendEvent('position-selected', event.detail);
+                }
+            }) as EventListener)
+        }
+        
+        if (mode === 'select') {
+            window.addEventListener('icon-clicked', ((event: CustomEvent) => {
+                if (this.validZoomConstraint) {
+                    // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
+                    event.detail.get('isClick') ? GeocityEvent.sendEvent('position-selected', undefined) : GeocityEvent.sendEvent('position-selected', event.detail.get('geometry').getCoordinates());
+                    GeocityEvent.sendEvent('valid-clicked', event.detail);
+                }
+            }) as EventListener)
+        }
+    
         this.setup(notifications)
     }
 
