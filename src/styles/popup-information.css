@@ -15,7 +15,7 @@
 }
 
 .custom-popup-element {
-  font-family: Times sans-serif;
+  font-family: sans-serif;
   position: absolute;
   top: 5px;
   background-color: var(--information-box-background-color);
