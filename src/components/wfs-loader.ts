@@ -124,14 +124,22 @@ export default class WFSLoader {
         if (mode.type === 'select') {
           this.map.on('click', function (evt) {
             map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-              if (feature) {
+              if (feature && feature.getGeometry()?.getType() === 'Point') {
                 if (feature.getProperties().features.length === 1) {
-                  const currentState = feature.getProperties().features[0].get('isClick')
-                  feature.getProperties().features[0].set('isClick', !currentState)
+                  GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0]);                
                 }
               }
             });
           });
+          window.addEventListener('valid-clicked', ((event: CustomEvent) => {
+            const currentState = event.detail.get('isClick')
+            if (currentState) {
+              event.detail.set('isClick', false)
+            } else {
+              vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => f2.set('isClick', false)))
+              event.detail.set('isClick', true)
+            }
+          }) as EventListener)
         }
       });
 
