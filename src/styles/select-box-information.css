@@ -1,6 +1,6 @@
 .box-element {
     left: calc(50% - 172px);
-    font-family: Times sans-serif;
+    font-family: sans-serif;
     display: flex;
   }
   
