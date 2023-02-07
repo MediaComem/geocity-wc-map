@@ -86,7 +86,7 @@ export default class InclusionArea {
             }),
           }),
         });
-        map.addLayer(vectorLayer);
+        map.getLayers().insertAt(1, vectorLayer);
 
         window.addEventListener('current-center-position', ((
           event: CustomEvent
