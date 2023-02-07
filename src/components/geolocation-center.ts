@@ -1,11 +1,12 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 
 import Control from "ol/control/Control";
 import Geolocation from 'ol/Geolocation';
 
 import style from '../styles/svg-control.css?inline';
 import themeStyle from '../styles/theme.css?inline';
+import control from '../styles/controls.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../utils/svg-creator';
 
@@ -14,10 +15,24 @@ import { useStore } from '../composable/store';
 @customElement('geolocation-control-button')
 class GeolocationControlButton extends LitElement {
 
-  static styles = [unsafeCSS(style), unsafeCSS(themeStyle)];
+  @state() className: string;
+
+  static styles = [unsafeCSS(style), unsafeCSS(themeStyle), unsafeCSS(control)];
+
+  constructor() {
+    super();
+    this.className = useStore().isCustomDisplay() ? `center-control-custom-${useStore().getTargetBoxSize()}` : 'information-control';
+  }
 
   render() {
-    return html`<div class="control-${useStore().getTheme()}">${unsafeSVG(SVGCreator.geolocation)}</div>`;
+    return html`<div class="ol-unselectable ol-control ${this.className}" style="position: absolute">
+                  <div>
+                    <div class="control-${useStore().getTheme()}">
+                      ${unsafeSVG(SVGCreator.geolocation)}
+                    </div>
+                  </div>
+                </div>
+    `;
   }
 }
 
@@ -25,21 +40,14 @@ export default class GeolocationCenter extends Control {
     geolocaliseElement: Geolocation | undefined;
 
     constructor(geolociliseElement:Geolocation | undefined) {
-      const button = document.createElement('div');
 
-      const icon = document.createElement('geolocation-control-button') as GeolocationControlButton;
-      button.appendChild(icon);
-  
-      const element = document.createElement('div');
-      element.className = useStore().isCustomDisplay() ? `center-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'center-control ol-unselectable ol-control';
-      element.className += useStore().getTheme() === 'light' ? ' control-light' : ' control-dark';
-      element.appendChild(button);
+      const element = document.createElement('geolocation-control-button') as GeolocationControlButton;
   
       super({
         element: element,
       });
       this.geolocaliseElement = geolociliseElement;
-      button.addEventListener('click', this.centerMap.bind(this), false);
+      element.addEventListener('click', this.centerMap.bind(this), false);
     }
   
     centerMap() {
