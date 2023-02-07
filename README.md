@@ -41,6 +41,7 @@
 | wfs                | Information needed to import data via a WFS service                                                                        | Object           | Look at Information parameters table for more details [WFS parameters](#wfs-parameters)                     |
 | wmts               | Information needed to use WMTS layer                                                                                       | Object           | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
+| geolocationInformation    | Display options for the geolocation information box   | Object                  |    Look at Information parameters table for more details [geolocation information parameters](#geolocation-information-parameters)                                                                                                         |
 |                    |                                                                                                                            |                  |                                                                                                             |
 
 ### Information parameters
@@ -102,6 +103,22 @@ The notification setting is a special case and depends on the notification level
 | type      | Type of notification                | string | 'info', 'warning', 'error'                                                      |
 | message   | Message display in the notification | string | 'This is a notification message'                                                |
 | rule      | Description of the rule             | Object | Look at rule section for more details [Rule specification](#rule-specification) |
+|           |                                     |        |                                                                                 |
+
+### Geolocation Information parameters
+
+These settings allow you to display or not
+- the box containing the current location
+- the address based on the current location
+- the current position
+ 
+according to the settings table below:
+
+| Parameter | Description                         | Type   | Possible value                                                                  |
+| --------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| displayBox      | Display or not the box                | boolean | true                                                      |
+| reverseLocation   | Display or not the address according to the current position | boolean | true                                      |
+| currentLocation      | Display or not the current coordinate            | boolean | true |
 |           |                                     |        |                                                                                 |
 
 #### Rule specification
