@@ -4,7 +4,7 @@ export default class NotificationManager {
     map: Map;
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
-    constructor(map: Map, notifications: Array<NotificationElement>);
+    constructor(map: Map, notifications: Array<NotificationElement>, mode: string);
     setup(notifications: Array<NotificationElement>): void;
     setupZoomContraint(rule: NotificationElement): void;
     setupInclusionAreaConstraint(rule: NotificationElement): void;
