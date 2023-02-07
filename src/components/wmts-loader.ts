@@ -3,7 +3,7 @@ import TileLayer from 'ol/layer/Tile';
 import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 
-interface wmtsLayerConfiguration {
+export default interface wmtsLayerConfiguration {
   capability: string;
   layer: string;
   projection: string;

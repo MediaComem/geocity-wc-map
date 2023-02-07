@@ -15,14 +15,23 @@ import GeolocationMarker from './components/geolocation-marker';
 import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
 import InformationControl from './components/information-control';
-import WarningNotification from './components/notification/warning-notification';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import ErrorNotification from './components/notification/error-notification';
-import InfoNotification from './components/notification/info-notification';
+import NotificationManager from './components/notification-manager';
+import theme from './styles/theme.css?inline';
+
+import TargetController from './components/target';
+import TargetInformationBoxElement from './components/target-information-box';
+import Options from './utils/options';
+import IOption from './utils/options';
+import SVGCreator from './utils/svg-creator';
+import GeolocationInformation from './types/geolocation-information';
+
+import { useStore } from './composable/store';
+import InclusionArea from './components/inclusion-area';
 
 /**
  * An example element.
@@ -38,60 +47,7 @@ export class OpenLayersElement extends LitElement {
   @state() view:View | undefined;
   @state() geolocation:Geolocation | undefined;
 
-  @property({type: Object, attribute: 'options'}) options = {
-    zoom: 15,
-    minZoom: 1,
-    maxZoom: 18,
-    displayZoom: true,
-    displayScaleLine: false,
-    fullscreen: true,
-    defaultCenter: [739867.251358, 5905800.079386],
-    enableGeolocation: false,
-    enableCenterButton: false,
-    enableDraw: true,
-    drawElement: 'Point',
-    maxNbDraw: 3,
-    enableRotation: true,
-    information: {
-      duration: 5,
-      title: "This is a title",
-      content: "This is a content",
-    },
-    info: {
-      configuration: {
-        textColor: '#1D4ED8',
-        backgroundColor: '#DBEAFE',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    warning: {
-      configuration: {
-        textColor: '#B45309',
-        backgroundColor: '#FEF3C7',
-      },
-      message: "Veuillez zoomer davantage avant de pouvoir pointer l'emplacement",
-    },
-    error: {
-      configuration: {
-        textColor: '#B91C1C',
-        backgroundColor: '#FEE2E2',
-      },
-      message: "Une erreur est survenue lors du chargement de votre positiont",
-    },
-    geojson: {
-      url: "",
-    },
-    wfs: {
-      url: "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
-      projection: "EPSG:2056",
-      projectionDefinition: "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
-    },
-    wmts: {
-      capability: "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-      layer: "ch.swisstopo.swissimage",
-      projection: "EPSG:3857"
-    }
-  }
+  @property({type: Object, attribute: 'options'}) options = {}
 
   constructor() {
     super();
@@ -101,13 +57,52 @@ export class OpenLayersElement extends LitElement {
     super.connectedCallback();
   }
 
+  setupTheme(options:any) {
+    if (options.darkMode) {
+      useStore().setTheme('dark');
+    }
+    else if (options.lightMode) {
+      useStore().setTheme('light');
+    }
+    else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      useStore().setTheme('light');
+    }
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) { 
+      useStore().setTheme('dark');
+    }
+    else {
+      useStore().setTheme('light');
+    }
+  }
+
+  setupCustomDisplay(options: IOption) {
+    useStore().setCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
+  }
+
+  /*
+    Some boxes are under the control button and some should be under it. We know the size of the box (currently the information of the target box) via an option
+    There are three cases:
+      - geolocationInformation.reverseLocation and geolocationInformation.currentLocation is set to true. This means that there are two lines under the title (maximum size)
+      - geolocationInformation.reverseLocation or geolocationInformation.currentLocation is set to true. This means that there is one line under the title (medium size).
+      - geolocationInformation.reverseLocation and geolocationInformation.currentLocation have the value false. This means that there is no line under the title (small size).
+  */
+  setupTargetBoxSize(geolocationInformation: GeolocationInformation) {
+    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) useStore().setTargetBoxSize('large');
+    else if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) useStore().setTargetBoxSize('medium');
+    else useStore().setTargetBoxSize('small');
+  }
+
   firstUpdated() {
+    const options = Options.getOptions(this.options as IOption);
+    this.setupTheme(options);
+    this.setupCustomDisplay(options);
+    this.setupTargetBoxSize(options.geolocationInformation);
     this.view = new View({
-      center: this.options.defaultCenter,
-      zoom: this.options.zoom,
-      minZoom: this.options.minZoom,
-      maxZoom: this.options.maxZoom,
-      enableRotation: this.options.enableRotation
+      center: options.defaultCenter,
+      zoom: options.zoom,
+      minZoom: options.minZoom,
+      maxZoom: options.maxZoom,
+      enableRotation: options.enableRotation
     });
     const map = new Map({
       target: this.mapElement,
@@ -115,7 +110,7 @@ export class OpenLayersElement extends LitElement {
       layers: [],
       view: this.view,
     });
-    if (this.options.enableGeolocation) {
+    if (options.enableGeolocation) {
       this.geolocation = new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
@@ -125,31 +120,53 @@ export class OpenLayersElement extends LitElement {
       this.geolocation.setTracking(true);
       new GeolocationMarker(map, this.geolocation);
     }
+
     const controls = [];
-    if (this.options.wmts.capability != "") new WMTSLoader(map, this.options.wmts);
-    if (this.options.displayZoom) controls.push(new Zoom())
-    if (this.options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
-    if (this.options.enableRotation) controls.push(new ResetRotationControl(map, this.view));
-    controls.push(new InformationControl(map, this.options.information))
-    if (false) controls.push(new InfoNotification(this.options.info));
-    if (false) controls.push(new WarningNotification(this.options.warning));
-    if (false) controls.push(new ErrorNotification(this.options.error));
+    if (options.mode.type === 'target') {
+      controls.push(new TargetController(map))
+      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, options.geolocationInformation));
+    }
+    if (options.wmts.capability != "") new WMTSLoader(map, options.wmts);
+    if (options.displayZoom)
+      controls.push(new Zoom({
+        zoomInLabel: SVGCreator.zoomInLabel(),
+        zoomOutLabel: SVGCreator.zoomOutLabel(),
+        className: useStore().isCustomDisplay() ? `ol-zoom-custom-${useStore().getTargetBoxSize()}` : `ol-zoom`
+      }))
+    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
+    if (options.enableRotation) this.view.on('change:rotation', (event) => {
+      map.getControls().forEach((control) => {
+        if (control instanceof ResetRotationControl) {
+          map.removeControl(control);
+        }
+      });
+      if (event.target.getRotation() !== 0) {
+        map.addControl(new ResetRotationControl());
+      }
+    });
+    controls.push(new InformationControl(map, options.information))
+    new NotificationManager(map, options.notifications);
     controls.forEach(control => map.addControl(control));
-    if (this.options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
-    if (this.options.fullscreen) map.addControl(new FullScreen())
-    if (this.options.geojson.url != "") new GeojsonLoader(map, this.options.geojson.url)
-    if (this.options.wfs.url != "") new WFSLoader(map, this.options.wfs.url , this.options.wfs.projection, this.options.wfs.projectionDefinition);
-    if (this.options.enableDraw) new Drawer(map, this.options.drawElement, this.options.maxNbDraw);
+    if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
+    if (options.fullscreen) map.addControl(new FullScreen({
+      label: SVGCreator.fullScreenLabel(),
+      labelActive: SVGCreator.fullScreenLabelActive(),
+      className: useStore().isCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
+    }))
+    if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
+    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
+    if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
+    new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
   }
 
   render() {
     return html`
-    <div id="map">
+    <div id="map" class="control-${useStore().getTheme()}">
     </div>   
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme)];
 }
 
 declare global {

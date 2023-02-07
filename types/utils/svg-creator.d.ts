@@ -1,5 +1,13 @@
 export default class SVGCreator {
-    static infoCreator(logoColor: string): SVGSVGElement;
-    static warningCreator(logoColor: string): SVGSVGElement;
-    static errorCreator(logoColor: string): SVGSVGElement;
+    static info: string;
+    static warning: string;
+    static error: string;
+    static mapPin: string;
+    static information: string;
+    static geolocation: string;
+    static rotation: string;
+    static zoomInLabel(): HTMLDivElement;
+    static zoomOutLabel(): HTMLDivElement;
+    static fullScreenLabel(): HTMLDivElement;
+    static fullScreenLabelActive(): HTMLDivElement;
 }

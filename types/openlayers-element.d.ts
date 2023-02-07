@@ -1,6 +1,8 @@
 import { LitElement } from 'lit';
 import View from 'ol/View.js';
 import { Geolocation } from 'ol';
+import IOption from './utils/options';
+import GeolocationInformation from './types/geolocation-information';
 /**
  * An example element.
  *
@@ -11,62 +13,12 @@ export declare class OpenLayersElement extends LitElement {
     mapElement: HTMLDivElement;
     view: View | undefined;
     geolocation: Geolocation | undefined;
-    options: {
-        zoom: number;
-        minZoom: number;
-        maxZoom: number;
-        displayZoom: boolean;
-        displayScaleLine: boolean;
-        fullscreen: boolean;
-        defaultCenter: number[];
-        enableGeolocation: boolean;
-        enableCenterButton: boolean;
-        enableDraw: boolean;
-        drawElement: string;
-        maxNbDraw: number;
-        enableRotation: boolean;
-        information: {
-            duration: number;
-            title: string;
-            content: string;
-        };
-        info: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
-            };
-            message: string;
-        };
-        warning: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
-            };
-            message: string;
-        };
-        error: {
-            configuration: {
-                textColor: string;
-                backgroundColor: string;
-            };
-            message: string;
-        };
-        geojson: {
-            url: string;
-        };
-        wfs: {
-            url: string;
-            projection: string;
-            projectionDefinition: string;
-        };
-        wmts: {
-            capability: string;
-            layer: string;
-            projection: string;
-        };
-    };
+    options: {};
     constructor();
     connectedCallback(): void;
+    setupTheme(options: any): void;
+    setupCustomDisplay(options: IOption): void;
+    setupTargetBoxSize(geolocationInformation: GeolocationInformation): void;
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;
     static styles: import("lit").CSSResult[];

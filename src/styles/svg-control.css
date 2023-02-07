@@ -1,0 +1,14 @@
+svg {
+    margin-left: 5px;
+    margin-top: 5px;
+    width: 26px;
+    height: 26px;
+}
+
+svg > g > .icon {
+  fill: none;
+  stroke: var(--control-icon-color);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
