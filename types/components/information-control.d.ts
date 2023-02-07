@@ -1,12 +1,10 @@
-import { Map } from 'ol';
 import Control from "ol/control/Control";
+import Map from "ol/Map";
 import InformationElement from '../types/information-element';
 export default class InformationControl extends Control {
     map: Map;
-    theme: string;
     information: InformationElement;
     informationIsOpen: Boolean;
-    timeout: any;
     constructor(map: Map, information: InformationElement);
     closeInformationBox(): void;
     openInformationBox(): void;
