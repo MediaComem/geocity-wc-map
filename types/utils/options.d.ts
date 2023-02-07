@@ -29,6 +29,8 @@ export default interface IOption {
     notifications: Array<NotificationElement>;
     wfs: WFSConfiguration;
     wmts: wmtsLayerConfiguration;
+    inclusionArea: boolean;
+    targetBoxMessage: string;
 }
 export default class Options {
     static getOptions(options: IOption): IOption;

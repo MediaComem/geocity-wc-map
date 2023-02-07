@@ -11,6 +11,7 @@ import proj4 from 'proj4';
 import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
 import ModeConfig from '../types/mode';
+import SelectInformationBoxController from './select-information-box';
 
 interface ClusterOptions {
   distance: number;
@@ -135,9 +136,22 @@ export default class WFSLoader {
             const currentState = event.detail.get('isClick')
             if (currentState) {
               event.detail.set('isClick', false)
+              this.map.getControls().forEach((control) => {
+                if (control instanceof SelectInformationBoxController) {
+                    this.map.removeControl(control);
+                }
+              });
             } else {
-              vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => f2.set('isClick', false)))
+              vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => {
+                f2.set('isClick', false);
+                this.map.getControls().forEach((control) => {
+                  if (control instanceof SelectInformationBoxController) {
+                      this.map.removeControl(control);
+                  }
+                });
+              }))
               event.detail.set('isClick', true)
+              map.addControl(new SelectInformationBoxController(event.detail.get('geometry').getCoordinates()))
             }
           }) as EventListener)
         }

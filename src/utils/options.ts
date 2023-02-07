@@ -30,6 +30,8 @@ export default interface IOption {
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
   wmts: wmtsLayerConfiguration;
+  inclusionArea: boolean;
+  targetBoxMessage: string;
 }
 
 export default class Options {
@@ -82,6 +84,8 @@ export default class Options {
         layer: 'ch.swisstopo.swissimage',
         projection: 'EPSG:3857',
       },
+      inclusionArea: false,
+      targetBoxMessage: ''
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -108,6 +112,8 @@ export default class Options {
     if (options.geolocationInformation !== undefined) result.geolocationInformation = options.geolocationInformation;
     if (options.wfs !== undefined) result.wfs = options.wfs;
     if (options.wmts !== undefined) result.wmts = options.wmts;
+    if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
+    if (options.targetBoxMessage !== undefined) result.targetBoxMessage = options.targetBoxMessage;
     return result;
   }
 }

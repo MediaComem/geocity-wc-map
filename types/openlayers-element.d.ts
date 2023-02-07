@@ -18,6 +18,7 @@ export declare class OpenLayersElement extends LitElement {
     connectedCallback(): void;
     setupTheme(options: any): void;
     setupCustomDisplay(options: IOption): void;
+    setupSelectBoxSize(): void;
     setupTargetBoxSize(geolocationInformation: GeolocationInformation): void;
     firstUpdated(): void;
     render(): import("lit-html").TemplateResult<1>;

@@ -76,7 +76,19 @@ export class OpenLayersElement extends LitElement {
   }
 
   setupCustomDisplay(options: IOption) {
-    useStore().setCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
+    if (options.mode.type === 'target') {
+      useStore().setCustomDisplay(options.geolocationInformation.displayBox);
+      this.setupTargetBoxSize(options.geolocationInformation);
+    } else if (options.mode.type === 'select') {
+      useStore().setCustomDisplay(true);
+      this.setupSelectBoxSize();
+    } else {
+      useStore().setCustomDisplay(false);
+    }  
+  }
+
+  setupSelectBoxSize() {
+    useStore().setTargetBoxSize('medium');
   }
 
   /*
@@ -96,7 +108,6 @@ export class OpenLayersElement extends LitElement {
     const options = Options.getOptions(this.options as IOption);
     this.setupTheme(options);
     this.setupCustomDisplay(options);
-    this.setupTargetBoxSize(options.geolocationInformation);
     this.view = new View({
       center: options.defaultCenter,
       zoom: options.zoom,
@@ -124,7 +135,7 @@ export class OpenLayersElement extends LitElement {
     const controls = [];
     if (options.mode.type === 'target') {
       controls.push(new TargetController(map))
-      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, options.geolocationInformation));
+      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, options.geolocationInformation, options.targetBoxMessage));
     }
     if (options.wmts.capability != "") new WMTSLoader(map, options.wmts);
     if (options.displayZoom)
@@ -156,7 +167,7 @@ export class OpenLayersElement extends LitElement {
     if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
     if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode);
     if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
-    new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
+    if (options.inclusionArea) new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
   }
 
   render() {
