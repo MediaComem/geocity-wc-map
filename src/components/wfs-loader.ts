@@ -99,6 +99,26 @@ export default class WFSLoader {
                 })
               })
             }
+          else if (feature.get('features').find((f:Feature) => f.get('isClick'))) {
+            style = new Style({
+              image: new CircleStyle({
+                radius: 15,
+                stroke: new Stroke({
+                  color: '#fff',
+                }),
+                fill: new Fill({
+                  color: '#EF4444',
+                }),
+              }),
+              text: new Text({
+                text: size.toString(),
+                font: "14px sans-serif",
+                fill: new Fill({
+                  color: '#fff',
+                }),
+              }),
+            });
+          }
           else {
             style = new Style({
               image: new CircleStyle({
