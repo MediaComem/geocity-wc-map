@@ -17,6 +17,11 @@
                                             "type": "target",
                                             "radius": 40
                                         },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": true
+                                        },
                                         "notifications": [
                                         {
                                             "type": "warning",
@@ -57,12 +62,10 @@
     button.style.opacity = 0.5;
 
     button.addEventListener('click', () => {
-        console.log(this.toSendEvent);
         document.getElementById('coordinate').innerHTML = this.toSendEvent;
     })
 
     window.addEventListener('position-selected', (event) => {
-        console.log(event)
         const button = document.getElementById('validate');
         if (event.detail) {
             button.disabled = false;

@@ -63,12 +63,10 @@
     button.style.opacity = 0.5;
 
     button.addEventListener('click', () => {
-        console.log(this.toSendEvent);
         document.getElementById('coordinate').innerHTML = this.toSendEvent;
     })
 
     window.addEventListener('position-selected', (event) => {
-        console.log(event)
         const button = document.getElementById('validate');
         if (event.detail) {
             button.disabled = false;
