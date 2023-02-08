@@ -29,6 +29,8 @@ import ControlIconManager from './utils/control-icon-manager';
 
 import TargetController from './components/target';
 import TargetInformationBoxElement from './components/target-information-box';
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4.js';
 
 /**
  * An example element.
@@ -101,8 +103,11 @@ export class OpenLayersElement extends LitElement {
     const options = useStore().getOptions()
     this.setupTheme(options);
     this.setupCustomDisplay(options);
+    proj4.defs(options.wfs.projection, options.wfs.projectionDefinition);
+    register(proj4);
     
     this.view = new View({
+      projection: 'EPSG:2056',
       center: options.defaultCenter,
       zoom: options.zoom,
       minZoom: options.minZoom,

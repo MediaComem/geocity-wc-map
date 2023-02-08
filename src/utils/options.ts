@@ -44,7 +44,7 @@ export default class Options {
       displayZoom: true,
       displayScaleLine: false,
       fullscreen: true,
-      defaultCenter: [739867.251358, 5905800.079386],
+      defaultCenter: [2539057, 1181111],
       enableGeolocation: false,
       enableCenterButton: true,
       enableDraw: true,
@@ -81,9 +81,9 @@ export default class Options {
           '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
       },
       wmts: {
-        capability: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+        capability: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
         layer: 'ch.swisstopo.swissimage',
-        projection: 'EPSG:3857',
+        projection: 'EPSG:2056',
       },
       inclusionArea: '',
       targetBoxMessage: 'ddd'
