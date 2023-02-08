@@ -37,7 +37,7 @@ export default class SingleSelect {
           const geomPoint = new Point([Number(coordinates[0]), Number(coordinates[1])]);
           const marker = new Feature({
             geometry: geomPoint,
-            name: i,
+            name: layers[i].getElementsByTagName('ms:objectid')[0].innerHTML,
             myCustomeValue: layers[i],
             isClick: false,
           });

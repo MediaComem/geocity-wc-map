@@ -70,7 +70,7 @@
     button.style.opacity = 0.5;
 
     button.addEventListener('click', () => {
-        document.getElementById('coordinate').innerHTML = this.toSendEvent;
+        document.getElementById('coordinate').innerHTML = JSON.stringify(this.toSendEvent);
     })
 
     window.addEventListener('position-selected', (event) => {
