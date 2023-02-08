@@ -6,6 +6,7 @@ import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
+import { useStore } from '../composable/store';
 
 export default interface IOption {
   zoom: number;
@@ -30,12 +31,12 @@ export default interface IOption {
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
   wmts: wmtsLayerConfiguration;
-  inclusionArea: boolean;
+  inclusionArea: string;
   targetBoxMessage: string;
 }
 
 export default class Options {
-  static getOptions(options: IOption): IOption {
+  static getOptions(options: IOption) {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
@@ -84,8 +85,8 @@ export default class Options {
         layer: 'ch.swisstopo.swissimage',
         projection: 'EPSG:3857',
       },
-      inclusionArea: false,
-      targetBoxMessage: ''
+      inclusionArea: '',
+      targetBoxMessage: 'ddd'
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -114,6 +115,6 @@ export default class Options {
     if (options.wmts !== undefined) result.wmts = options.wmts;
     if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
     if (options.targetBoxMessage !== undefined) result.targetBoxMessage = options.targetBoxMessage;
-    return result;
+    useStore().setOptions(result);
   }
 }

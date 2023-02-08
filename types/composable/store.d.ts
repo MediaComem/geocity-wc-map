@@ -1,9 +1,18 @@
+import { Map } from 'ol';
+import Geolocation from 'ol/Geolocation';
+import IOption from '../utils/options';
 declare function setTheme(newVal: string): void;
 declare function getTheme(): string;
 declare function setCustomDisplay(newVal: boolean): void;
 declare function isCustomDisplay(): boolean;
 declare function setTargetBoxSize(newVal: string): void;
 declare function getTargetBoxSize(): string;
+declare function setGeolocation(newVal: Geolocation): void;
+declare function getGeolocation(): Geolocation | undefined;
+declare function setOptions(newVal: IOption): void;
+declare function getOptions(): IOption;
+declare function setMap(newVal: Map): void;
+declare function getMap(): Map;
 export declare function useStore(): {
     setTheme: typeof setTheme;
     getTheme: typeof getTheme;
@@ -11,5 +20,11 @@ export declare function useStore(): {
     isCustomDisplay: typeof isCustomDisplay;
     setTargetBoxSize: typeof setTargetBoxSize;
     getTargetBoxSize: typeof getTargetBoxSize;
+    setGeolocation: typeof setGeolocation;
+    getGeolocation: typeof getGeolocation;
+    setOptions: typeof setOptions;
+    getOptions: typeof getOptions;
+    setMap: typeof setMap;
+    getMap: typeof getMap;
 };
 export {};

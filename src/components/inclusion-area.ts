@@ -1,6 +1,5 @@
 import proj4 from 'proj4';
 
-import Map from 'ol/Map.js';
 import { parse } from 'ol/xml';
 import Feature from 'ol/Feature';
 import { Coordinate } from 'ol/coordinate';
@@ -9,14 +8,10 @@ import { MultiPolygon, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import { Stroke, Style } from 'ol/style';
 import { GeocityEvent } from '../utils/geocity-event';
+import { useStore } from '../composable/store';
 
 export default class InclusionArea {
-  constructor(
-    map: Map,
-    url: string,
-    projectionSource: string,
-    projectionDefinition: string
-  ) {
+  constructor() {
     proj4.defs(
       'EPSG:3857',
       '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs'
@@ -25,9 +20,9 @@ export default class InclusionArea {
       'SR-ORG:6864',
       '+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
     );
-    proj4.defs(projectionSource, projectionDefinition);
+    proj4.defs(useStore().getOptions().wfs.projection, useStore().getOptions().wfs.projectionDefinition);
 
-    fetch(url)
+    fetch(useStore().getOptions().inclusionArea)
       .then((response) => {
         return response.text();
       })
@@ -61,7 +56,7 @@ export default class InclusionArea {
             for (let i = 0; i < coordinates.length; i++) {
               if (i % 2 === 1) {
                 newCoordinates.push(
-                  proj4(projectionSource, 'SR-ORG:6864', [
+                  proj4(useStore().getOptions().wfs.projection, 'SR-ORG:6864', [
                     Number(coordinates[i - 1]),
                     Number(coordinates[i]),
                   ]) as Coordinate
@@ -86,7 +81,7 @@ export default class InclusionArea {
             }),
           }),
         });
-        map.getLayers().insertAt(1, vectorLayer);
+        useStore().getMap().getLayers().insertAt(1, vectorLayer);
 
         window.addEventListener('current-center-position', ((
           event: CustomEvent

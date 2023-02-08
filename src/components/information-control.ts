@@ -2,9 +2,7 @@ import { html, LitElement, unsafeCSS } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import Control from "ol/control/Control";
-import Map from "ol/Map";
 
-import InformationElement from '../types/information-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import InformationBoxControl from './information-box';
 
@@ -17,17 +15,20 @@ import { useStore } from '../composable/store';
 @customElement('information-control-button')
 class InformationControlButton extends LitElement {
 
-  @state() className: string;
+  @state() className: string = '';
 
   static styles = [unsafeCSS(style), unsafeCSS(control)];
 
   constructor() {
     super();
+  }
+
+  protected firstUpdated() {
     this.className = useStore().isCustomDisplay() ? `information-control-custom-${useStore().getTargetBoxSize()}` : 'information-control';
   }
 
   render() {
-    return html`<div class="ol-unselectable ol-control ${this.className}" style="position: absolute">
+    return html`<div class="ol-unselectable ol-control information-control" style="position: absolute">
                   <div>
                     <div class="control-${useStore().getTheme()}">
                       ${unsafeSVG(SVGCreator.information)}
@@ -40,19 +41,15 @@ class InformationControlButton extends LitElement {
 
 
 export default class InformationControl extends Control {
-    map: Map;
-    information: InformationElement;
     informationIsOpen: Boolean = true;
 
-    constructor(map: Map, information: InformationElement) {
+    constructor() {
 
         const element = document.createElement('information-control-button') as InformationControlButton;
-    
+
         super({
           element: element,
         });
-        this.map = map;
-        this.information = information;
         element.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
         this.openInformationBox();
@@ -60,16 +57,16 @@ export default class InformationControl extends Control {
 
       closeInformationBox() {
         GeocityEvent.sendEvent('clear-information-box-interval', {});
-        this.map.getControls().forEach((control) => {
+        useStore().getMap().getControls().forEach((control) => {
             if (control instanceof InformationBoxControl) {
-              this.map.removeControl(control);
+              useStore().getMap().removeControl(control);
             }
         });
         this.informationIsOpen = false;
       }
 
       openInformationBox() {
-        this.map.addControl(new InformationBoxControl(this.information));
+        useStore().getMap().addControl(new InformationBoxControl());
         this.informationIsOpen = true;
       }
     
