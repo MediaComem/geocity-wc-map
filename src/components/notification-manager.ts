@@ -2,6 +2,7 @@ import { useStore } from '../composable/store';
 import NotificationElement from '../types/notification-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import NotificationBoxControl from './notification/notification';
+import wtk from 'wkt';
 
 /* 
     ZOOM_CONSTRAINT 1
@@ -19,7 +20,11 @@ export default class NotificationManager {
         if (options.mode.type === 'target') {
             window.addEventListener('current-center-position', ((event: CustomEvent) => {
                 if (this.validZoomConstraint && this.validAreaConstraint) {
-                    GeocityEvent.sendEvent('position-selected', event.detail);
+                    const geometry = {
+                        type: "Point",
+                        coordinates: event.detail
+                      };
+                    GeocityEvent.sendEvent('position-selected', {geometry: wtk.stringify(geometry)});
                 }
             }) as EventListener)
         }
@@ -29,7 +34,19 @@ export default class NotificationManager {
                 const feature = useStore().getSelectedFeature();
                 if (this.validZoomConstraint && feature) {
                     // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
-                    feature.get('isClick') ? GeocityEvent.sendEvent('position-selected', undefined) : GeocityEvent.sendEvent('position-selected', feature.get('geometry').getCoordinates());
+                    if (feature.get('isClick')) {
+                        GeocityEvent.sendEvent('position-selected', undefined);
+                    } else {
+                        const geometry = {
+                            type: "Point",
+                            coordinates: feature.get('geometry').getCoordinates()
+                          };
+                        GeocityEvent.sendEvent('position-selected', {
+                            id: feature.get('name'),
+                            geometry: wtk.stringify(geometry)
+                        });
+                    }
+                    
                     GeocityEvent.sendEvent('authorize-clicked', undefined);
                 }
             }) as EventListener)
