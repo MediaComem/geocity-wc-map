@@ -12,7 +12,7 @@ import SVGCreator from '../utils/svg-creator';
 import SelectInformationBoxController from './select-information-box';
 import { useStore } from '../composable/store';
 
-export default class WFSLoader {
+export default class SingleSelect {
   constructor() {
     const map = useStore().getMap();
     const options = useStore().getOptions();
@@ -29,7 +29,6 @@ export default class WFSLoader {
           'wfs:FeatureCollection'
         )[0];
         const layers = features.getElementsByTagName('wfs:member');
-        console.log(layers)
         for (let i = 0; i < layers.length; i++) {
           const geom = layers[i].getElementsByTagName('ms:geom')[0];
           const point = geom.getElementsByTagName('gml:Point')[0];
@@ -129,39 +128,49 @@ export default class WFSLoader {
             map.forEachFeatureAtPixel(evt.pixel, function (feature) {
               if (feature && feature.getGeometry()?.getType() === 'Point') {
                 if (feature.getProperties().features.length === 1) {
-                  GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0]);                
+                  useStore().setSelectedFeature(feature.getProperties().features[0]);
+                  GeocityEvent.sendEvent('icon-clicked', undefined);                
                 }
               }
             });
           });
-          window.addEventListener('valid-clicked', ((event: CustomEvent) => {
-            const currentState = event.detail.get('isClick')
-            if (currentState) {
-              event.detail.set('isClick', false)
-              map.getControls().forEach((control) => {
-                if (control instanceof SelectInformationBoxController) {
-                    map.removeControl(control);
-                    useStore().setCustomDisplay(false);
-                    useStore().setTargetBoxSize('no-box');
-                }
-              });
-            } else {
-              vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => {
-                f2.set('isClick', false);
+
+          window.addEventListener('authorize-clicked', () => {
+            const feature = useStore().getSelectedFeature();
+            if (feature) {
+              const currentState = feature.get('isClick')
+              if (currentState) {
+                feature.set('isClick', false)
                 map.getControls().forEach((control) => {
                   if (control instanceof SelectInformationBoxController) {
-                    map.removeControl(control);
+                      map.removeControl(control);
                   }
                 });
-              }))
-              event.detail.set('isClick', true);
-              useStore().setCustomDisplay(true);
-              map.addControl(new SelectInformationBoxController(event.detail.get('geometry').getCoordinates()));
-              useStore().setTargetBoxSize('medium');
+                useStore().setCustomDisplay(false);
+                useStore().setTargetBoxSize('no-box');
+                useStore().setSelectedFeature(undefined);
+              } else {
+                vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => {
+                  f2.set('isClick', false);
+                  map.getControls().forEach((control) => {
+                    if (control instanceof SelectInformationBoxController) {
+                      map.removeControl(control);
+                    }
+                  });
+                }))
+                feature.set('isClick', true);
+                useStore().setCustomDisplay(true);
+                map.addControl(new SelectInformationBoxController(feature.get('geometry').getCoordinates()));
+                useStore().setTargetBoxSize('medium');
+              }
             }
             useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
-          }) as EventListener)
+          })
         }
+
+        window.addEventListener('recenter-selected-element', () => {
+          useStore().getMap().getView().setCenter(useStore().getSelectedFeature()?.get('geometry').getCoordinates())
+        })        
       });
 
     window.addEventListener('current-center-position', ((event: CustomEvent) => {

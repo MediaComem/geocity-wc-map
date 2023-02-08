@@ -48,5 +48,30 @@
   }
   
   .position-icon {
+    display: flex;
+    justify-content: center;
     width: 50%;
   }
+
+  .icon-container {
+    width: 36px;
+    height: 36px;
+    background-color: var(--select-icon-background);
+    border-radius: var(--icon-border-radius);
+  }
+
+  .icon-container > svg {
+    display: block;
+    margin-left: calc((var(--icon-width) - var(--svg-icon-size)) / 2);
+    margin-top: calc((var(--icon-height) - var(--svg-icon-size)) / 2);
+    width: var(--svg-icon-size) !important;
+    height: var(--svg-icon-size) !important;
+  }
+
+  .icon-container > svg > g > .icon {
+    fill: none;
+    stroke: var(--control-icon-color);
+    stroke-width: var(--icon-stroke-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}

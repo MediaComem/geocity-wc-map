@@ -174,6 +174,16 @@ export default class SVGCreator {
     </svg>
   `;
 
+  static iconRemoveSelection = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <g class="RemoveSelection">
+        <g class="icon">
+          <path d="M16 28C22.627 28 28 22.627 28 16 28 9.373 22.627 4 16 4 9.373 4 4 9.373 4 16 4 22.627 9.373 28 16 28ZM20 12 12 20M20 20 12 12" class="Vector"/>
+        </g>
+        </g>
+    </svg>
+  `;
+
   static zoomInLabel() {
     const zoomIn = document.createElement('div');
     const icon = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
