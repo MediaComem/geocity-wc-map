@@ -7,7 +7,7 @@ import { Geolocation } from 'ol';
 import { ScaleLine } from 'ol/control';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
-import WFSLoader from './components/wfs-loader';
+import SingleSelect from './components/single-select';
 
 import GeolocationMarker from './components/geolocation-marker';
 import WMTSLoader from './components/wmts-loader';
@@ -145,7 +145,7 @@ export class OpenLayersElement extends LitElement {
     if (options.wmts.capability != "") new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.geojson.url != "") new GeojsonLoader()
-    if (options.wfs.url != "") new WFSLoader();
+    if (options.wfs.url != "") new SingleSelect();
     if (options.enableDraw) new Drawer();
     if (options.inclusionArea !== '') new InclusionArea();
     new NotificationManager();

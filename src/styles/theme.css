@@ -20,6 +20,7 @@
     --information-box-background-color: white;
     --information-box-title-color: #1E293B;
     --information-box-text-color: #334155;
+    --select-icon-background: #1E293B;
 }
 
 :host > .dark {
@@ -28,6 +29,7 @@
     --information-box-background-color: #1F2937;
     --information-box-title-color: #F3F4F6;
     --information-box-text-color: #9CA3AF;
+    --select-icon-background: rgb(255,255,255, 0.75);
 }
 
 :host > #map {

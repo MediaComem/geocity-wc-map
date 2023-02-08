@@ -25,11 +25,12 @@ export default class NotificationManager {
         }
         
         if (options.mode.type === 'select') {
-            window.addEventListener('icon-clicked', ((event: CustomEvent) => {
-                if (this.validZoomConstraint) {
+            window.addEventListener('icon-clicked', (() => {
+                const feature = useStore().getSelectedFeature();
+                if (this.validZoomConstraint && feature) {
                     // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
-                    event.detail.get('isClick') ? GeocityEvent.sendEvent('position-selected', undefined) : GeocityEvent.sendEvent('position-selected', event.detail.get('geometry').getCoordinates());
-                    GeocityEvent.sendEvent('valid-clicked', event.detail);
+                    feature.get('isClick') ? GeocityEvent.sendEvent('position-selected', undefined) : GeocityEvent.sendEvent('position-selected', feature.get('geometry').getCoordinates());
+                    GeocityEvent.sendEvent('authorize-clicked', undefined);
                 }
             }) as EventListener)
         }
