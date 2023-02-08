@@ -7,6 +7,8 @@ export default class SVGCreator {
     static information: string;
     static geolocation: string;
     static rotation: string;
+    static iconRecenter: string;
+    static iconRemoveSelection: string;
     static zoomInLabel(): HTMLDivElement;
     static zoomOutLabel(): HTMLDivElement;
     static fullScreenLabel(): HTMLDivElement;

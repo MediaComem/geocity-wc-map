@@ -66,7 +66,7 @@ class SelectInformationBoxElement extends LitElement {
   }
 
   unselect() {
-    GeocityEvent.sendEvent('authorize-clicked', undefined)
+    GeocityEvent.sendEvent('icon-clicked', undefined)
   }
 }
 

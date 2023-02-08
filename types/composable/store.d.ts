@@ -1,4 +1,4 @@
-import { Map } from 'ol';
+import { Feature, Map } from 'ol';
 import Geolocation from 'ol/Geolocation';
 import IOption from '../utils/options';
 declare function setTheme(newVal: string): void;
@@ -13,6 +13,8 @@ declare function setOptions(newVal: IOption): void;
 declare function getOptions(): IOption;
 declare function setMap(newVal: Map): void;
 declare function getMap(): Map;
+declare function setSelectedFeature(newVal: Feature | undefined): void;
+declare function getSelectedFeature(): Feature<import("ol/geom/Geometry").default> | undefined;
 export declare function useStore(): {
     setTheme: typeof setTheme;
     getTheme: typeof getTheme;
@@ -26,5 +28,7 @@ export declare function useStore(): {
     getOptions: typeof getOptions;
     setMap: typeof setMap;
     getMap: typeof getMap;
+    setSelectedFeature: typeof setSelectedFeature;
+    getSelectedFeature: typeof getSelectedFeature;
 };
 export {};
