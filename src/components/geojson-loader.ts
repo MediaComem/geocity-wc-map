@@ -1,19 +1,17 @@
-import { Map } from 'ol';
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
+import { useStore } from '../composable/store';
 
 export default class GeojsonLoader {
-  map: Map;
   data: Object = {};
   vectorSource: VectorSource = new VectorSource();
   vectorLayer: VectorLayer<VectorSource> = new VectorLayer();
 
-  constructor(map: Map, url: string) {
-    this.map = map;
-    fetch(url)
+  constructor() {
+    fetch(useStore().getOptions().geojson.url)
       .then((response) => {
         return response.json();
       })
@@ -25,7 +23,7 @@ export default class GeojsonLoader {
           source: this.vectorSource,
           style: this.styleFunction,
         });
-        this.map.addLayer(this.vectorLayer);
+        useStore().getMap().addLayer(this.vectorLayer);
       });
   }
 

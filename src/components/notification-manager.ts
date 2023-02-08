@@ -1,4 +1,4 @@
-import Map from 'ol/Map.js';
+import { useStore } from '../composable/store';
 import NotificationElement from '../types/notification-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import NotificationBoxControl from './notification/notification';
@@ -11,14 +11,12 @@ import NotificationBoxControl from './notification/notification';
 */
 
 export default class NotificationManager {
-    map: Map;
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
 
-    constructor(map: Map, notifications: Array<NotificationElement>, mode: string) {
-        this.map = map;
-
-        if (mode === 'target') {
+    constructor() {
+        const options = useStore().getOptions();
+        if (options.mode.type === 'target') {
             window.addEventListener('current-center-position', ((event: CustomEvent) => {
                 if (this.validZoomConstraint && this.validAreaConstraint) {
                     GeocityEvent.sendEvent('position-selected', event.detail);
@@ -26,7 +24,7 @@ export default class NotificationManager {
             }) as EventListener)
         }
         
-        if (mode === 'select') {
+        if (options.mode.type === 'select') {
             window.addEventListener('icon-clicked', ((event: CustomEvent) => {
                 if (this.validZoomConstraint) {
                     // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
@@ -36,24 +34,24 @@ export default class NotificationManager {
             }) as EventListener)
         }
     
-        this.setup(notifications)
+        this.setup(options.notifications)
     }
 
     setup(notifications: Array<NotificationElement>) {
         notifications.forEach((notification: NotificationElement) => {
             if (notification.rule.type === 'ZOOM_CONSTRAINT') this.setupZoomContraint(notification)
             if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
-            if (notification.type === 'info') this.map.addControl(new NotificationBoxControl(notification, 1))
+            if (notification.type === 'info') useStore().getMap().addControl(new NotificationBoxControl(notification, 1))
         })
     }
 
     setupZoomContraint(rule: NotificationElement) {
         if (this.hasValidZoom(rule)) {
-            this.map.addControl(new NotificationBoxControl(rule, 3))
+            useStore().getMap().addControl(new NotificationBoxControl(rule, 3))
             this.validZoomConstraint = false;
         } 
         
-        this.map.getView().on('change:resolution', () => {
+        useStore().getMap().getView().on('change:resolution', () => {
             this.checkZoomConstraint(rule)
         })
     }
@@ -65,22 +63,22 @@ export default class NotificationManager {
     }
 
     hasValidZoom(rule: NotificationElement) {
-        const currentZoom = this.map.getView().getZoom()
+        const currentZoom = useStore().getMap().getView().getZoom()
         return currentZoom && rule.rule.minZoom && currentZoom < rule.rule.minZoom
     }
 
     checkZoomConstraint(rule: NotificationElement) {
         if (!this.hasValidZoom(rule)) {
-            this.map.getControls().forEach((control) => {
+            useStore().getMap().getControls().forEach((control) => {
                 if (control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') {
-                    this.map.removeControl(control);
+                    useStore().getMap().removeControl(control);
                     this.validZoomConstraint = true;
                 }
             });
         }
         else {
-            if (this.map.getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') === undefined) {
-                this.map.addControl(new NotificationBoxControl(rule, 3))
+            if (useStore().getMap().getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') === undefined) {
+                useStore().getMap().addControl(new NotificationBoxControl(rule, 3))
                 this.validZoomConstraint = false;
                 GeocityEvent.sendEvent('position-selected', undefined);
             }   
@@ -89,16 +87,16 @@ export default class NotificationManager {
 
     checkInclusionAreaConstraint(rule: NotificationElement, isInInclusionArea: boolean) {
         if (isInInclusionArea) {
-            this.map.getControls().forEach((control) => {
+            useStore().getMap().getControls().forEach((control) => {
                 if (control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') {
-                    this.map.removeControl(control);
+                    useStore().getMap().removeControl(control);
                     this.validAreaConstraint = true;
                 }
             });
         }
         else {
-            if (this.map.getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') === undefined) {
-                this.map.addControl(new NotificationBoxControl(rule, 2))
+            if (useStore().getMap().getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') === undefined) {
+                useStore().getMap().addControl(new NotificationBoxControl(rule, 2))
                 this.validAreaConstraint = false;
                 GeocityEvent.sendEvent('position-selected', undefined);
             }   

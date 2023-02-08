@@ -1,6 +1,5 @@
 import proj4 from 'proj4';
 
-import Map from 'ol/Map.js';
 import { parse } from 'ol/xml';
 import Feature from 'ol/Feature';
 import { Coordinate } from 'ol/coordinate';
@@ -9,14 +8,10 @@ import { MultiPolygon, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import { Stroke, Style } from 'ol/style';
 import { GeocityEvent } from '../utils/geocity-event';
+import { useStore } from '../composable/store';
 
 export default class InclusionArea {
-  constructor(
-    map: Map,
-    url: string,
-    projectionSource: string,
-    projectionDefinition: string
-  ) {
+  constructor() {
     proj4.defs(
       'EPSG:3857',
       '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs'
@@ -25,9 +20,9 @@ export default class InclusionArea {
       'SR-ORG:6864',
       '+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
     );
-    proj4.defs(projectionSource, projectionDefinition);
+    proj4.defs(useStore().getOptions().wfs.projection, useStore().getOptions().wfs.projectionDefinition);
 
-    fetch(url)
+    fetch(useStore().getOptions().inclusionArea)
       .then((response) => {
         return response.text();
       })
@@ -43,7 +38,6 @@ export default class InclusionArea {
           const portail = layers[i].getElementsByTagName(
             'ms:MO_bf_bien_fonds'
           )[0];
-          
           const geom = portail.getElementsByTagName('ms:geom')[0];
           const poligone = geom.getElementsByTagName('gml:Polygon')[0];
           const exterior = poligone.getElementsByTagName('gml:exterior')[0];
@@ -59,6 +53,7 @@ export default class InclusionArea {
                   Number(coordinates[i]),
                 ]) as Coordinate
               );
+
             }
           }
 
@@ -79,7 +74,7 @@ export default class InclusionArea {
             }),
           }),
         });
-        map.getLayers().insertAt(1, vectorLayer);
+        useStore().getMap().getLayers().insertAt(1, vectorLayer);
 
         window.addEventListener('current-center-position', ((
           event: CustomEvent

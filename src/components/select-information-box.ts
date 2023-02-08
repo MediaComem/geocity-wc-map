@@ -1,10 +1,11 @@
 import { html, LitElement, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { Control } from 'ol/control';
 import { useStore } from '../composable/store';
 
 import boxStyle from '../styles/select-box-information.css?inline';
-import themeStyle from '../styles/theme.css?inline';
+import SVGCreator from '../utils/svg-creator';
 
 @customElement('select-information-box-element')
 class SelectInformationBoxElement extends LitElement {
@@ -19,7 +20,7 @@ class SelectInformationBoxElement extends LitElement {
     super();
   }
 
-  static styles = [unsafeCSS(boxStyle), unsafeCSS(themeStyle)];
+  static styles = [unsafeCSS(boxStyle)];
 
   render() {
     return html`
@@ -29,6 +30,11 @@ class SelectInformationBoxElement extends LitElement {
             <div class="box-element-title-text">Éclairage signalé</div>
             </div>
             <div class="box-element-content">${this.currentPosition[0].toFixed(6)}, ${this.currentPosition[1].toFixed(6)}</div>
+        </div>
+        <div class="box-icon-container">
+        <div class="position-icon">
+          ${unsafeSVG(SVGCreator.iconRecenter)}
+        </div>
         </div>
       </div>
     `;

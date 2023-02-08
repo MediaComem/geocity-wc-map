@@ -1,14 +1,14 @@
 import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import Map from 'ol/Map.js';
 import { Control } from 'ol/control';
+import { useStore } from '../composable/store';
 
 import { GeocityEvent } from '../utils/geocity-event';
 
 class TargetInformation {
-  constructor(map: Map) {
-    map.getView().on('change:center', (event:any) => {
+  constructor() {
+    useStore().getMap().getView().on('change:center', (event:any) => {
         GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
     });
   }
@@ -53,9 +53,9 @@ class TargetElement extends LitElement {
 
 
 export default class TargetController extends Control {
-    constructor(map: Map) {
+    constructor() {
         const target = document.createElement('target-element') as TargetElement;
         super({ element: target});
-        new TargetInformation(map);
+        new TargetInformation();
       }
 }

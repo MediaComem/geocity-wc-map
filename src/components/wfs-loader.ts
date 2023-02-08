@@ -1,4 +1,4 @@
-import { Feature, Map } from 'ol';
+import { Feature } from 'ol';
 import { Cluster, Vector } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Circle, Point } from 'ol/geom';
@@ -10,20 +10,13 @@ import CircleStyle from 'ol/style/Circle';
 import proj4 from 'proj4';
 import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
-import ModeConfig from '../types/mode';
 import SelectInformationBoxController from './select-information-box';
-
-interface ClusterOptions {
-  distance: number;
-  minDistance: number;
-}
+import { useStore } from '../composable/store';
 
 export default class WFSLoader {
-  map: Map;
-
-  constructor(map: Map, url: string, projectionSource: string, projectionDefinition: string, clusterOptions: ClusterOptions, mode: ModeConfig) {
-    this.map = map;
-
+  constructor() {
+    const map = useStore().getMap();
+    const options = useStore().getOptions();
     const vectorLayer = new VectorLayer();
     const vectorSource = new Vector;
 
@@ -33,9 +26,9 @@ export default class WFSLoader {
       '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs +type=crs'
     );
     proj4.defs('SR-ORG:6864', "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
-    proj4.defs(projectionSource, projectionDefinition);
+    proj4.defs(options.wfs.projection, options.wfs.projectionDefinition);
 
-    fetch(url)
+    fetch(options.wfs.url)
       .then((response) => {
         return response.text();
       })
@@ -64,8 +57,8 @@ export default class WFSLoader {
         }
         
         const clusterSource = new Cluster({
-          distance: clusterOptions.distance,
-          minDistance: clusterOptions.minDistance,
+          distance: options.cluster.distance,
+          minDistance: options.cluster.minDistance,
           source: vectorSource,
         });
         
@@ -141,9 +134,9 @@ export default class WFSLoader {
           }
           return style;
         },)
-        this.map.addLayer(vectorLayer);
-        if (mode.type === 'select') {
-          this.map.on('click', function (evt) {
+        map.addLayer(vectorLayer);
+        if (options.mode.type === 'select') {
+          map.on('click', function (evt) {
             map.forEachFeatureAtPixel(evt.pixel, function (feature) {
               if (feature && feature.getGeometry()?.getType() === 'Point') {
                 if (feature.getProperties().features.length === 1) {
@@ -156,30 +149,35 @@ export default class WFSLoader {
             const currentState = event.detail.get('isClick')
             if (currentState) {
               event.detail.set('isClick', false)
-              this.map.getControls().forEach((control) => {
+              map.getControls().forEach((control) => {
                 if (control instanceof SelectInformationBoxController) {
-                    this.map.removeControl(control);
+                    map.removeControl(control);
+                    useStore().setCustomDisplay(false);
+                    useStore().setTargetBoxSize('no-box');
                 }
               });
             } else {
               vectorLayer.getSource()?.getFeatures().forEach((f) => f.get('features').forEach((f2:Feature) => {
                 f2.set('isClick', false);
-                this.map.getControls().forEach((control) => {
+                map.getControls().forEach((control) => {
                   if (control instanceof SelectInformationBoxController) {
-                      this.map.removeControl(control);
+                    map.removeControl(control);
                   }
                 });
               }))
-              event.detail.set('isClick', true)
-              map.addControl(new SelectInformationBoxController(event.detail.get('geometry').getCoordinates()))
+              event.detail.set('isClick', true);
+              useStore().setCustomDisplay(true);
+              map.addControl(new SelectInformationBoxController(event.detail.get('geometry').getCoordinates()));
+              useStore().setTargetBoxSize('medium');
             }
+            useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
           }) as EventListener)
         }
       });
 
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
       const nearestPoint = vectorSource.getClosestFeatureToCoordinate(event.detail);
-      const circle = new Circle(event.detail, mode.radius);
+      const circle = new Circle(event.detail, options.mode.radius);
       if (nearestPoint.getGeometry()?.getType() === 'Point') {
         const nearestPointCoordinate = (nearestPoint?.getGeometry() as Point).getCoordinates();
         // This event will use by the notification manager to inform about an nearest POI.
