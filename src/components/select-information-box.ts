@@ -1,5 +1,6 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
+import { cache } from 'lit/directives/cache.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { Control } from 'ol/control';
 import { useStore } from '../composable/store';
@@ -13,12 +14,21 @@ class SelectInformationBoxElement extends LitElement {
 
   @property() currentPosition = [0,0];
 
+  @state() _isRecenterButton: boolean = true;
+
   connectedCallback() {
     super.connectedCallback();
   }
 
   constructor() {
     super();
+    useStore().getMap().getView().on('change:center', () => {
+      const feature = useStore().getSelectedFeature();
+      if (feature) {
+        const geometry = feature.get('geometry');
+        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
+      }
+    });
   }
 
   static styles = [unsafeCSS(boxStyle)];
@@ -34,9 +44,12 @@ class SelectInformationBoxElement extends LitElement {
         </div>
         <div class="box-icon-container">
           <div class="position-icon">
-            <div class="icon-container" @click="${this.recenter}">
-              ${unsafeSVG(SVGCreator.iconRecenter)}
-            </div>
+          ${cache(this._isRecenterButton
+            ? html``
+            : html `<div class="icon-container" @click="${this.recenter}">
+                      ${unsafeSVG(SVGCreator.iconRecenter)}
+                    </div>`
+          )}
           </div>
           <div class="position-icon">
             <div class="icon-container" @click="${this.unselect}">
