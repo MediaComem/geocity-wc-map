@@ -42,6 +42,8 @@
 | wmts               | Information needed to use WMTS layer                                                                                       | Object           | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
 | geolocationInformation    | Display options for the geolocation information box   | Object                  |    Look at Information parameters table for more details [geolocation information parameters](#geolocation-information-parameters)                                                                                                         |
+| inclusionArea    | URL to a WFS server containing the inclusion area information   | string                  | ''   |
+| selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
 |                    |                                                                                                                            |                  |                                                                                                             |
 
 ### Information parameters
@@ -81,8 +83,6 @@
 | Parameter             | Description                         | Type   | Default                                                                                                                                                                 |
 | -------------------- | ----------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | url                  | URL of the WFS service              | string | https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle              |
-| projection           | Target geographic projection        | string | EPSG:2056                                                                                                                                                               |
-| projectionDefinition | Definition of the target projection | string | +proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs |
 |                      |                                     |        |                                                                                                                                                                         |
 
 ### WMTS parameters
@@ -129,55 +129,49 @@ according to the settings table below:
 - Information about the target mode. This is a `info` type of notification. This rule contains only one paramter.
   - type: for this rule, the value is `MOVE_TARGET`
 
-## Street lamp: Target Mode
+## Street lamp: Select Mode
 
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
-<openlayers-element
-    options='{
-        "enableDraw": false, 
-        "information": {
-            "duration": 7,
-            "title": "Signaler un éclairage public",
-            "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville. Ceux déjà signalés sont indiqués en orange." },
-            "enableGeolocation": true,
-            "enableCenterButton": true,
-            "enableRotation": true,
-            "mode": {
-                "type": "target",
-                "radius": 40
-            },
-            "notifications": [
-                {
-                    "type": "warning",
-                    "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
-                    "rule": {
-                        "type": "ZOOM_CONSTRAINT",
-                        "minZoom": 16
-                    }
-                },
-                {
-                    "type": "info",
-                    "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
-                        "rule": {
-                        "type": "MOVE_TARGET"
-                    }
-                }
-            ],
-            "wfs": {
-                "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
-                "projection": "EPSG:2056",
-                "projectionDefinition":
-                  "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
-            },
-            "wmts": {
-                "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                "layer": "ch.swisstopo.swissimage",
-                "projection": "EPSG:3857"
-            }
-            
-/>
+ <openlayers-element  options='{ "enableDraw": false, 
+                                        "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
+                                        "enableGeolocation": true,
+                                        "enableCenterButton": true,
+                                        "enableRotation": true,
+                                        "mode": {
+                                            "type": "select",
+                                            "radius": 40
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                            "type": "info",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wfs": {
+                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
+                                        },
+                                        "wmts": {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:3857"
+                                        },
+                                        "inclusionArea": false,
+                                        "selectionTargetBoxMessage": "Éclairage signalé"
+                                    }'
+    />
 ```
 
 ### Validation events
@@ -185,7 +179,127 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The position is stored in an array in event.detail and the array contains the x_coordinate and y_coordinate coordinates of the target center.
-    - event.detail example: [x_coordinate, y_coordinate]
+  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains the id of the lamp post and the geometry in WTK format.
+    - { id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) };
+  - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
+    - event.detail example: undefined
+
+
+## Target Mode with inclusion area
+
+To activate this mode, add in your HTML code the web component with the following parameters:
+
+```
+ <openlayers-element  options='{ "enableDraw": false, 
+                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
+                                        "enableGeolocation": true,
+                                        "enableCenterButton": true,
+                                        "enableRotation": true,
+                                        "mode": {
+                                            "type": "target",
+                                            "radius": 40
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": true
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                          "type": "warning",
+                                          "message": "L’emplacement sélectionné se situe en dehors des zones autorisées.",
+                                          "rule": {
+                                              "type": "AREA_CONSTRAINT"
+                                          }
+                                        },
+                                        {
+                                            "type": "info",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wmts": {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:3857"
+                                        },
+                                        "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
+                                        "selectionTargetBoxMessage": "Emplacement du banc"
+                                    }'
+    />
+```
+
+### Validation events
+
+For this scenario, there is one events to listen:
+
+- `position-selected`: This event is sent in two cases:
+  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains only the geometry in WTK format.
+    - { geometry: POINT (2538545.7462747833 1180732.9753953428)) };
+  - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
+    - event.detail example: undefined
+
+## Target Mode without inclusion area
+
+To activate this mode, add in your HTML code the web component with the following parameters:
+
+```
+ <openlayers-element  options='{ "enableDraw": false, 
+                                        "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
+                                        "enableGeolocation": true,
+                                        "enableCenterButton": true,
+                                        "enableRotation": true,
+                                        "mode": {
+                                            "type": "select",
+                                            "radius": 40
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                            "type": "info",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wfs": {
+                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
+                                        },
+                                        "wmts": {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:3857"
+                                        },
+                                        "inclusionArea": false,
+                                        "selectionTargetBoxMessage": "Emplacement du banc"
+                                    }'
+    />
+```
+
+### Validation events
+
+For this scenario, there is one events to listen:
+
+- `position-selected`: This event is sent in two cases:
+  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains only the geometry in WTK format.
+    - { geometry: POINT (2538545.7462747833 1180732.9753953428)) };
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined

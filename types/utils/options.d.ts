@@ -30,7 +30,7 @@ export default interface IOption {
     wfs: WFSConfiguration;
     wmts: wmtsLayerConfiguration;
     inclusionArea: string;
-    targetBoxMessage: string;
+    selectionTargetBoxMessage: string;
 }
 export default class Options {
     static getOptions(options: IOption): void;
