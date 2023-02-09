@@ -38,7 +38,7 @@ class SelectInformationBoxElement extends LitElement {
       <div class="information-box-${useStore().getTheme()} box-element">
         <div class="box-text-container">
             <div class="box-element-title">
-            <div class="box-element-title-text">Éclairage signalé</div>
+            <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
             </div>
             <div class="box-element-content">${this.currentPosition[0].toFixed(6)}, ${this.currentPosition[1].toFixed(6)}</div>
         </div>

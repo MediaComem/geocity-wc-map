@@ -32,7 +32,7 @@ export default interface IOption {
   wfs: WFSConfiguration;
   wmts: wmtsLayerConfiguration;
   inclusionArea: string;
-  targetBoxMessage: string;
+  selectionTargetBoxMessage: string;
 }
 
 export default class Options {
@@ -76,9 +76,6 @@ export default class Options {
       notifications: [],
       wfs: {
         url: '',
-        projection: 'EPSG:2056',
-        projectionDefinition:
-          '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
       },
       wmts: {
         capability: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
@@ -86,7 +83,7 @@ export default class Options {
         projection: 'EPSG:2056',
       },
       inclusionArea: '',
-      targetBoxMessage: 'ddd'
+      selectionTargetBoxMessage: ''
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -114,7 +111,7 @@ export default class Options {
     if (options.wfs !== undefined) result.wfs = options.wfs;
     if (options.wmts !== undefined) result.wmts = options.wmts;
     if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
-    if (options.targetBoxMessage !== undefined) result.targetBoxMessage = options.targetBoxMessage;
+    if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
     useStore().setOptions(result);
   }
 }

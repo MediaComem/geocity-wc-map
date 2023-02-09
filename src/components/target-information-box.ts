@@ -36,7 +36,7 @@ class TargetInformationBoxElement extends LitElement {
     return html`
       <div class="information-box-${useStore().getTheme()} box-element">
         <div class="box-element-title">
-          <div class="box-element-title-text">${useStore().getOptions().targetBoxMessage}</div>
+          <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
         </div>
         <div class="box-element-content">${this._reversePosition}</div>
         <div class="box-element-content">${this._currentPosition}</div>
