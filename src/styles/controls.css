@@ -26,15 +26,15 @@
   width: var(--icon-width) !important;
   top: 0px;
   right: 0px;
-  margin-top: 10px;
+  margin-top: var(--top-distance);
 }
 
 .center-control {
-  margin-top: 10px;
+  margin-top: var(--top-distance)
 }
 
 .rotation-control {
-  margin-top: 10px;
+  margin-top: var(--top-distance);
 }
 
 .ol-zoom > button {
