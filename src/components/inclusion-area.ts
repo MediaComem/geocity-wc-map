@@ -25,7 +25,6 @@ export default class InclusionArea {
           const portail = layers[i].getElementsByTagName(
             'ms:MO_bf_bien_fonds'
           )[0];
-
           if (
             (portail.getElementsByTagName('ms:genre')[0].innerHTML ===
               'Domaine public communal' ||
