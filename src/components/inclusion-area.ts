@@ -25,32 +25,22 @@ export default class InclusionArea {
           const portail = layers[i].getElementsByTagName(
             'ms:MO_bf_bien_fonds'
           )[0];
-          if (
-            (portail.getElementsByTagName('ms:genre')[0].innerHTML ===
-              'Domaine public communal' ||
-              portail.getElementsByTagName('ms:genre')[0].innerHTML ===
-                'Domaine public cantonal') &&
-            portail.getElementsByTagName('ms:commune')[0].innerHTML ===
-              'Yverdon-les-Bains'
-          ) {
-            const geom = portail.getElementsByTagName('ms:geom')[0];
-            const poligone = geom.getElementsByTagName('gml:Polygon')[0];
-            const exterior = poligone.getElementsByTagName('gml:exterior')[0];
-            const ring = exterior.getElementsByTagName('gml:LinearRing')[0];
-            const pos = ring.getElementsByTagName('gml:posList')[0];
-            const coordinates = pos.innerHTML.split(' ');
-            const newCoordinates = [];
-            for (let i = 0; i < coordinates.length; i++) {
-              if (i % 2 === 1) {
-                newCoordinates.push([Number(coordinates[i - 1]),Number(coordinates[i])]);
-              }
-            }
-
+          
+          const geom = portail.getElementsByTagName('ms:geom')[0];
+          const poligone = geom.getElementsByTagName('gml:Polygon')[0];
+          const exterior = poligone.getElementsByTagName('gml:exterior')[0];
+          const ring = exterior.getElementsByTagName('gml:LinearRing')[0];
+          const pos = ring.getElementsByTagName('gml:posList')[0];
+          const coordinates = pos.innerHTML.split(' ');
+          const newCoordinates = [];
+          for (let i = 0; i < coordinates.length; i++) {
+            if (i % 2 === 1) {
+              newCoordinates.push([Number(coordinates[i - 1]),Number(coordinates[i])]);
             }
           }
 
           polygons.push(new Polygon([newCoordinates]));
-
+        
         }
         const marker = new Feature({
           geometry: new MultiPolygon(polygons),
