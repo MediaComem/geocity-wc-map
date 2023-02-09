@@ -9,18 +9,13 @@
   </head>
   <body>
     <openlayers-element  options='{ "enableDraw": false, 
-    "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
+    "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
     "enableGeolocation": true,
     "enableCenterButton": true,
     "enableRotation": true,
     "mode": {
-        "type": "target",
+        "type": "select",
         "radius": 40
-    },
-    "geolocationInformation": {
-        "displayBox": true,
-        "reverseLocation": false,
-        "currentLocation": true
     },
     "notifications": [
     {
@@ -32,13 +27,6 @@
         }
     },
     {
-      "type": "warning",
-      "message": "L’emplacement sélectionné se situe en dehors des zones autorisées.",
-      "rule": {
-          "type": "AREA_CONSTRAINT"
-      }
-    },
-    {
         "type": "info",
         "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
             "rule": {
@@ -46,13 +34,16 @@
         }
     }
     ],
+    "wfs": {
+        "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
+    },
     "wmts": {
         "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
         "layer": "ch.swisstopo.swissimage",
         "projection": "EPSG:3857"
     },
-    "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
-    "selectionTargetBoxMessage": "Emplacement du banc"
+    "inclusionArea": false,
+    "selectionTargetBoxMessage": "Éclairage signalé"
 }'
 />  
   </body>
