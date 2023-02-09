@@ -60,7 +60,6 @@
 | Parameter | Description                                                              | Type   | Default |
 | --------- | ------------------------------------------------------------------------ | ------ | ------- |
 | type      | Mode type: target means a target in the center of the map                | string | target  |
-| radius    | Distance between the center and another point to detect a nearby element (unit is based on the projection unit) | number | 40      |
 |           |                                                                          |        |         |
 
 ### Cluster parameters
@@ -140,8 +139,7 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "select",
-                                            "radius": 40
+                                            "type": "select"
                                         },
                                         "notifications": [
                                         {
@@ -179,7 +177,7 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains the id of the lamp post and the geometry in WTK format.
+  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains the id of the object and the geometry in WTK format.
     - { id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) };
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
@@ -196,8 +194,7 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "target",
-                                            "radius": 40
+                                            "type": "target"
                                         },
                                         "geolocationInformation": {
                                             "displayBox": true,
@@ -260,8 +257,7 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "select",
-                                            "radius": 40
+                                            "type": "select"
                                         },
                                         "notifications": [
                                         {

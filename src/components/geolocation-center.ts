@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 
 import Control from "ol/control/Control";
 
@@ -13,17 +13,14 @@ import { useStore } from '../composable/store';
 @customElement('geolocation-control-button')
 class GeolocationControlButton extends LitElement {
 
-  @state() className: string;
-
   static styles = [unsafeCSS(style), unsafeCSS(control)];
 
   constructor() {
     super();
-    this.className = 'center-control';
   }
 
   render() {
-    return html`<div class="ol-unselectable ol-control ${this.className}" style="position: absolute">
+    return html`<div class="ol-unselectable ol-control center-control">
                   <div>
                     <div class="control-${useStore().getTheme()}">
                       ${unsafeSVG(SVGCreator.geolocation)}
@@ -35,7 +32,7 @@ class GeolocationControlButton extends LitElement {
 }
 
 export default class GeolocationCenter extends Control {
-    constructor() {
+    constructor(target: HTMLElement) {
 
       const element = document.createElement('geolocation-control-button') as GeolocationControlButton;
   
@@ -44,6 +41,7 @@ export default class GeolocationCenter extends Control {
       });
 
       element.addEventListener('click', this.centerMap.bind(this), false);
+      this.setTarget(target);
     }
   
     centerMap() {

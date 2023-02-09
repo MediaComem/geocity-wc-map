@@ -1,10 +1,40 @@
+.left-buttons-control-container {
+  display: flex;
+  position: absolute;
+  width: var(--icon-width);
+  flex-direction: column;
+  left: var(--side-distance);
+}
+
+.right-buttons-control-container {
+  display: flex;
+  position: absolute;
+  right: var(--side-distance);
+  width: var(--icon-width);
+  flex-direction: column;
+}
+
 .ol-zoom {
+  position: relative;
   width: var(--icon-width) !important;
+  top: 0px;
+  left: 0px;
 }
 
 .ol-full-screen {
+  position: relative;
   width: var(--icon-width) !important;
-  height: var(--icon-height) !important;
+  top: 0px;
+  right: 0px;
+  margin-top: 10px;
+}
+
+.center-control {
+  margin-top: 10px;
+}
+
+.rotation-control {
+  margin-top: 10px;
 }
 
 .ol-zoom > button {
@@ -24,8 +54,6 @@
 .ol-zoom-out,
 .information-control,
 .center-control,
-.center-control,
-.rotation-control,
 .rotation-control,
 .ol-full-screen-true,
 .ol-full-screen-false {
@@ -68,58 +96,22 @@
 }
 
 @media only screen and (min-width: 420px) {
-
-  .ol-zoom {
-    top: var(--top-distance);
-    left: var(--side-distance);
-  }
-
-  .ol-full-screen {
-    top: calc(calc(var(--top-distance) * 2) + var(--icon-height));
-    right: var(--side-distance);
-  }
-
-  .information-control {
-    right: var(--side-distance);
+  .left-buttons-control-container {
     top: var(--top-distance);
   }
 
-  .center-control {
-    top: calc(calc(var(--top-distance) * 2) + calc(var(--icon-height) * 2));
-    left: var(--side-distance);
-  }
-
-  .rotation-control{
-    top: calc(calc(var(--top-distance) * 3) + calc(var(--icon-height) * 3));
-    left: var(--side-distance);
+  .right-buttons-control-container {
+    top: var(--top-distance);
   }
 
 }
 
 @media only screen and (max-width: 419px) {
-
-  .ol-zoom {
-    top: calc(calc(var(--top-distance) * 2) + var(--box-height));
-    left: var(--side-distance);
+  .left-buttons-control-container {
+    top: calc(calc(var(--top-distance) * 2 ) + var(--box-height));
   }
 
-  .ol-full-screen{
-    top: calc(calc(var(--top-distance) * 3) + var(--box-height) + var(--icon-height));
-    right: var(--side-distance);
-  }
-
-  .information-control {
-    right: var(--side-distance);
-    top: calc(calc(var(--top-distance) * 2) + var(--box-height));
-  }
-
-  .center-control {
-    top: calc(calc(var(--top-distance) * 3) + 75px + var(--box-height));
-    left: var(--side-distance);
-  }
-
-  .rotation-control{
-    top: calc(calc(var(--top-distance) * 4) + 75px + var(--box-height) + var(--icon-height));
-    left: var(--side-distance);
+  .right-buttons-control-container {
+    top: calc(calc(var(--top-distance) * 2 ) + var(--box-height));
   }
 }

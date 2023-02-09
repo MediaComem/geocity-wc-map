@@ -119,7 +119,7 @@ export default class SingleSelect {
           feature.set('isClick', true);
           map.addControl(new SelectInformationBoxController(feature.get('geometry').getCoordinates()));
           useStore().setCustomDisplay(true);
-          useStore().setTargetBoxSize('medium');
+          useStore().setTargetBoxSize('select');
         }
       }
       // Set right class to the map

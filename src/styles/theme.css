@@ -1,17 +1,26 @@
 :host > .no-box {
     --box-height: 0px;
+    --top-distance: 10px;
+}
+
+:host > .select {
+    --box-height: 68px;
+    --top-distance: 10px;
 }
 
 :host > .large {
     --box-height: 79px;
+    --top-distance: 10px;
 }
 
 :host > .medium {
     --box-height: 64px;
+    --top-distance: 10px;
 }
 
 :host > .small {
     --box-height: 49px;
+    --top-distance: 10px;
 }
 
 :host > .light {
@@ -35,7 +44,6 @@
 :host > #map {
     --icon-width: 36px;
     --icon-height: 36px;
-    --top-distance: 10px;
     --side-distance: 10px;
     --icon-border-radius: 4px;
     --svg-icon-size: 26px;

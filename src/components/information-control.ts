@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 
 import Control from "ol/control/Control";
 
@@ -15,20 +15,14 @@ import { useStore } from '../composable/store';
 @customElement('information-control-button')
 class InformationControlButton extends LitElement {
 
-  @state() className: string = '';
-
   static styles = [unsafeCSS(style), unsafeCSS(control)];
 
   constructor() {
     super();
   }
 
-  protected firstUpdated() {
-    this.className = useStore().isCustomDisplay() ? `information-control-custom-${useStore().getTargetBoxSize()}` : 'information-control';
-  }
-
   render() {
-    return html`<div class="ol-unselectable ol-control information-control" style="position: absolute">
+    return html`<div class="information-control">
                   <div>
                     <div class="control-${useStore().getTheme()}">
                       ${unsafeSVG(SVGCreator.information)}
@@ -43,7 +37,7 @@ class InformationControlButton extends LitElement {
 export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
 
-    constructor() {
+    constructor(target: HTMLElement) {
 
         const element = document.createElement('information-control-button') as InformationControlButton;
 
@@ -53,6 +47,7 @@ export default class InformationControl extends Control {
         element.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
         this.openInformationBox();
+        this.setTarget(target)
       }
 
       closeInformationBox() {

@@ -58,8 +58,7 @@ export default class Options {
         content: 'This is a content',
       },
       mode: {
-          type: '',
-          radius: 40
+          type: ''
       },
       cluster: {
         distance: 40,
@@ -70,7 +69,7 @@ export default class Options {
       },
       geolocationInformation: {
         displayBox: true,
-        reverseLocation: true,
+        reverseLocation: false,
         currentLocation: true,
       },
       notifications: [],

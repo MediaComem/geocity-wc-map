@@ -40,7 +40,7 @@ class SelectInformationBoxElement extends LitElement {
             <div class="box-element-title">
             <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
             </div>
-            <div class="box-element-content">${this.currentPosition[0].toFixed(6)}, ${this.currentPosition[1].toFixed(6)}</div>
+            <div class="box-element-content">${this.currentPosition[0].toFixed(4)}, ${this.currentPosition[1].toFixed(4)}</div>
         </div>
         <div class="box-icon-container">
           <div class="position-icon">
