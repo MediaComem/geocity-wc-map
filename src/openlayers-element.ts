@@ -4,17 +4,13 @@ import { customElement, query, property, state } from 'lit/decorators.js';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { Geolocation } from 'ol';
-import { Zoom, ScaleLine, FullScreen } from 'ol/control';
-
-import GeolocationCenter from './components/geolocation-center';
+import { ScaleLine } from 'ol/control';
 import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
-import WFSLoader from './components/wfs-loader';
+import SingleSelect from './components/single-select';
 
 import GeolocationMarker from './components/geolocation-marker';
-import ResetRotationControl from './components/reset-rotation-control';
 import WMTSLoader from './components/wmts-loader';
-import InformationControl from './components/information-control';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
@@ -23,15 +19,18 @@ import notificationStyle from './styles/notification.css?inline';
 import NotificationManager from './components/notification-manager';
 import theme from './styles/theme.css?inline';
 
-import TargetController from './components/target';
-import TargetInformationBoxElement from './components/target-information-box';
 import Options from './utils/options';
 import IOption from './utils/options';
-import SVGCreator from './utils/svg-creator';
 import GeolocationInformation from './types/geolocation-information';
 
 import { useStore } from './composable/store';
 import InclusionArea from './components/inclusion-area';
+import ControlIconManager from './utils/control-icon-manager';
+
+import TargetController from './components/target';
+import TargetInformationBoxElement from './components/target-information-box';
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4.js';
 
 /**
  * An example element.
@@ -45,7 +44,6 @@ export class OpenLayersElement extends LitElement {
   public mapElement!: HTMLDivElement;
 
   @state() view:View | undefined;
-  @state() geolocation:Geolocation | undefined;
 
   @property({type: Object, attribute: 'options'}) options = {}
 
@@ -76,7 +74,15 @@ export class OpenLayersElement extends LitElement {
   }
 
   setupCustomDisplay(options: IOption) {
-    useStore().setCustomDisplay(options.mode.type === 'target' && options.geolocationInformation.displayBox);
+    if (options.mode.type === 'target') {
+      useStore().setCustomDisplay(options.geolocationInformation.displayBox);
+      this.setupTargetBoxSize(options.geolocationInformation);
+    } else if (options.mode.type === 'select') {
+      useStore().setCustomDisplay(false);
+      useStore().setTargetBoxSize('no-box');
+    } else {
+      useStore().setCustomDisplay(false);
+    }  
   }
 
   /*
@@ -93,75 +99,61 @@ export class OpenLayersElement extends LitElement {
   }
 
   firstUpdated() {
-    const options = Options.getOptions(this.options as IOption);
+    Options.getOptions(this.options as IOption);
+    const options = useStore().getOptions()
     this.setupTheme(options);
     this.setupCustomDisplay(options);
-    this.setupTargetBoxSize(options.geolocationInformation);
+    proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
+    register(proj4);
+    
     this.view = new View({
+      projection: 'EPSG:2056',
       center: options.defaultCenter,
       zoom: options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
       enableRotation: options.enableRotation
     });
-    const map = new Map({
+
+    useStore().setMap(new Map({
       target: this.mapElement,
       controls: [],
       layers: [],
       view: this.view,
-    });
+    }));
     if (options.enableGeolocation) {
-      this.geolocation = new Geolocation({
+      useStore().setGeolocation(new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
         },
         projection: this.view.getProjection(),
-      });
-      this.geolocation.setTracking(true);
-      new GeolocationMarker(map, this.geolocation);
+      }));
+      useStore().getGeolocation()?.setTracking(true);
+      new GeolocationMarker();
     }
 
-    const controls = [];
+    ControlIconManager.setupIcon();
+
     if (options.mode.type === 'target') {
-      controls.push(new TargetController(map))
-      if (options.geolocationInformation.displayBox) controls.push(new TargetInformationBoxElement(options.defaultCenter, options.geolocationInformation));
+      useStore().getMap().addControl(new TargetController());
+      if (options.geolocationInformation.displayBox)
+        useStore().getMap().addControl(
+          new TargetInformationBoxElement()
+        );
     }
-    if (options.wmts.capability != "") new WMTSLoader(map, options.wmts);
-    if (options.displayZoom)
-      controls.push(new Zoom({
-        zoomInLabel: SVGCreator.zoomInLabel(),
-        zoomOutLabel: SVGCreator.zoomOutLabel(),
-        className: useStore().isCustomDisplay() ? `ol-zoom-custom-${useStore().getTargetBoxSize()}` : `ol-zoom`
-      }))
-    if (options.enableCenterButton) controls.push(new GeolocationCenter(this.geolocation));
-    if (options.enableRotation) this.view.on('change:rotation', (event) => {
-      map.getControls().forEach((control) => {
-        if (control instanceof ResetRotationControl) {
-          map.removeControl(control);
-        }
-      });
-      if (event.target.getRotation() !== 0) {
-        map.addControl(new ResetRotationControl());
-      }
-    });
-    controls.push(new InformationControl(map, options.information))
-    new NotificationManager(map, options.notifications);
-    controls.forEach(control => map.addControl(control));
-    if (options.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
-    if (options.fullscreen) map.addControl(new FullScreen({
-      label: SVGCreator.fullScreenLabel(),
-      labelActive: SVGCreator.fullScreenLabelActive(),
-      className: useStore().isCustomDisplay() ? `ol-full-screen-custom-${useStore().getTargetBoxSize()}` : `ol-full-screen`
-    }))
-    if (options.geojson.url != "") new GeojsonLoader(map, options.geojson.url)
-    if (options.wfs.url != "") new WFSLoader(map, options.wfs.url , options.wfs.projection, options.wfs.projectionDefinition, options.cluster, options.mode.radius);
-    if (options.enableDraw) new Drawer(map, options.drawElement, options.maxNbDraw);
-    new InclusionArea(map, 'https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>',options.wfs.projection, options.wfs.projectionDefinition);
+
+    if (options.wmts.capability != "") new WMTSLoader();
+    if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
+    if (options.geojson.url != "") new GeojsonLoader()
+    if (options.wfs.url != "") new SingleSelect();
+    if (options.enableDraw) new Drawer();
+    if (options.inclusionArea !== '') new InclusionArea();
+    new NotificationManager();
   }
 
   render() {
     return html`
-    <div id="map" class="control-${useStore().getTheme()}">
+    <div id="map" class="${useStore().getTargetBoxSize()} ${useStore().getTheme()}">
     </div>   
     `
   }

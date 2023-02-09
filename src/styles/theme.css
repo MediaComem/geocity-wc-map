@@ -1,57 +1,51 @@
-.control-light {
+:host > .no-box {
+    --box-height: 0px;
+    --top-distance: 10px;
+}
+
+:host > .select {
+    --box-height: 68px;
+    --top-distance: 10px;
+}
+
+:host > .large {
+    --box-height: 79px;
+    --top-distance: 10px;
+}
+
+:host > .medium {
+    --box-height: 64px;
+    --top-distance: 10px;
+}
+
+:host > .small {
+    --box-height: 49px;
+    --top-distance: 10px;
+}
+
+:host > .light {
     --control-background-color: rgb(30 41 59 / 75%);
     --control-icon-color: white;
-}
-
-.control-dark {
-    --control-background-color: rgb(255 255 255 / 75%);
-    --control-icon-color: #1E293B;
-}
-
-.notification-element-info-light {
-    --notification-background-color: #DBEAFE;
-    --notification-stroke-color: #1D4ED8;
-    --notification-text-color: #1D4ED8;
-}
-
-.notification-element-info-dark {
-    --notification-background-color: #2563EB;
-    --notification-stroke-color: #FFFFFF;
-    --notification-text-color: #FFFFFF;
-}
-
-.notification-element-warning-light {
-    --notification-background-color: #FEF3C7;
-    --notification-stroke-color: #B45309;
-    --notification-text-color: #B45309;
-}
-
-.notification-element-warning-dark {
-    --notification-background-color: #D97706;
-    --notification-stroke-color: #FFFFFF;
-    --notification-text-color: #FFFFFF;
-}
-
-.notification-element-error-light {
-    --notification-background-color: #FEE2E2;
-    --notification-stroke-color: #B91C1C;
-    --notification-text-color: #B91C1C;
-}
-
-.notification-element-error-dark {
-    --notification-background-color: #DC2626;
-    --notification-stroke-color: #FFFFFF;
-    --notification-text-color: #FFFFFF;
-}
-
-.information-box-light {
     --information-box-background-color: white;
     --information-box-title-color: #1E293B;
     --information-box-text-color: #334155;
+    --select-icon-background: #1E293B;
 }
 
-.information-box-dark {
+:host > .dark {
+    --control-background-color: rgb(255 255 255 / 75%);
+    --control-icon-color: #1E293B;
     --information-box-background-color: #1F2937;
     --information-box-title-color: #F3F4F6;
     --information-box-text-color: #9CA3AF;
+    --select-icon-background: rgb(255,255,255, 0.75);
+}
+
+:host > #map {
+    --icon-width: 36px;
+    --icon-height: 36px;
+    --side-distance: 10px;
+    --icon-border-radius: 4px;
+    --svg-icon-size: 26px;
+    --icon-stroke-width: 2px;
 }

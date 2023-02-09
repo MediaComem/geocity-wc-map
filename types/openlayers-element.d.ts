@@ -1,6 +1,5 @@
 import { LitElement } from 'lit';
 import View from 'ol/View.js';
-import { Geolocation } from 'ol';
 import IOption from './utils/options';
 import GeolocationInformation from './types/geolocation-information';
 /**
@@ -12,7 +11,6 @@ import GeolocationInformation from './types/geolocation-information';
 export declare class OpenLayersElement extends LitElement {
     mapElement: HTMLDivElement;
     view: View | undefined;
-    geolocation: Geolocation | undefined;
     options: {};
     constructor();
     connectedCallback(): void;

@@ -4,7 +4,6 @@ import { customElement } from 'lit/decorators.js';
 import Control from "ol/control/Control";
 
 import style from '../styles/svg-control.css?inline';
-import themeStyle from '../styles/theme.css?inline';
 
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../utils/svg-creator';
@@ -13,7 +12,7 @@ import { useStore } from '../composable/store';
 @customElement('rotation-control-button')
 class RotationControlButton extends LitElement {
 
-  static styles = [unsafeCSS(style), unsafeCSS(themeStyle)];
+  static styles = [unsafeCSS(style)];
 
   render() {
     return html`<div class="control-${useStore().getTheme()}">${unsafeSVG(SVGCreator.rotation)}</div>`;
@@ -22,7 +21,7 @@ class RotationControlButton extends LitElement {
 
 export default class ResetRotationControl extends Control {
 
-    constructor() {
+    constructor(target: HTMLElement) {
         const button = document.createElement('div');
 
         const icon = document.createElement('rotation-control-button') as RotationControlButton;
@@ -30,16 +29,18 @@ export default class ResetRotationControl extends Control {
         button.appendChild(icon);
 
         const element = document.createElement('div');
-        element.className = useStore().isCustomDisplay() ? `rotation-control-custom-${useStore().getTargetBoxSize()} ol-unselectable ol-control` : 'rotation-control ol-unselectable ol-control';
+        element.className = 'rotation-control ';
         element.appendChild(button);
     
         super({
             element: element,
         });
         button.addEventListener('click', this.resetRotation.bind(this), false);
+
+        this.setTarget(target);
     }
 
     resetRotation() {
-        this.getMap()?.getView().setRotation(0);
+      useStore().getMap().getView().setRotation(0);
     }
 }

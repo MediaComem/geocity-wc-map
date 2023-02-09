@@ -3,19 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lampadaire Target Mode Demo</title>
+    <title>Target Mode Demo</title>
     <script type="module" src="/lib/geocity-wc-map.js"></script>
   </head>
   <body>
     <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
         <openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 7, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville. Ceux déjà signalés sont indiqués en orange." },
+                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "target",
-                                            "radius": 40
+                                            "type": "target"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": true
                                         },
                                         "notifications": [
                                         {
@@ -41,22 +45,22 @@
                                             }
                                         }
                                         ],
-                                        "wfs": {
-                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=mf_ste_equipements_publics_poubelle",
-                                            "projection": "EPSG:2056",
-                                            "projectionDefinition":
-                                              "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"
-                                        },
                                         "wmts": {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:3857"
-                                        }
+                                        },
+                                        "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
+                                        "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
     />
     </div>
     <div style="width: 100%; display: flex; margin-top: 1vh">
         <button id="validate" style="margin-left: auto;margin-right: auto; width: 229px; height: 36px; background-color: #008C6F; border: 10px solid #008C6F ;color: white">Valider</button>
+    </div>
+    <div style="width: 100%; display: flex; margin-top: 1vh; justify-content: center;">
+        <span id="coordinate"></span>
+    </div>
   </body>
   <script>
     const toSendEvent = '';
@@ -65,11 +69,10 @@
     button.style.opacity = 0.5;
 
     button.addEventListener('click', () => {
-        console.log(this.toSendEvent);
+        document.getElementById('coordinate').innerHTML = JSON.stringify(this.toSendEvent);
     })
 
     window.addEventListener('position-selected', (event) => {
-        console.log(event)
         const button = document.getElementById('validate');
         if (event.detail) {
             button.disabled = false;

@@ -4,7 +4,6 @@ import { Control } from 'ol/control';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 
 import style from '../../styles/notification.css?inline';
-import theme from '../../styles/theme.css?inline';
 
 import SVGCreator from '../../utils/svg-creator';
 import NotificationElement from '../../types/notification-element';
@@ -22,7 +21,7 @@ class NotificationBox extends LitElement {
   @state() icon = '';
   @state() theme = '';
 
-  static styles = [unsafeCSS(theme), unsafeCSS(style)];
+  static styles = [ unsafeCSS(style)];
 
   constructor() {
     super();

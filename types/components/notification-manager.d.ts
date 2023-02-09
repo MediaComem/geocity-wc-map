@@ -1,10 +1,8 @@
-import Map from 'ol/Map.js';
 import NotificationElement from '../types/notification-element';
 export default class NotificationManager {
-    map: Map;
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
-    constructor(map: Map, notifications: Array<NotificationElement>);
+    constructor();
     setup(notifications: Array<NotificationElement>): void;
     setupZoomContraint(rule: NotificationElement): void;
     setupInclusionAreaConstraint(rule: NotificationElement): void;

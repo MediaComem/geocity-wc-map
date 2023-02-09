@@ -6,6 +6,7 @@ import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
+import { useStore } from '../composable/store';
 
 export default interface IOption {
   zoom: number;
@@ -30,18 +31,20 @@ export default interface IOption {
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
   wmts: wmtsLayerConfiguration;
+  inclusionArea: string;
+  selectionTargetBoxMessage: string;
 }
 
 export default class Options {
-  static getOptions(options: IOption): IOption {
+  static getOptions(options: IOption) {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
-      maxZoom: 18,
+      maxZoom: 20,
       displayZoom: true,
       displayScaleLine: false,
       fullscreen: true,
-      defaultCenter: [739867.251358, 5905800.079386],
+      defaultCenter: [2539057, 1181111],
       enableGeolocation: false,
       enableCenterButton: true,
       enableDraw: true,
@@ -55,8 +58,7 @@ export default class Options {
         content: 'This is a content',
       },
       mode: {
-          type: '',
-          radius: 40
+          type: ''
       },
       cluster: {
         distance: 40,
@@ -67,21 +69,20 @@ export default class Options {
       },
       geolocationInformation: {
         displayBox: true,
-        reverseLocation: true,
+        reverseLocation: false,
         currentLocation: true,
       },
       notifications: [],
       wfs: {
         url: '',
-        projection: 'EPSG:2056',
-        projectionDefinition:
-          '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs',
       },
       wmts: {
-        capability: 'https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml',
+        capability: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
         layer: 'ch.swisstopo.swissimage',
-        projection: 'EPSG:3857',
+        projection: 'EPSG:2056',
       },
+      inclusionArea: '',
+      selectionTargetBoxMessage: ''
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -108,6 +109,8 @@ export default class Options {
     if (options.geolocationInformation !== undefined) result.geolocationInformation = options.geolocationInformation;
     if (options.wfs !== undefined) result.wfs = options.wfs;
     if (options.wmts !== undefined) result.wmts = options.wmts;
-    return result;
+    if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
+    if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
+    useStore().setOptions(result);
   }
 }

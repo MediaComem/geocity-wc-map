@@ -3,16 +3,12 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { Control } from 'ol/control';
 import { useStore } from '../composable/store';
 
-import boxStyle from '../styles/box-information.css?inline';
-import themeStyle from '../styles/theme.css?inline';
-import GeolocationInformation from '../types/geolocation-information';
+import boxStyle from '../styles/target-box-information.css?inline';
 
 @customElement('target-information-box-element')
 class TargetInformationBoxElement extends LitElement {
   @property()
   defaultPosition: Array<number> = [0, 0];
-  @property()
-  geolocationInformation: GeolocationInformation = { displayBox: true, reverseLocation: true, currentLocation: true};
 
   @state() _currentPosition: string = '';
   @state() _reversePosition: string = '';
@@ -24,23 +20,23 @@ class TargetInformationBoxElement extends LitElement {
   constructor() {
     super();
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
-      this._reversePosition = event.detail;
-      this._currentPosition = event.detail;
+      this._reversePosition = useStore().getOptions().geolocationInformation.reverseLocation ? `${event.detail[0].toFixed(6)}}, ${event.detail[1].toFixed(6)}}` : '';
+      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(6)}}, ${event.detail[1].toFixed(6)}}` : '';
     }) as EventListener);
   }
 
   protected firstUpdated(): void {
-    this._reversePosition = this.geolocationInformation.reverseLocation ? `${this.defaultPosition[0]}, ${this.defaultPosition[1]}` : '';
-    this._currentPosition = this.geolocationInformation.currentLocation ? `${this.defaultPosition[0]}, ${this.defaultPosition[1]}` : '';
+    this._reversePosition = useStore().getOptions().geolocationInformation.reverseLocation ? `${this.defaultPosition[0].toFixed(6)}}, ${this.defaultPosition[1].toFixed(6)}}` : '';
+    this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${this.defaultPosition[0].toFixed(6)}}, ${this.defaultPosition[1].toFixed(6)}}` : '';
   }
 
-  static styles = [unsafeCSS(boxStyle), unsafeCSS(themeStyle)];
+  static styles = [unsafeCSS(boxStyle)];
 
   render() {
     return html`
       <div class="information-box-${useStore().getTheme()} box-element">
         <div class="box-element-title">
-          <div class="box-element-title-text">Éclairage signalé</div>
+          <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
         </div>
         <div class="box-element-content">${this._reversePosition}</div>
         <div class="box-element-content">${this._currentPosition}</div>
@@ -49,11 +45,10 @@ class TargetInformationBoxElement extends LitElement {
   }
 }
 
-export default class LightInformationBoxController extends Control {
-  constructor(defaultPosition: Array<number>, geolocationInformation: GeolocationInformation) {
+export default class TargetInformationBoxController extends Control {
+  constructor() {
     const box = document.createElement('target-information-box-element') as TargetInformationBoxElement;
-    box.defaultPosition = defaultPosition;
-    box.geolocationInformation = geolocationInformation;
+    box.defaultPosition = useStore().getOptions().defaultCenter;
     super({ element: box });
   }
 }
