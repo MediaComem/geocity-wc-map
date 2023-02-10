@@ -15,6 +15,7 @@ class SelectCreateInformationBoxElement extends LitElement {
   @property() currentPosition = [0,0];
 
   @state() _isRecenterButton: boolean = true;
+  @state() _currentPosition = '';
 
   connectedCallback() {
     super.connectedCallback();
@@ -31,6 +32,10 @@ class SelectCreateInformationBoxElement extends LitElement {
     });
   }
 
+  firstUpdated() {
+    this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${this.currentPosition[0].toFixed(4)}}, ${this.currentPosition[1].toFixed(4)}` : '';
+  }
+
   static styles = [unsafeCSS(boxStyle)];
 
   render() {
@@ -40,7 +45,7 @@ class SelectCreateInformationBoxElement extends LitElement {
             <div class="box-element-title">
             <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
             </div>
-            <div class="box-element-content">${this.currentPosition[0].toFixed(4)}, ${this.currentPosition[1].toFixed(4)}</div>
+            <div class="box-element-content">${this._currentPosition}</div>
         </div>
         <div class="box-icon-container">
           <div class="position-icon">
