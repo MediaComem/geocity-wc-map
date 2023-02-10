@@ -10,7 +10,7 @@ import { GeocityEvent } from '../utils/geocity-event';
 import SVGCreator from '../utils/svg-creator';
 
 @customElement('select-information-box-element')
-class SelectInformationBoxElement extends LitElement {
+class SelectCreateInformationBoxElement extends LitElement {
 
   @property() currentPosition = [0,0];
 
@@ -66,13 +66,15 @@ class SelectInformationBoxElement extends LitElement {
   }
 
   unselect() {
-    GeocityEvent.sendEvent('icon-clicked', undefined)
+    const options = useStore().getOptions();
+    if (options.mode.type === 'select') GeocityEvent.sendEvent('icon-clicked', undefined)
+    if (options.mode.type === 'create') GeocityEvent.sendEvent('icon-removed', undefined)
   }
 }
 
-export default class SelectInformationBoxController extends Control {
+export default class SelectCreateInformationBoxController extends Control {
   constructor(currentPosition: Array<number>) {
-    const box = document.createElement('select-information-box-element') as SelectInformationBoxElement;
+    const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
     box.currentPosition = currentPosition;
     super({ element: box });
   }

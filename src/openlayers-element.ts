@@ -31,6 +31,7 @@ import TargetController from './components/target';
 import TargetInformationBoxElement from './components/target-information-box';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4.js';
+import SingleCreate from './components/single-create';
 
 /**
  * An example element.
@@ -77,10 +78,8 @@ export class OpenLayersElement extends LitElement {
     if (options.mode.type === 'target') {
       useStore().setCustomDisplay(options.geolocationInformation.displayBox);
       this.setupTargetBoxSize(options.geolocationInformation);
-    } else if (options.mode.type === 'select') {
-      useStore().setCustomDisplay(false);
-      useStore().setTargetBoxSize('no-box');
     } else {
+      useStore().setTargetBoxSize('no-box');
       useStore().setCustomDisplay(false);
     }  
   }
@@ -148,6 +147,7 @@ export class OpenLayersElement extends LitElement {
     if (options.wfs.url != "") new SingleSelect();
     if (options.enableDraw) new Drawer();
     if (options.inclusionArea !== '') new InclusionArea();
+    if (options.mode.type === 'create') new SingleCreate(this.mapElement);
     new NotificationManager();
   }
 

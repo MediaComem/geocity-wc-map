@@ -17,42 +17,79 @@ export default class NotificationManager {
 
     constructor() {
         const options = useStore().getOptions();
-        if (options.mode.type === 'target') {
-            window.addEventListener('current-center-position', ((event: CustomEvent) => {
-                if (this.validZoomConstraint && this.validAreaConstraint) {
+        switch (options.mode.type) {
+            case 'target': this.setupTargetMode(); break;
+            case 'select': this.setupSelectMode(); break;
+            case 'create': this.setupCreateMode(); break;
+            default: useStore().getMap().addControl(new NotificationBoxControl({
+                type: "error",
+                message: "Veuillez sélectionner un mode de fonctionnement valide.",
+                rule: {
+                    type: "NOT_VALID_MODE"
+                }
+            } as NotificationElement, 4))
+        }    
+        this.setup(options.notifications)
+    }
+
+    setupTargetMode() {
+        window.addEventListener('current-center-position', ((event: CustomEvent) => {
+            if (this.validZoomConstraint && this.validAreaConstraint) {
+                const geometry = {
+                    type: "Point",
+                    coordinates: event.detail
+                  };
+                GeocityEvent.sendEvent('position-selected', {geometry: wtk.stringify(geometry)});
+            }
+        }) as EventListener)
+    }
+
+    setupSelectMode() {
+        window.addEventListener('icon-clicked', (() => {
+            const feature = useStore().getSelectedFeature();
+            if (this.validZoomConstraint && feature) {
+                // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
+                if (feature.get('isClick')) {
+                    GeocityEvent.sendEvent('position-selected', undefined);
+                } else {
                     const geometry = {
                         type: "Point",
-                        coordinates: event.detail
+                        coordinates: feature.get('geometry').getCoordinates()
                       };
-                    GeocityEvent.sendEvent('position-selected', {geometry: wtk.stringify(geometry)});
+                    GeocityEvent.sendEvent('position-selected', {
+                        id: feature.get('name'),
+                        geometry: wtk.stringify(geometry)
+                    });
                 }
-            }) as EventListener)
-        }
-        
-        if (options.mode.type === 'select') {
-            window.addEventListener('icon-clicked', (() => {
-                const feature = useStore().getSelectedFeature();
-                if (this.validZoomConstraint && feature) {
-                    // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
-                    if (feature.get('isClick')) {
-                        GeocityEvent.sendEvent('position-selected', undefined);
-                    } else {
-                        const geometry = {
-                            type: "Point",
-                            coordinates: feature.get('geometry').getCoordinates()
-                          };
-                        GeocityEvent.sendEvent('position-selected', {
-                            id: feature.get('name'),
-                            geometry: wtk.stringify(geometry)
-                        });
-                    }
-                    
-                    GeocityEvent.sendEvent('authorize-clicked', undefined);
-                }
-            }) as EventListener)
-        }
-    
-        this.setup(options.notifications)
+                
+                GeocityEvent.sendEvent('authorize-clicked', undefined);
+            }
+        }) as EventListener)
+    }
+
+    setupCreateMode() {
+        window.addEventListener('icon-created', () => {
+            const feature = useStore().getSelectedFeature();
+            if (this.validZoomConstraint && feature) {
+                const geometry = {
+                    type: "Point",
+                    coordinates: feature.get('geometry').getCoordinates()
+                  };
+                GeocityEvent.sendEvent('position-selected', {
+                    id: feature.get('name'),
+                    geometry: wtk.stringify(geometry)
+                });
+            } else {
+                useStore().setSelectedFeature(undefined);
+                GeocityEvent.sendEvent('position-selected', undefined);
+            }
+            GeocityEvent.sendEvent('authorize-created', undefined);
+        })
+
+        window.addEventListener('icon-removed', () => {
+            GeocityEvent.sendEvent('position-selected', undefined);
+            GeocityEvent.sendEvent('remove-created-icon', undefined);
+        })
     }
 
     setup(notifications: Array<NotificationElement>) {
