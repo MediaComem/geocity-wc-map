@@ -65,6 +65,20 @@ export default class NotificationManager {
                 GeocityEvent.sendEvent('authorize-clicked', undefined);
             }
         }) as EventListener)
+
+        window.addEventListener('rule-validation', () => {
+            const feature = useStore().getSelectedFeature();
+            if (this.validZoomConstraint && feature) {
+                const geometry = {
+                    type: "Point",
+                    coordinates: feature.get('geometry').getCoordinates()
+                  };
+                GeocityEvent.sendEvent('position-selected', {
+                    id: feature.get('name'),
+                    geometry: wtk.stringify(geometry)
+                });
+            }
+        })
     }
 
     setupCreateMode() {
@@ -84,6 +98,20 @@ export default class NotificationManager {
                 GeocityEvent.sendEvent('position-selected', undefined);
             }
             GeocityEvent.sendEvent('authorize-created', undefined);
+        })
+
+        window.addEventListener('rule-validation', () => {
+            const feature = useStore().getSelectedFeature();
+            if (this.validZoomConstraint && feature) {
+                const geometry = {
+                    type: "Point",
+                    coordinates: feature.get('geometry').getCoordinates()
+                  };
+                GeocityEvent.sendEvent('position-selected', {
+                    id: feature.get('name'),
+                    geometry: wtk.stringify(geometry)
+                });
+            }
         })
 
         window.addEventListener('icon-removed', () => {
@@ -127,7 +155,8 @@ export default class NotificationManager {
             useStore().getMap().getControls().forEach((control) => {
                 if (control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') {
                     useStore().getMap().removeControl(control);
-                    this.validZoomConstraint = true;
+                    this.validZoomConstraint = true;        
+                    GeocityEvent.sendEvent('rule-validation', undefined);          
                 }
             });
         }
