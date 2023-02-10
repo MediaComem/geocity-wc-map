@@ -70,7 +70,7 @@ export default class Options {
       geolocationInformation: {
         displayBox: true,
         reverseLocation: false,
-        currentLocation: true,
+        currentLocation: false,
       },
       notifications: [],
       wfs: {
