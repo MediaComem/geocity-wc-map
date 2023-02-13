@@ -46,7 +46,9 @@ class NotificationBox extends LitElement {
     return html`
       <div class="notification-element ${this.theme}">
         <div class="notification-title">
-          ${unsafeSVG(this.icon)}
+          <div class="notification-icon-container">
+            ${unsafeSVG(this.icon)}
+          </div>
           <div class="notification-title-text">${this.message}</div>
         </div>  
       </div>
