@@ -19,18 +19,18 @@ export default class SingleCreate {
     this.setupMapForCreation(map, vectorSource);
 
     window.addEventListener('authorize-created', () => {
-      this.setupCreateElement(map, vectorSource)
+      this.createElement(map, vectorSource)
     })
 
     window.addEventListener('remove-created-icon', () => {
-      this.setupDeleteElement(map, vectorSource)
+      this.deleteElement(map, vectorSource)
     })
 
     window.addEventListener('recenter-selected-element', () => {
       map.getView().setCenter(useStore().getSelectedFeature()?.get('geometry').getCoordinates())
     }) 
 
-    this.longClickEvent(mapElement, map);
+    this.addLongClickEvent(mapElement, map);
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
@@ -52,7 +52,7 @@ export default class SingleCreate {
     })
   }
 
-  setupCreateElement(map: Map, vectorSource:Vector) {
+  createElement(map: Map, vectorSource:Vector) {
     const feature = useStore().getSelectedFeature();
     if (feature) {
       if (this.currentFeature) {
@@ -72,7 +72,7 @@ export default class SingleCreate {
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }
 
-  setupDeleteElement(map: Map, vectorSource:Vector) {
+  deleteElement(map: Map, vectorSource:Vector) {
     if (this.currentFeature) {
       vectorSource.removeFeature(this.currentFeature)
         map.getControls().forEach((control: Control) => {
@@ -88,51 +88,69 @@ export default class SingleCreate {
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }
 
-  longClickEvent(mapElement: HTMLDivElement, map: Map) {
+  addLongClickEvent(mapElement: HTMLDivElement, map: Map) {
     const longClickDuration = 800;
-    let startTime: number, endTime: number;
-    let longpress: boolean = false;
+    let timeout: string | number | NodeJS.Timeout | undefined = undefined;
+    let move: number = 0;
 
     // Desktop device
-    // pointerdown and pointerup aren't supported by openlayers map
-    mapElement.addEventListener('pointerdown', () => {
-      startTime = new Date().getTime();
-    });
-    mapElement.addEventListener('pointerup', () => {
-      endTime = new Date().getTime();
-      longpress = endTime - startTime < longClickDuration ? false : true;
+    mapElement.addEventListener('mousedown', (e) => {
+      move = 0;
+      this.clearCreationTimeout(timeout);
+      timeout = setTimeout(() => {
+        this.reqiestElementCreation(e.pageX, e.pageY, map, mapElement);
+      }, longClickDuration)
     });
 
-    map.on('click',  (e) => {
-      if (longpress) {
-        const geomPoint = new Point(e.coordinate);
-        const feature = new Feature({
-          geometry: geomPoint,
-        });
-        useStore().setSelectedFeature(feature)
-        GeocityEvent.sendEvent('icon-created', undefined);
-      }
+    mapElement.addEventListener('mousemove', () =>  {
+      move++;
+      this.moveAnalyzer(timeout, move);
+  });
+
+    mapElement.addEventListener('mouseup', () => {
+      move = 0;
+      this.clearCreationTimeout(timeout);
     });
 
     // Mobile device. 
     // Using the map div because openlayers object doesn't support the touch event. But the div yes.
-    mapElement.addEventListener('touchstart', () => {
-      startTime = new Date().getTime();
+    mapElement.addEventListener('touchstart', (e) => {
+      move = 0;
+      this.clearCreationTimeout(timeout);
+      timeout = setTimeout(() => {
+        this.reqiestElementCreation(e.changedTouches[0].pageX, e.changedTouches[0].pageY, map, mapElement);
+      }, longClickDuration)
     });
 
-    mapElement.addEventListener('touchend', (e) => {      
-      endTime = new Date().getTime();
-      if (endTime - startTime > longClickDuration) {
+    mapElement.addEventListener('touchmove', () =>  {
+      move++;
+      this.moveAnalyzer(timeout, move);
+    });
+
+    mapElement.addEventListener('touchend', () => {
+      move = 0;
+      this.clearCreationTimeout(timeout);
+    });
+  }
+
+  reqiestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
         // To have the coordinate, we use the pixel position and the map position to find the exact pixel in the window.
         // Then use map pixel converter
-        const coordiante = map.getCoordinateFromPixel([e.changedTouches[0].pageX - mapElement.offsetLeft, e.changedTouches[0].pageY - mapElement.offsetTop]);
+        const coordiante = map.getCoordinateFromPixel([x - mapElement.offsetLeft, y - mapElement.offsetTop]);
         const geomPoint = new Point(coordiante);
         const feature = new Feature({
           geometry: geomPoint,
         });
         useStore().setSelectedFeature(feature)
         GeocityEvent.sendEvent('icon-created', undefined);
-      }
-    });
+  }
+
+  moveAnalyzer(timeout: string | number | NodeJS.Timeout | undefined, move: number) {
+    if (move > 20) this.clearCreationTimeout(timeout);
+  }
+
+  clearCreationTimeout(timeout: string | number | NodeJS.Timeout | undefined) {
+    clearTimeout(timeout);
+    timeout = undefined;
   }
 }
