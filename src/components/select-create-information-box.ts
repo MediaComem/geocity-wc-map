@@ -30,10 +30,9 @@ class SelectCreateInformationBoxElement extends LitElement {
         this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
       }
     });
-  }
-
-  firstUpdated() {
-    this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${this.currentPosition[0].toFixed(4)}}, ${this.currentPosition[1].toFixed(4)}` : '';
+    window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
+      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(4)}}, ${event.detail[1].toFixed(4)}` : '';
+    }) as EventListener)
   }
 
   static styles = [unsafeCSS(boxStyle)];
@@ -78,9 +77,12 @@ class SelectCreateInformationBoxElement extends LitElement {
 }
 
 export default class SelectCreateInformationBoxController extends Control {
-  constructor(currentPosition: Array<number>) {
+
+  public div: HTMLElement;
+
+  constructor() {
     const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
-    box.currentPosition = currentPosition;
     super({ element: box });
+    this.div = box;
   }
 }

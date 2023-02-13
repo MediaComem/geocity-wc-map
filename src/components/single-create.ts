@@ -6,11 +6,11 @@ import { Vector as VectorLayer } from 'ol/layer';
 import CreateStyle from './styles/create-style';
 import { GeocityEvent } from '../utils/geocity-event';
 import SelectCreateInformationBoxController from './select-create-information-box';
-import { Control } from 'ol/control';
 import { Map } from 'ol';
 
 export default class SingleCreate {
   currentFeature: Feature | undefined;
+  control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
 
   constructor(mapElement: HTMLDivElement) {
     const map = useStore().getMap();
@@ -19,11 +19,11 @@ export default class SingleCreate {
     this.setupMapForCreation(map, vectorSource);
 
     window.addEventListener('authorize-created', () => {
-      this.setupCreateElement(map, vectorSource)
+      this.setupCreateElement(vectorSource)
     })
 
     window.addEventListener('remove-created-icon', () => {
-      this.setupDeleteElement(map, vectorSource)
+      this.setupDeleteElement(vectorSource)
     })
 
     window.addEventListener('recenter-selected-element', () => {
@@ -50,36 +50,35 @@ export default class SingleCreate {
       const resolution = map.getView().getResolution();
       if (zoom && resolution && zoom > minZoomAllowed ) vectorLayer.setStyle([CreateStyle.setupSingleClick(zoom / resolution), CreateStyle.setupSingleClickCenterCircle(zoom / resolution)])
     })
+    this.control.div.classList.add('disabled')
+    map.addControl(this.control);
   }
 
-  setupCreateElement(map: Map, vectorSource:Vector) {
+  setupCreateElement(vectorSource:Vector) {
     const feature = useStore().getSelectedFeature();
     if (feature) {
       if (this.currentFeature) {
         vectorSource.removeFeature(this.currentFeature)
-        map.getControls().forEach((control: Control) => {
-          if (control instanceof SelectCreateInformationBoxController) {
-            map.removeControl(control);
-          }
-        });
+        this.control.div.classList.remove('fade-in');
+        this.control.div.classList.add('fade-out');
       }
       this.currentFeature = feature;
       vectorSource.addFeature(this.currentFeature);
-      map.addControl(new SelectCreateInformationBoxController(feature.get('geometry').getCoordinates()));
+      this.control.div.classList.remove('disabled');
+      this.control.div.classList.remove('fade-out');
+      this.control.div.classList.add('fade-in');
+      GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
       useStore().setCustomDisplay(true);
       useStore().setTargetBoxSize('select');
     }
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }
 
-  setupDeleteElement(map: Map, vectorSource:Vector) {
+  setupDeleteElement(vectorSource:Vector) {
     if (this.currentFeature) {
       vectorSource.removeFeature(this.currentFeature)
-        map.getControls().forEach((control: Control) => {
-          if (control instanceof SelectCreateInformationBoxController) {
-            map.removeControl(control);
-          }
-        });
+      this.control.div.classList.remove('fade-in');
+      this.control.div.classList.add('fade-out');
       vectorSource.removeFeature(this.currentFeature);
       this.currentFeature = undefined;
       useStore().setCustomDisplay(false);

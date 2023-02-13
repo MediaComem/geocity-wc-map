@@ -18,6 +18,7 @@ import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
 import NotificationManager from './components/notification-manager';
 import theme from './styles/theme.css?inline';
+import animationStyle from './styles/animation.css?inline';
 
 import Options from './utils/options';
 import IOption from './utils/options';
@@ -158,7 +159,7 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme), unsafeCSS(animationStyle)];
 }
 
 declare global {

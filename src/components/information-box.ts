@@ -15,24 +15,25 @@ class InformationBox extends LitElement {
 
   static styles = [unsafeCSS(popupStyle)];
 
-  firstUpdated(): void {
-    const intervalDuration = useStore().getOptions().information.duration / 100;
-    this.interval = setInterval(() => {
-      if (this._width > 0) {
-        if (this._width < 100) {
-          this._borderRadiusRight = 0;
-        }
-        this._width--;
-        
-      } else {
-        this.closeBox();
-      }
-    }, intervalDuration);
-  }
-
   constructor() {
     super();
     window.addEventListener('clear-information-box-interval', this.clear.bind(this), true);
+    window.addEventListener('open-information-box', () => {
+      this._width = 100;
+      const intervalDuration = useStore().getOptions().information.duration / 100;
+
+      this.interval = setInterval(() => {
+        if (this._width > 0) {
+          if (this._width < 100) {
+            this._borderRadiusRight = 0;
+          }
+          this._width--;
+          
+        } else {
+          this.closeBox();
+        }
+      }, intervalDuration);
+    });
   }
 
   render() {
@@ -62,8 +63,12 @@ class InformationBox extends LitElement {
 }
 
 export default class InformationBoxControl extends Control {
+
+  public div: HTMLElement;
+
   constructor() {
     const infoBox = document.createElement('information-box') as InformationBox;
     super({ element: infoBox});
+    this.div = infoBox;
   }
 }
