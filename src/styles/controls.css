@@ -64,6 +64,17 @@
   cursor: pointer;
 }
 
+.ol-zoom-in:hover,
+.ol-zoom-out:hover,
+.information-control:hover,
+.center-control:hover,
+.rotation-control:hover,
+.ol-full-screen-true:hover,
+.ol-full-screen-false:hover {
+  background-color: var(--control-background-color-hover) !important;
+  outline: none !important;
+}
+
 .ol-zoom-in {
   border-radius: 0px !important;
   border-top-right-radius: var(--icon-border-radius) !important;

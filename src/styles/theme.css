@@ -25,18 +25,22 @@
 
 :host > .light {
     --control-background-color: rgb(30 41 59 / 75%);
+    --control-background-color-hover: rgb(30 41 59 / 100%);
     --control-icon-color: white;
     --information-box-background-color: white;
     --information-box-title-color: #1E293B;
+    --information-cross-hover-color: rgb(30 41 59 / 75%);
     --information-box-text-color: #334155;
     --select-icon-background: #1E293B;
 }
 
 :host > .dark {
     --control-background-color: rgb(255 255 255 / 75%);
+    --control-background-color-hover: rgb(255 255 255 / 100%);
     --control-icon-color: #1E293B;
     --information-box-background-color: #1F2937;
     --information-box-title-color: #F3F4F6;
+    --information-cross-hover-color: rgb(255 255 255 / 75%);
     --information-box-text-color: #9CA3AF;
     --select-icon-background: rgb(255,255,255, 0.75);
 }
