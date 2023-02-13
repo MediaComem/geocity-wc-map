@@ -141,6 +141,7 @@ export default class SingleCreate {
         GeocityEvent.sendEvent('icon-created', undefined);
   }
 
+  // The move is on pixel
   moveAnalyzer(startPosition: Array<number>, xPosition: number, yPosition: number) {
     return startPosition[0] - 10 > xPosition || startPosition[0] + 10 < xPosition || startPosition[1] - 10 > yPosition || startPosition[1] + 10 < yPosition;
   }
