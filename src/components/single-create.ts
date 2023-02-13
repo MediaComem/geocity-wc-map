@@ -91,49 +91,45 @@ export default class SingleCreate {
   addLongClickEvent(mapElement: HTMLDivElement, map: Map) {
     const longClickDuration = 800;
     let timeout: string | number | NodeJS.Timeout | undefined = undefined;
-    let move: number = 0;
+    let startPosition = [0,0];
 
     // Desktop device
     mapElement.addEventListener('mousedown', (e) => {
-      move = 0;
+      startPosition = [e.pageX, e.pageY]
       this.clearCreationTimeout(timeout);
       timeout = setTimeout(() => {
-        this.reqiestElementCreation(e.pageX, e.pageY, map, mapElement);
+        this.requestElementCreation(e.pageX, e.pageY, map, mapElement);
       }, longClickDuration)
     });
 
-    mapElement.addEventListener('mousemove', () =>  {
-      move++;
-      this.moveAnalyzer(timeout, move);
-  });
+    mapElement.addEventListener('mousemove', (e) => {
+      if (this.moveAnalyzer(startPosition, e.pageX, e.pageY)) this.clearCreationTimeout(timeout);
+    });
 
     mapElement.addEventListener('mouseup', () => {
-      move = 0;
       this.clearCreationTimeout(timeout);
     });
 
     // Mobile device. 
     // Using the map div because openlayers object doesn't support the touch event. But the div yes.
     mapElement.addEventListener('touchstart', (e) => {
-      move = 0;
+      startPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
       this.clearCreationTimeout(timeout);
       timeout = setTimeout(() => {
-        this.reqiestElementCreation(e.changedTouches[0].pageX, e.changedTouches[0].pageY, map, mapElement);
+        this.requestElementCreation(e.changedTouches[0].pageX, e.changedTouches[0].pageY, map, mapElement);
       }, longClickDuration)
     });
 
-    mapElement.addEventListener('touchmove', () =>  {
-      move++;
-      this.moveAnalyzer(timeout, move);
+    mapElement.addEventListener('touchmove', (e) => {
+      if (this.moveAnalyzer(startPosition, e.changedTouches[0].pageX, e.changedTouches[0].pageY)) this.clearCreationTimeout(timeout);
     });
 
     mapElement.addEventListener('touchend', () => {
-      move = 0;
       this.clearCreationTimeout(timeout);
     });
   }
 
-  reqiestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
+  requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
         // To have the coordinate, we use the pixel position and the map position to find the exact pixel in the window.
         // Then use map pixel converter
         const coordiante = map.getCoordinateFromPixel([x - mapElement.offsetLeft, y - mapElement.offsetTop]);
@@ -145,8 +141,8 @@ export default class SingleCreate {
         GeocityEvent.sendEvent('icon-created', undefined);
   }
 
-  moveAnalyzer(timeout: string | number | NodeJS.Timeout | undefined, move: number) {
-    if (move > 20) this.clearCreationTimeout(timeout);
+  moveAnalyzer(startPosition: Array<number>, xPosition: number, yPosition: number) {
+    return startPosition[0] - 10 > xPosition || startPosition[0] + 10 < xPosition || startPosition[1] - 10 > yPosition || startPosition[1] + 10 < yPosition;
   }
 
   clearCreationTimeout(timeout: string | number | NodeJS.Timeout | undefined) {
