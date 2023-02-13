@@ -15,8 +15,6 @@ class NotificationBox extends LitElement {
   type: string = 'info';
   @property()
   message: string = '';
-  @property()
-  layerPosition: number = 0;
 
   @state() icon = '';
   @state() theme = '';
@@ -46,7 +44,7 @@ class NotificationBox extends LitElement {
 
   render() {
     return html`
-      <div class="notification-element ${this.theme}" style="z-index: ${this.layerPosition}">
+      <div class="notification-element ${this.theme}">
         <div class="notification-title">
           ${unsafeSVG(this.icon)}
           <div class="notification-title-text">${this.message}</div>
@@ -58,15 +56,20 @@ class NotificationBox extends LitElement {
 
 export default class NotificationBoxControl extends Control {
   ruleType: string;
+  public div: HTMLElement;
 
-  constructor(notification: NotificationElement, layerPosition: number) {
+  constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number) {
     const notificationBox = document.createElement(
       'notification-box'
     ) as NotificationBox;
     notificationBox.type = notification.type;
     notificationBox.message = notification.message;
-    notificationBox.layerPosition = layerPosition;
+    
     super({ element: notificationBox });
     this.ruleType = notification.rule.type;
+    this.div = notificationBox;
+    this.div.classList.add('notification-box');
+    this.div.style.zIndex = `${layerPosition}`;
+    this.setTarget(target);
   }
 }

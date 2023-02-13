@@ -36,6 +36,7 @@ class InformationControlButton extends LitElement {
 
 export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
+    control: InformationBoxControl;
 
     constructor(target: HTMLElement) {
 
@@ -46,22 +47,25 @@ export default class InformationControl extends Control {
         });
         element.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
+        this.control = new InformationBoxControl()
+        useStore().getMap().addControl(this.control);
         this.openInformationBox();
         this.setTarget(target)
       }
 
-      closeInformationBox() {
+       closeInformationBox() {
         GeocityEvent.sendEvent('clear-information-box-interval', {});
-        useStore().getMap().getControls().forEach((control) => {
-            if (control instanceof InformationBoxControl) {
-              useStore().getMap().removeControl(control);
-            }
-        });
+
+        this.control.div.classList.remove('fade-in')
+        this.control.div.classList.add('fade-out')
+
         this.informationIsOpen = false;
       }
 
       openInformationBox() {
-        useStore().getMap().addControl(new InformationBoxControl());
+        this.control.div.classList.remove('fade-out')
+        this.control.div.classList.add('fade-in')
+        GeocityEvent.sendEvent('open-information-box', {});
         this.informationIsOpen = true;
       }
     

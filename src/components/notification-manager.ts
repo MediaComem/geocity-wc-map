@@ -3,6 +3,10 @@ import NotificationElement from '../types/notification-element';
 import { GeocityEvent } from '../utils/geocity-event';
 import NotificationBoxControl from './notification/notification';
 import wtk from 'wkt';
+import Control from 'ol/control/Control';
+
+import style from '../styles/notification.css?inline';
+import { unsafeCSS } from 'lit';
 
 /* 
     ZOOM_CONSTRAINT 1
@@ -11,9 +15,31 @@ import wtk from 'wkt';
     MAX_SELECTION 4
 */
 
+class ControlNotificationContainer extends Control {
+    public div: HTMLElement;
+
+    static style = [unsafeCSS(style)];
+
+    
+    constructor() {
+      const element = document.createElement('div');
+      element.classList.add('control-notification-manager')
+  
+      super({
+        element: element,
+      });
+  
+      this.div = element;
+    }
+  }
+
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
+    notificationControl: ControlNotificationContainer = new ControlNotificationContainer();
+    zoomNotificationControl: NotificationBoxControl | undefined;
+    inclusionNotificationControl: NotificationBoxControl | undefined;
+    infosNotificationControl: NotificationBoxControl | undefined;
 
     constructor() {
         const options = useStore().getOptions();
@@ -21,7 +47,7 @@ export default class NotificationManager {
             case 'target': this.setupTargetMode(); break;
             case 'select': this.setupSelectMode(); break;
             case 'create': this.setupCreateMode(); break;
-            default: useStore().getMap().addControl(new NotificationBoxControl({
+            default: useStore().getMap().addControl(new NotificationBoxControl(this.notificationControl.div, {
                 type: "error",
                 message: "Veuillez sélectionner un mode de fonctionnement valide.",
                 rule: {
@@ -29,6 +55,7 @@ export default class NotificationManager {
                 }
             } as NotificationElement, 4))
         }    
+        useStore().getMap().addControl(this.notificationControl)
         this.setup(options.notifications)
     }
 
@@ -124,14 +151,22 @@ export default class NotificationManager {
         notifications.forEach((notification: NotificationElement) => {
             if (notification.rule.type === 'ZOOM_CONSTRAINT') this.setupZoomContraint(notification)
             if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
-            if (notification.type === 'info') useStore().getMap().addControl(new NotificationBoxControl(notification, 1))
+            if (notification.type === 'info') {
+                this.infosNotificationControl = new NotificationBoxControl(this.notificationControl.div, notification, 1)
+                useStore().getMap().addControl(this.infosNotificationControl);
+            }
         })
     }
 
     setupZoomContraint(rule: NotificationElement) {
+        this.zoomNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
+        this.zoomNotificationControl.div.classList.add('disabled');
+        useStore().getMap().addControl(this.zoomNotificationControl)
+
         if (this.hasValidZoom(rule)) {
-            useStore().getMap().addControl(new NotificationBoxControl(rule, 3))
-            this.validZoomConstraint = false;
+            this.validZoomConstraint = false; 
+            this.zoomNotificationControl.div.classList.remove('disabled');
+            this.zoomNotificationControl.div.classList.add('fade-in');
         } 
         
         useStore().getMap().getView().on('change:resolution', () => {
@@ -140,8 +175,11 @@ export default class NotificationManager {
     }
 
     setupInclusionAreaConstraint(rule: NotificationElement) {
+        this.inclusionNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 2);
+        this.inclusionNotificationControl.div.classList.add('disabled');
+        useStore().getMap().addControl(this.inclusionNotificationControl)
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
-            this.checkInclusionAreaConstraint(rule, event.detail)
+            this.checkInclusionAreaConstraint(event.detail)
         }) as EventListener);
     }
 
@@ -152,38 +190,30 @@ export default class NotificationManager {
 
     checkZoomConstraint(rule: NotificationElement) {
         if (!this.hasValidZoom(rule)) {
-            useStore().getMap().getControls().forEach((control) => {
-                if (control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') {
-                    useStore().getMap().removeControl(control);
-                    this.validZoomConstraint = true;        
-                    GeocityEvent.sendEvent('rule-validation', undefined);          
-                }
-            });
+            this.zoomNotificationControl?.div.classList.remove('fade-in');
+            this.zoomNotificationControl?.div.classList.add('fade-out');
+            this.validZoomConstraint = true;        
+            GeocityEvent.sendEvent('rule-validation', undefined);        
         }
         else {
-            if (useStore().getMap().getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'ZOOM_CONSTRAINT') === undefined) {
-                useStore().getMap().addControl(new NotificationBoxControl(rule, 3))
-                this.validZoomConstraint = false;
-                GeocityEvent.sendEvent('position-selected', undefined);
-            }   
+            this.zoomNotificationControl?.div.classList.remove('disabled');
+            this.zoomNotificationControl?.div.classList.remove('fade-out');
+            this.zoomNotificationControl?.div.classList.add('fade-in');
+            this.validZoomConstraint = false;
+            GeocityEvent.sendEvent('position-selected', undefined);
         }
     }
 
-    checkInclusionAreaConstraint(rule: NotificationElement, isInInclusionArea: boolean) {
+    checkInclusionAreaConstraint(isInInclusionArea: boolean) {
         if (isInInclusionArea) {
-            useStore().getMap().getControls().forEach((control) => {
-                if (control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') {
-                    useStore().getMap().removeControl(control);
-                    this.validAreaConstraint = true;
-                }
-            });
+            this.inclusionNotificationControl?.div.classList.remove('fade-in');
+            this.inclusionNotificationControl?.div.classList.add('fade-out');
+            this.validAreaConstraint = true;
         }
         else {
-            if (useStore().getMap().getControls().getArray().find((control) => control instanceof NotificationBoxControl && control.ruleType === 'AREA_CONSTRAINT') === undefined) {
-                useStore().getMap().addControl(new NotificationBoxControl(rule, 2))
-                this.validAreaConstraint = false;
-                GeocityEvent.sendEvent('position-selected', undefined);
-            }   
+            this.inclusionNotificationControl?.div.classList.remove('fade-out');
+            this.inclusionNotificationControl?.div.classList.add('fade-in');
+            this.validAreaConstraint = true;
         }
     }
 }
