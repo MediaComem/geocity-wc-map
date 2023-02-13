@@ -65,13 +65,18 @@
   grid-template-rows: 100%;
 }
 
-.notification-title > svg {
+.notification-title > div > svg {
+  display: block;
   width: var(--icon-size);
   height: var(--icon-size);
   padding-right: 10px;
 }
 
-.notification-title > svg > g > .icon {
+.notification-icon-container {
+  height: 100%;
+}
+
+.notification-title > div > svg > g > .icon {
   fill: none;
   stroke: var(--notification-stroke-color);
   stroke-width: 2px;
