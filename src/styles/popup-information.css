@@ -66,6 +66,10 @@
   cursor: pointer;
 }
 
+.custom-popup-title-svg:hover {
+  stroke: var(--information-cross-hover-color);
+}
+
 .custom-popup-content {
   font-weight: 400;
   font-size: 12px;
