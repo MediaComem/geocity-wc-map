@@ -9,6 +9,8 @@ export default class SVGCreator {
     static rotation: string;
     static iconRecenter: string;
     static iconRemoveSelection: string;
+    static search: string;
+    static cross: string;
     static zoomInLabel(): HTMLDivElement;
     static zoomOutLabel(): HTMLDivElement;
     static fullScreenLabel(): HTMLDivElement;

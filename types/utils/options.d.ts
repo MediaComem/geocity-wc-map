@@ -4,6 +4,7 @@ import wmtsLayerConfiguration from '../components/wmts-loader';
 import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
+import SearchConfig from '../types/search-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
 export default interface IOption {
@@ -31,6 +32,7 @@ export default interface IOption {
     wmts: wmtsLayerConfiguration;
     inclusionArea: string;
     selectionTargetBoxMessage: string;
+    search: SearchConfig;
 }
 export default class Options {
     static getOptions(options: IOption): void;

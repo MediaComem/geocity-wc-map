@@ -1,7 +1,18 @@
 import NotificationElement from '../types/notification-element';
+import NotificationBoxControl from './notification/notification';
+import Control from 'ol/control/Control';
+declare class ControlNotificationContainer extends Control {
+    div: HTMLElement;
+    static style: import("lit").CSSResult[];
+    constructor();
+}
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
+    notificationControl: ControlNotificationContainer;
+    zoomNotificationControl: NotificationBoxControl | undefined;
+    inclusionNotificationControl: NotificationBoxControl | undefined;
+    infosNotificationControl: NotificationBoxControl | undefined;
     constructor();
     setupTargetMode(): void;
     setupSelectMode(): void;
@@ -11,5 +22,6 @@ export default class NotificationManager {
     setupInclusionAreaConstraint(rule: NotificationElement): void;
     hasValidZoom(rule: NotificationElement): boolean | 0 | undefined;
     checkZoomConstraint(rule: NotificationElement): void;
-    checkInclusionAreaConstraint(rule: NotificationElement, isInInclusionArea: boolean): void;
+    checkInclusionAreaConstraint(isInInclusionArea: boolean): void;
 }
+export {};
