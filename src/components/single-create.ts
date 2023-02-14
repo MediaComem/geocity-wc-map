@@ -143,7 +143,8 @@ export default class SingleCreate {
 
   // The move is on pixel
   moveAnalyzer(startPosition: Array<number>, xPosition: number, yPosition: number) {
-    return startPosition[0] - 10 > xPosition || startPosition[0] + 10 < xPosition || startPosition[1] - 10 > yPosition || startPosition[1] + 10 < yPosition;
+    const maxMovePx = 10;
+    return Math.abs(xPosition - startPosition[0]) > maxMovePx || Math.abs( yPosition - startPosition[1]) > maxMovePx ;
   }
 
   clearCreationTimeout(timeout: string | number | NodeJS.Timeout | undefined) {
