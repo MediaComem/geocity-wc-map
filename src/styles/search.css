@@ -70,11 +70,15 @@ li:hover {
 svg {
     width: var(--svg-icon-size);
     height: var(--svg-icon-size);
+    stroke: var(--information-box-title-color);
+}
+
+svg:hover {
+    stroke: var(--information-cross-hover-color);
 }
 
 svg > g > .icon {
   fill: none;
-  stroke: var(--information-box-title-color);
   stroke-width: var(--icon-stroke-width);
   stroke-linejoin: round;
   stroke-linecap: round;
