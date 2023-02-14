@@ -3,18 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lampadaire Select Mode Demo</title>
+    <title>Signaler Harcèlement Demo</title>
     <script type="module" src="/lib/geocity-wc-map.js"></script>
   </head>
   <body>
     <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
         <openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
+                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "select"
+                                            "type": "create"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": true
                                         },
                                         "notifications": [
                                         {
@@ -27,22 +32,18 @@
                                         },
                                         {
                                             "type": "info",
-                                            "message": "Sélectionnez un icon sur la carte",
+                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
                                         }
                                         ],
-                                        "wfs": {
-                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
-                                        },
                                         "wmts": {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:3857"
                                         },
-                                        "inclusionArea": false,
-                                        "selectionTargetBoxMessage": "Éclairage signalé"
+                                        "selectionTargetBoxMessage": "Harcèlement signalé"
                                     }'
     />
     </div>

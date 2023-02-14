@@ -290,6 +290,51 @@ To activate this mode, add in your HTML code the web component with the followin
     />
 ```
 
+## Create Mode
+
+To activate this mode, add in your HTML code the web component with the following parameters:
+
+```
+ <openlayers-element  options='{ "enableDraw": false, 
+                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
+                                        "enableGeolocation": true,
+                                        "enableCenterButton": true,
+                                        "enableRotation": true,
+                                        "mode": {
+                                            "type": "create"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": true
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                            "type": "info",
+                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wmts": {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:3857"
+                                        },
+                                        "selectionTargetBoxMessage": "Harcèlement signalé"
+                                    }'
+    />
+```
+
 ### Validation events
 
 For this scenario, there is one events to listen:

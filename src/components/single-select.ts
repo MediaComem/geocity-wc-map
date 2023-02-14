@@ -6,7 +6,7 @@ import { Geometry, Point } from 'ol/geom';
 import { parse } from 'ol/xml';
 
 import { GeocityEvent } from '../utils/geocity-event';
-import SelectInformationBoxController from './select-information-box';
+import SelectCreateInformationBoxController from './select-create-information-box';
 
 import { useStore } from '../composable/store';
 import SingleSelectStyle from './styles/single-select-style';
@@ -98,7 +98,7 @@ export default class SingleSelect {
         if (currentState) {
           feature.set('isClick', false)
           map.getControls().forEach((control: Control) => {
-            if (control instanceof SelectInformationBoxController) {
+            if (control instanceof SelectCreateInformationBoxController) {
                 map.removeControl(control);
             }
           });
@@ -111,13 +111,13 @@ export default class SingleSelect {
           vectorLayer.getSource()?.getFeatures().forEach((feature) => feature.get('features').forEach((geometryFeature:Feature) => {
             geometryFeature.set('isClick', false);
             map.getControls().forEach((control: Control) => {
-              if (control instanceof SelectInformationBoxController) {
+              if (control instanceof SelectCreateInformationBoxController) {
                 map.removeControl(control);
               }
             });
           }));
           feature.set('isClick', true);
-          map.addControl(new SelectInformationBoxController(feature.get('geometry').getCoordinates()));
+          map.addControl(new SelectCreateInformationBoxController(feature.get('geometry').getCoordinates()));
           useStore().setCustomDisplay(true);
           useStore().setTargetBoxSize('select');
         }
