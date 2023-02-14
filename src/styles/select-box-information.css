@@ -1,9 +1,3 @@
-.box-element {
-    left: calc(50% - 172px);
-    font-family: sans-serif;
-    display: flex;
-  }
-  
   .box-element {
     position: absolute;
     top: 10px;
@@ -16,6 +10,10 @@
     margin-right: 5px;
     max-width: 302px;
     width: 100%;
+    left: calc(50% - 172px);
+    font-family: sans-serif;
+    display: flex;
+    z-index: 5;
   }
 
   .box-text-container {

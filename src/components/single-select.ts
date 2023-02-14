@@ -11,6 +11,7 @@ import SelectCreateInformationBoxController from './select-create-information-bo
 import { useStore } from '../composable/store';
 import SingleSelectStyle from './styles/single-select-style';
 import IOption from '../utils/options';
+import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleSelect {
 
@@ -105,9 +106,7 @@ export default class SingleSelect {
           this.control.div.classList.remove('fade-in');
           this.control.div.classList.add('fade-out');
           // Set parameter for icon position display
-          useStore().setCustomDisplay(false);
-          useStore().setTargetBoxSize('no-box');
-          useStore().setSelectedFeature(undefined);
+          CustomStyleSelection.setCustomStyleWithouInfoBox();
         } else {
           // Search all selected icon to deselect them and ensure that only one element is selected.
           vectorLayer.getSource()?.getFeatures().forEach((feature) => feature.get('features').forEach((geometryFeature:Feature) => {

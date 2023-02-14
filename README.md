@@ -42,6 +42,7 @@
 | wmts               | Information needed to use WMTS layer                                                                                       | Object           | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
 | geolocationInformation    | Display options for the geolocation information box   | Object                  |    Look at Information parameters table for more details [geolocation information parameters](#geolocation-information-parameters)                                                                                                         |
+| search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
 | inclusionArea    | URL to a WFS server containing the inclusion area information   | string                  | ''   |
 | selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
 |                    |                                                                                                                            |                  |                                                                                                             |
@@ -119,6 +120,16 @@ according to the settings table below:
 | reverseLocation   | Display or not the address according to the current position | boolean | true                                      |
 | currentLocation      | Display or not the current coordinate            | boolean | true |
 |           |                                     |        |                                                                                 |
+
+### Search parameters
+
+| Parameter  | Description                                       | Type   | Default                                                        |
+| --------- | ----------------------------------- | ------ | ------------------------------------------------------------------------------- |
+| displaySearch | Display or not the search field                  | boolean | false |
+| requestWithoutCustomValue      | URL without text search value and without bbox restriction. | string | https://api3.geo.admin.ch/rest/services/api/SearchServer?limit=5&&type=locations&sr=2056&lang=fr&origins=address%2Cparcel&searchText=                                        |
+| bboxRestiction | Bounding box of the search area  | string | 2523099.818000,1167985.282000,2549752.141000,1192697.773000                                                     |
+|           |                                     |        |                                                                                 |
+
 
 #### Rule specification
 

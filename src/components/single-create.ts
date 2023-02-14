@@ -7,6 +7,7 @@ import CreateStyle from './styles/create-style';
 import { GeocityEvent } from '../utils/geocity-event';
 import SelectCreateInformationBoxController from './select-create-information-box';
 import { Map } from 'ol';
+import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleCreate {
   currentFeature: Feature | undefined;
@@ -19,11 +20,11 @@ export default class SingleCreate {
     this.setupMapForCreation(map, vectorSource);
 
     window.addEventListener('authorize-created', () => {
-      this.createElement(map, vectorSource)
+      this.createElement(vectorSource)
     })
 
     window.addEventListener('remove-created-icon', () => {
-      this.deleteElement(map, vectorSource)
+      this.deleteElement(vectorSource)
     })
 
     window.addEventListener('recenter-selected-element', () => {
@@ -54,7 +55,7 @@ export default class SingleCreate {
     map.addControl(this.control);
   }
 
-  createElement(map: Map, vectorSource:Vector) {
+  createElement( vectorSource:Vector) {
     const feature = useStore().getSelectedFeature();
     if (feature) {
       if (this.currentFeature) {
@@ -74,15 +75,14 @@ export default class SingleCreate {
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }
 
-  deleteElement(map: Map, vectorSource:Vector) {
+  deleteElement(vectorSource:Vector) {
     if (this.currentFeature) {
       vectorSource.removeFeature(this.currentFeature)
       this.control.div.classList.remove('fade-in');
       this.control.div.classList.add('fade-out');
       vectorSource.removeFeature(this.currentFeature);
       this.currentFeature = undefined;
-      useStore().setCustomDisplay(false);
-      useStore().setTargetBoxSize('no-box');
+      CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }

@@ -4,6 +4,7 @@ import wmtsLayerConfiguration from '../components/wmts-loader';
 import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
+import SearchConfig from '../types/search-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
 import { useStore } from '../composable/store';
@@ -33,6 +34,7 @@ export default interface IOption {
   wmts: wmtsLayerConfiguration;
   inclusionArea: string;
   selectionTargetBoxMessage: string;
+  search: SearchConfig;
 }
 
 export default class Options {
@@ -82,12 +84,18 @@ export default class Options {
         projection: 'EPSG:2056',
       },
       inclusionArea: '',
-      selectionTargetBoxMessage: ''
+      selectionTargetBoxMessage: '',
+      search: {
+        displaySearch: true,
+        requestWithoutCustomValue: 'https://api3.geo.admin.ch/rest/services/api/SearchServer?limit=5&&type=locations&sr=2056&lang=fr&origins=address%2Cparcel',
+        bboxRestiction: '2523099.818000,1167985.282000,2549752.141000,1192697.773000'
+      }
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
     if (options.maxZoom !== undefined) result.maxZoom = options.maxZoom;
     if (options.displayZoom !== undefined) result.displayZoom = options.displayZoom;
+    if (options.search !== undefined) result.search = options.search;
     if (options.displayScaleLine !== undefined)
       result.displayScaleLine = options.displayScaleLine;
     if (options.fullscreen !== undefined) result.fullscreen = options.fullscreen;
