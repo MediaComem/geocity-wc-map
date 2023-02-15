@@ -71,4 +71,15 @@ export default class InformationBoxControl extends Control {
     super({ element: infoBox});
     this.div = infoBox;
   }
+
+  public show() {
+    this.div.classList.remove('fade-out');
+    this.div.classList.remove('disabled');
+    this.div.classList.add('fade-in');
+  }
+
+  public hide() {
+    this.div.classList.remove('fade-in');
+    this.div.classList.add('fade-out');
+  }
 }

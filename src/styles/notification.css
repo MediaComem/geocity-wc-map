@@ -55,7 +55,7 @@
   background-color: var(--notification-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
-  border-radius: var(--boc-border-radius);
+  border-radius: var(--box-border-radius);
   z-index: 10;
   margin-left: 5px;
   margin-right: 5px;

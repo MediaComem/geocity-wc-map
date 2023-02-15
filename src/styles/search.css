@@ -42,7 +42,7 @@ ul {
     border-radius: var(--icon-border-radius);
 }
 
-.first-li {
+ul > :first-child {
     border-top-right-radius: var(--icon-border-radius);
     border-top-left-radius: var(--icon-border-radius);
 }
@@ -58,12 +58,13 @@ li {
     color: var(--information-box-text-color)
 }
 
-.last-li {
+ul > :last-child {
     border-bottom-right-radius: var(--icon-border-radius);
     border-bottom-left-radius: var(--icon-border-radius);
 }
 
-li:hover {
+li:hover,
+li:focus {
     background-color: var(--search-border-color);
 }
 

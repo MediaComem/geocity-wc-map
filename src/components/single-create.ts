@@ -51,7 +51,7 @@ export default class SingleCreate {
       const resolution = map.getView().getResolution();
       if (zoom && resolution && zoom > minZoomAllowed ) vectorLayer.setStyle([CreateStyle.setupSingleClick(zoom / resolution), CreateStyle.setupSingleClickCenterCircle(zoom / resolution)])
     })
-    this.control.div.classList.add('disabled')
+    this.control.disable();
     map.addControl(this.control);
   }
 
@@ -60,14 +60,11 @@ export default class SingleCreate {
     if (feature) {
       if (this.currentFeature) {
         vectorSource.removeFeature(this.currentFeature)
-        this.control.div.classList.remove('fade-in');
-        this.control.div.classList.add('fade-out');
+        this.control.hide();
       }
       this.currentFeature = feature;
       vectorSource.addFeature(this.currentFeature);
-      this.control.div.classList.remove('disabled');
-      this.control.div.classList.remove('fade-out');
-      this.control.div.classList.add('fade-in');
+      this.control.show()
       GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
       useStore().setCustomDisplay(true);
       useStore().setTargetBoxSize('select');
@@ -78,8 +75,7 @@ export default class SingleCreate {
   deleteElement(vectorSource:Vector) {
     if (this.currentFeature) {
       vectorSource.removeFeature(this.currentFeature)
-      this.control.div.classList.remove('fade-in');
-      this.control.div.classList.add('fade-out');
+      this.control.hide()
       vectorSource.removeFeature(this.currentFeature);
       this.currentFeature = undefined;
       CustomStyleSelection.setCustomStyleWithouInfoBox();

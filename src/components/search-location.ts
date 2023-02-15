@@ -1,5 +1,5 @@
 import { LitElement, html, unsafeCSS } from "lit";
-import { customElement, query, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { Control } from "ol/control";
 import { useStore } from "../composable/store";
 import style from '../styles/search.css?inline';
@@ -8,17 +8,88 @@ import * as olProj from 'ol/proj';
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import SVGCreator from "../utils/svg-creator";
 import { cache } from "lit/directives/cache.js";
+import { GeocityEvent } from "../utils/geocity-event";
+
+interface SearchLocationElement {
+  address: string;
+  coordinate: number[];
+}
+
+@customElement('location-list')
+// @ts-ignore
+class LocationList extends LitElement {
+  
+  @property({type: Object}) locations: { results: string | any[]; } | undefined;
+
+  @state() _results: Array<SearchLocationElement> = [];
+
+  static styles = [unsafeCSS(style)];
+
+  constructor() {
+    super();
+    useStore().getMap().addEventListener('click', () => {
+      this._results = [];
+    })
+  }
+
+  updated(changedProperties: Map<string, any>) {
+    if (changedProperties.has('locations')) {
+      if (this.locations && this.locations.results && this.locations.results.length > 0) {
+        const maxDisplayedLocation = this.locations.results.length > 5 ? 5 : this.locations.results.length;
+        this._results = [];
+        for (let i = 0; i < maxDisplayedLocation; i++){
+          let label = '';
+          if (this.locations.results[i].attrs.origin == 'address') {
+              if (this.locations.results[i].attrs.label.trim().startsWith("<b>")){
+                continue;
+              }
+              label = this.locations.results[i].attrs.label.replace("<b>", " - ").replace("</b>", "");
+            } else if (this.locations.results[i].attrs.origin == 'parcel') {
+              label = "Parcelle: " + this.locations.results[i].attrs.label.replace("<b>", "").replace("</b>", "").split("(CH")[0];
+            }
+          this._results.push({coordinate: [this.locations.results[i].attrs.lon, this.locations.results[i].attrs.lat], address: label})
+        }
+      } else {
+        this._results = [];
+      }
+    }
+  }
+
+  selectAddress(coordinate: number[], address: string) {
+    useStore().getMap().getView().setCenter(olProj.fromLonLat([coordinate[0], coordinate[1]], 'EPSG:2056'))
+    this._results = [];
+    GeocityEvent.sendEvent('address_selected', address)
+  }
+
+  render() {
+    return html`
+                <ul>
+                  ${this._results.map((location: SearchLocationElement) =>
+                    html`<li tabindex="0" @click=${() => this.selectAddress(location.coordinate, location.address)}>${location.address}</li>`
+                  )}
+                </ul>
+              `;
+  }
+}
+
 
 @customElement('search-location')
 class SearchLocation extends LitElement {
   @query('#search')
   public inputElement!: HTMLInputElement;
-  @query('#results')
-  public results!: HTMLUListElement;
+  @state() results: Object = {};
 
   @state() _hasSearch: boolean = false;
 
   static styles = [unsafeCSS(style)];
+
+  constructor() {
+    super();
+    window.addEventListener('address_selected', ((e: CustomEvent) => {
+      this.inputElement.value = e.detail;
+      this._hasSearch = false;
+    }) as EventListener)
+  }
 
   firstUpdated() {
     this.inputElement.oninput = () => {
@@ -28,48 +99,18 @@ class SearchLocation extends LitElement {
             let url = `${options.search.requestWithoutCustomValue}&searchText=${this.inputElement.value}`
             if (options.search.bboxRestiction !== '') url += `&bbox=${options.search.bboxRestiction}`;
             fetch(url).then((result) => result.json()).then((json) => {
-                if (json && json.results.length > 0) {
-                    const maxDisplayedLocation = json.results.length > 5 ? 5 : json.results.length;
-                    this.results.innerHTML = '';
-                    for (let i = 0; i < maxDisplayedLocation; i++){
-               
-                        const item = document.createElement('li')
-                        let label = '';
-
-                        item.addEventListener('click', () => {
-                            this.inputElement.value = label;
-                            useStore().getMap().getView().setCenter(olProj.fromLonLat([json.results[i].attrs.lon, json.results[i].attrs.lat], 'EPSG:2056'))
-                            this.results.innerHTML = '';
-                        })
-
-                        if (i === 0) item.classList.add('first-li')
-                        if (i === maxDisplayedLocation - 1) item.classList.add('last-li')
-
-                        if (json.results[i].attrs.origin == 'address') {
-                            if (json.results[i].attrs.label.trim().startsWith("<b>")){
-                              continue;
-                            }
-                            label = json.results[i].attrs.label.replace("<b>", " - ").replace("</b>", "");
-                          } else if (json.results[i].attrs.origin == 'parcel') {
-                            label = "Parcelle: " + json.results[i].attrs.label.replace("<b>", "").replace("</b>", "").split("(CH")[0];
-                          }
-                
-                        const location = document.createTextNode(label)
-                        item.appendChild(location)
-                        this.results.appendChild(item)
-                    }
-                }
+                this.results = json;
             });
         } else {
-            this.results.innerHTML = '';
-            this._hasSearch = false;
+          this._hasSearch = false;
+          this.results = {};
         }
     }
   }
 
   clear() {
     this.inputElement.value = '';
-    this.results.innerHTML = '';
+    this.results = {}; 
     this._hasSearch = false;
   }
  
@@ -86,8 +127,7 @@ class SearchLocation extends LitElement {
                           )}
                         </div>
                     </div>
-                    <ul id="results">
-                    </ul>
+                    <location-list locations='${JSON.stringify(this.results)}'/>
                 </div>`;
   }
 }

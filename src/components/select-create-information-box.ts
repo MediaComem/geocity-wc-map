@@ -78,11 +78,26 @@ class SelectCreateInformationBoxElement extends LitElement {
 
 export default class SelectCreateInformationBoxController extends Control {
 
-  public div: HTMLElement;
+  div: HTMLElement;
 
   constructor() {
     const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
     super({ element: box });
     this.div = box;
+  }
+
+  public disable() {
+    this.div.classList.add('disabled');
+  }
+
+  public show() {
+    this.div.classList.remove('fade-out');
+    this.div.classList.remove('disabled');
+    this.div.classList.add('fade-in');
+  }
+
+  public hide() {
+    this.div.classList.remove('fade-in');
+    this.div.classList.add('fade-out');
   }
 }

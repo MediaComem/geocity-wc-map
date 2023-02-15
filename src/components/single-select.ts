@@ -88,7 +88,7 @@ export default class SingleSelect {
 
     map.addLayer(vectorLayer);
 
-    this.control.div.classList.add('disabled')
+    this.control.disable();
     map.addControl(this.control);
   }
 
@@ -103,8 +103,7 @@ export default class SingleSelect {
         const currentState = feature.get('isClick')
         if (currentState) {
           feature.set('isClick', false)
-          this.control.div.classList.remove('fade-in');
-          this.control.div.classList.add('fade-out');
+          this.control.hide();
           // Set parameter for icon position display
           CustomStyleSelection.setCustomStyleWithouInfoBox();
         } else {
@@ -113,9 +112,7 @@ export default class SingleSelect {
             geometryFeature.set('isClick', false);
           }));
           feature.set('isClick', true);
-          this.control.div.classList.remove('disabled');
-          this.control.div.classList.remove('fade-out');
-          this.control.div.classList.add('fade-in');
+          this.control.show()
           GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
           useStore().setCustomDisplay(true);
           useStore().setTargetBoxSize('select');

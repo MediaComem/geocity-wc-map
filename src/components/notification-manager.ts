@@ -160,13 +160,12 @@ export default class NotificationManager {
 
     setupZoomContraint(rule: NotificationElement) {
         this.zoomNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
-        this.zoomNotificationControl.div.classList.add('disabled');
+        this.zoomNotificationControl.disable();
         useStore().getMap().addControl(this.zoomNotificationControl)
 
         if (this.hasValidZoom(rule)) {
             this.validZoomConstraint = false; 
-            this.zoomNotificationControl.div.classList.remove('disabled');
-            this.zoomNotificationControl.div.classList.add('fade-in');
+            this.zoomNotificationControl.show();
         } 
         
         useStore().getMap().getView().on('change:resolution', () => {
@@ -176,7 +175,7 @@ export default class NotificationManager {
 
     setupInclusionAreaConstraint(rule: NotificationElement) {
         this.inclusionNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 2);
-        this.inclusionNotificationControl.div.classList.add('disabled');
+        this.inclusionNotificationControl.disable();
         useStore().getMap().addControl(this.inclusionNotificationControl)
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
             this.checkInclusionAreaConstraint(event.detail)
@@ -190,15 +189,12 @@ export default class NotificationManager {
 
     checkZoomConstraint(rule: NotificationElement) {
         if (!this.hasValidZoom(rule)) {
-            this.zoomNotificationControl?.div.classList.remove('fade-in');
-            this.zoomNotificationControl?.div.classList.add('fade-out');
+            this.zoomNotificationControl?.hide()
             this.validZoomConstraint = true;        
             GeocityEvent.sendEvent('rule-validation', undefined);        
         }
         else {
-            this.zoomNotificationControl?.div.classList.remove('disabled');
-            this.zoomNotificationControl?.div.classList.remove('fade-out');
-            this.zoomNotificationControl?.div.classList.add('fade-in');
+            this.zoomNotificationControl?.show()
             this.validZoomConstraint = false;
             GeocityEvent.sendEvent('position-selected', undefined);
         }
@@ -206,13 +202,11 @@ export default class NotificationManager {
 
     checkInclusionAreaConstraint(isInInclusionArea: boolean) {
         if (isInInclusionArea) {
-            this.inclusionNotificationControl?.div.classList.remove('fade-in');
-            this.inclusionNotificationControl?.div.classList.add('fade-out');
+            this.inclusionNotificationControl?.hide();
             this.validAreaConstraint = true;
         }
         else {
-            this.inclusionNotificationControl?.div.classList.remove('fade-out');
-            this.inclusionNotificationControl?.div.classList.add('fade-in');
+            this.inclusionNotificationControl?.show();
             this.validAreaConstraint = true;
         }
     }

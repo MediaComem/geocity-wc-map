@@ -56,15 +56,13 @@ export default class InformationControl extends Control {
        closeInformationBox() {
         GeocityEvent.sendEvent('clear-information-box-interval', {});
 
-        this.control.div.classList.remove('fade-in')
-        this.control.div.classList.add('fade-out')
+        this.control.hide();
 
         this.informationIsOpen = false;
       }
 
       openInformationBox() {
-        this.control.div.classList.remove('fade-out')
-        this.control.div.classList.add('fade-in')
+        this.control.show();
         GeocityEvent.sendEvent('open-information-box', {});
         this.informationIsOpen = true;
       }

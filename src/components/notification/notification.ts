@@ -58,7 +58,7 @@ class NotificationBox extends LitElement {
 
 export default class NotificationBoxControl extends Control {
   ruleType: string;
-  public div: HTMLElement;
+  div: HTMLElement;
 
   constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number) {
     const notificationBox = document.createElement(
@@ -73,5 +73,20 @@ export default class NotificationBoxControl extends Control {
     this.div.classList.add('notification-box');
     this.div.style.zIndex = `${layerPosition}`;
     this.setTarget(target);
+  }
+
+  public disable() {
+    this.div.classList.add('disabled');
+  }
+
+  public show() {
+    this.div.classList.remove('fade-out');
+    this.div.classList.remove('disabled');
+    this.div.classList.add('fade-in');
+  }
+
+  public hide() {
+    this.div.classList.remove('fade-in');
+    this.div.classList.add('fade-out');
   }
 }
