@@ -74,7 +74,6 @@ export default class InformationBoxControl extends Control {
 
   public show() {
     this.div.classList.remove('fade-out');
-    this.div.classList.remove('disabled');
     this.div.classList.add('fade-in');
   }
 
