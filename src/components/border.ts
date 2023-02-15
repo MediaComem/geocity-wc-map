@@ -4,6 +4,7 @@ import { useStore } from '../composable/store';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Style, Fill, Stroke } from 'ol/style';
 import { GeocityEvent } from '../utils/geocity-event';
+import { View } from 'ol';
 
 export default class Border {
   constructor() {
@@ -30,15 +31,22 @@ export default class Border {
     });
 
     vectorMaskLayer.on("change", () => {
+      const extent = vectorMaskLayer.getSource()?.getExtent();
+      if (extent) {
+        const options = useStore().getOptions();
+        useStore().getMap().setView(new View({
+          extent: extent,   
+          projection: 'EPSG:2056',
+          center: options.defaultCenter,
+          zoom: options.zoom,
+          minZoom: options.minZoom,
+          maxZoom: options.maxZoom,
+          enableRotation: options.enableRotation,
+          constrainOnlyCenter: true,
+        }));
+      }
       GeocityEvent.sendEvent('border-contraint-enabled', vectorMaskLayer.getSource()?.getExtent());
     })
-
-    useStore().getMap().getView().on('change:center', (event:any) => {
-      const geometry = vectorMaskLayer?.getSource()?.getFeatures();
-      if (geometry && !geometry[0]?.getGeometry()?.intersectsCoordinate(event.target.getCenter())) {
-        useStore().getMap().getView().setCenter(vectorMaskLayer?.getSource()?.getFeatures()[0].getGeometry()?.getClosestPoint(event.target.getCenter()))
-      }
-    });
 
     useStore().getMap().addLayer(vectorMaskLayer);
   }
