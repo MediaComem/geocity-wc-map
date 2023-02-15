@@ -34,30 +34,49 @@
   --notification-text-color: #FFFFFF;
 }
 
+.control-notification-manager {
+  position: absolute;
+  bottom: 10px;
+  left: calc((100% - 334px) / 2);
+  max-width: 302px;
+  width: 100%;
+  height: 62px;
+  display: grid;
+}
+
+.notification-box {
+  position: relative;
+  grid-area:  1 / 1 / 2 / 2;
+}
+
 .notification-element {
   font-family: sans-serif;
   --icon-size: 32px;
-  position: absolute;
-  bottom: 10px;
   background-color: var(--notification-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
-  border-radius: 10px;
+  border-radius: var(--box-border-radius);
   z-index: 10;
   margin-left: 5px;
   margin-right: 5px;
   max-width: 302px;
   width: 100%;
-  left: calc((100% - 334px) / 2);
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
 }
 
-.notification-title > svg {
+.notification-title > div > svg {
+  display: block;
   width: var(--icon-size);
   height: var(--icon-size);
   padding-right: 10px;
 }
 
-.notification-title > svg > g > .icon {
+.notification-icon-container {
+  height: 100%;
+}
+
+.notification-title > div > svg > g > .icon {
   fill: none;
   stroke: var(--notification-stroke-color);
   stroke-width: 2px;

@@ -15,6 +15,7 @@ class SelectCreateInformationBoxElement extends LitElement {
   @property() currentPosition = [0,0];
 
   @state() _isRecenterButton: boolean = true;
+  @state() _currentPosition = '';
 
   connectedCallback() {
     super.connectedCallback();
@@ -29,6 +30,9 @@ class SelectCreateInformationBoxElement extends LitElement {
         this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
       }
     });
+    window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
+      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(4)}}, ${event.detail[1].toFixed(4)}` : '';
+    }) as EventListener)
   }
 
   static styles = [unsafeCSS(boxStyle)];
@@ -40,7 +44,7 @@ class SelectCreateInformationBoxElement extends LitElement {
             <div class="box-element-title">
             <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
             </div>
-            <div class="box-element-content">${this.currentPosition[0].toFixed(4)}, ${this.currentPosition[1].toFixed(4)}</div>
+            <div class="box-element-content">${this._currentPosition}</div>
         </div>
         <div class="box-icon-container">
           <div class="position-icon">
@@ -73,9 +77,27 @@ class SelectCreateInformationBoxElement extends LitElement {
 }
 
 export default class SelectCreateInformationBoxController extends Control {
-  constructor(currentPosition: Array<number>) {
+
+  div: HTMLElement;
+
+  constructor() {
     const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
-    box.currentPosition = currentPosition;
     super({ element: box });
+    this.div = box;
+  }
+
+  public disable() {
+    this.div.classList.add('disabled');
+  }
+
+  public show() {
+    this.div.classList.remove('fade-out');
+    this.div.classList.remove('disabled');
+    this.div.classList.add('fade-in');
+  }
+
+  public hide() {
+    this.div.classList.remove('fade-in');
+    this.div.classList.add('fade-out');
   }
 }

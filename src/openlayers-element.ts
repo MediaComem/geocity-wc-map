@@ -18,6 +18,7 @@ import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
 import NotificationManager from './components/notification-manager';
 import theme from './styles/theme.css?inline';
+import animationStyle from './styles/animation.css?inline';
 
 import Options from './utils/options';
 import IOption from './utils/options';
@@ -32,6 +33,7 @@ import TargetInformationBoxElement from './components/target-information-box';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4.js';
 import SingleCreate from './components/single-create';
+import SearchLocationControl from './components/search-location';
 
 /**
  * An example element.
@@ -78,6 +80,9 @@ export class OpenLayersElement extends LitElement {
     if (options.mode.type === 'target') {
       useStore().setCustomDisplay(options.geolocationInformation.displayBox);
       this.setupTargetBoxSize(options.geolocationInformation);
+    } else if (options.search.displaySearch) {
+      useStore().setTargetBoxSize('small');
+      useStore().setCustomDisplay(true);
     } else {
       useStore().setTargetBoxSize('no-box');
       useStore().setCustomDisplay(false);
@@ -131,8 +136,6 @@ export class OpenLayersElement extends LitElement {
       new GeolocationMarker();
     }
 
-    ControlIconManager.setupIcon();
-
     if (options.mode.type === 'target') {
       useStore().getMap().addControl(new TargetController());
       if (options.geolocationInformation.displayBox)
@@ -149,6 +152,8 @@ export class OpenLayersElement extends LitElement {
     if (options.inclusionArea !== '') new InclusionArea();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
     new NotificationManager();
+    ControlIconManager.setupIcon();
+    if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
   }
 
   render() {
@@ -158,7 +163,7 @@ export class OpenLayersElement extends LitElement {
     `
   }
 
-  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme)];
+  static styles = [unsafeCSS(styles), unsafeCSS(mapStyle), unsafeCSS(controlsStyle), unsafeCSS(notificationStyle), unsafeCSS(theme), unsafeCSS(animationStyle)];
 }
 
 declare global {

@@ -176,6 +176,36 @@ export default class SVGCreator {
     </svg>
   `;
 
+  static search = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <g class="MagnifyingGlass" clip-path="url(#a)">
+        <g class="icon">
+          <path d="M14.5 25C20.299 25 25 20.299 25 14.5 25 8.701 20.299 4 14.5 4 8.701 4 4 8.701 4 14.5 4 20.299 8.701 25 14.5 25ZM21.925 21.925 28 28" class="Vector"/>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="a" class="a">
+          <path fill="#fff" d="M0 0H32V32H0z"/>
+        </clipPath>
+      </defs>
+    </svg>
+  `;
+
+  static cross = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <g class="X" clip-path="url(#a)">
+        <g class="icon">
+          <path d="M25 7 7 25M25 25 7 7" class="Vector"/>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="a" class="a">
+          <path fill="#fff" d="M0 0H32V32H0z"/>
+        </clipPath>
+      </defs>
+    </svg>  
+  `
+
   static zoomInLabel() {
     const zoomIn = document.createElement('div');
     const icon = document.createElementNS("http://www.w3.org/2000/svg", 'svg');

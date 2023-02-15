@@ -6,11 +6,12 @@ import { Vector as VectorLayer } from 'ol/layer';
 import CreateStyle from './styles/create-style';
 import { GeocityEvent } from '../utils/geocity-event';
 import SelectCreateInformationBoxController from './select-create-information-box';
-import { Control } from 'ol/control';
 import { Map } from 'ol';
+import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleCreate {
   currentFeature: Feature | undefined;
+  control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
 
   constructor(mapElement: HTMLDivElement) {
     const map = useStore().getMap();
@@ -19,11 +20,11 @@ export default class SingleCreate {
     this.setupMapForCreation(map, vectorSource);
 
     window.addEventListener('authorize-created', () => {
-      this.createElement(map, vectorSource)
+      this.createElement(vectorSource)
     })
 
     window.addEventListener('remove-created-icon', () => {
-      this.deleteElement(map, vectorSource)
+      this.deleteElement(vectorSource)
     })
 
     window.addEventListener('recenter-selected-element', () => {
@@ -50,40 +51,34 @@ export default class SingleCreate {
       const resolution = map.getView().getResolution();
       if (zoom && resolution && zoom > minZoomAllowed ) vectorLayer.setStyle([CreateStyle.setupSingleClick(zoom / resolution), CreateStyle.setupSingleClickCenterCircle(zoom / resolution)])
     })
+    this.control.disable();
+    map.addControl(this.control);
   }
 
-  createElement(map: Map, vectorSource:Vector) {
+  createElement( vectorSource:Vector) {
     const feature = useStore().getSelectedFeature();
     if (feature) {
       if (this.currentFeature) {
         vectorSource.removeFeature(this.currentFeature)
-        map.getControls().forEach((control: Control) => {
-          if (control instanceof SelectCreateInformationBoxController) {
-            map.removeControl(control);
-          }
-        });
+        this.control.hide();
       }
       this.currentFeature = feature;
       vectorSource.addFeature(this.currentFeature);
-      map.addControl(new SelectCreateInformationBoxController(feature.get('geometry').getCoordinates()));
+      this.control.show()
+      GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
       useStore().setCustomDisplay(true);
       useStore().setTargetBoxSize('select');
     }
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }
 
-  deleteElement(map: Map, vectorSource:Vector) {
+  deleteElement(vectorSource:Vector) {
     if (this.currentFeature) {
       vectorSource.removeFeature(this.currentFeature)
-        map.getControls().forEach((control: Control) => {
-          if (control instanceof SelectCreateInformationBoxController) {
-            map.removeControl(control);
-          }
-        });
+      this.control.hide()
       vectorSource.removeFeature(this.currentFeature);
       this.currentFeature = undefined;
-      useStore().setCustomDisplay(false);
-      useStore().setTargetBoxSize('no-box');
+      CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
   }

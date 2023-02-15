@@ -10,10 +10,13 @@ import SelectCreateInformationBoxController from './select-create-information-bo
 
 import { useStore } from '../composable/store';
 import SingleSelectStyle from './styles/single-select-style';
-import { Control } from 'ol/control';
 import IOption from '../utils/options';
+import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleSelect {
+
+  control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+
   constructor() {
     const map = useStore().getMap();
     const options = useStore().getOptions();
@@ -38,7 +41,7 @@ export default class SingleSelect {
             });
           });
 
-          this.toogleDataSelection(map, vectorLayer);
+          this.toogleDataSelection(vectorLayer);
         }
 
         window.addEventListener('recenter-selected-element', () => {
@@ -84,40 +87,33 @@ export default class SingleSelect {
     },)
 
     map.addLayer(vectorLayer);
+
+    this.control.disable();
+    map.addControl(this.control);
   }
 
   /*
     Check the selection state to check or uncheck the selected event.
     In addition, unselect all selected events if other icon is selected to keep only one selected element
   */
-  toogleDataSelection(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>) {
+  toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>) {
     window.addEventListener('authorize-clicked', () => {
       const feature = useStore().getSelectedFeature();
       if (feature) {
         const currentState = feature.get('isClick')
         if (currentState) {
           feature.set('isClick', false)
-          map.getControls().forEach((control: Control) => {
-            if (control instanceof SelectCreateInformationBoxController) {
-                map.removeControl(control);
-            }
-          });
+          this.control.hide();
           // Set parameter for icon position display
-          useStore().setCustomDisplay(false);
-          useStore().setTargetBoxSize('no-box');
-          useStore().setSelectedFeature(undefined);
+          CustomStyleSelection.setCustomStyleWithouInfoBox();
         } else {
           // Search all selected icon to deselect them and ensure that only one element is selected.
           vectorLayer.getSource()?.getFeatures().forEach((feature) => feature.get('features').forEach((geometryFeature:Feature) => {
             geometryFeature.set('isClick', false);
-            map.getControls().forEach((control: Control) => {
-              if (control instanceof SelectCreateInformationBoxController) {
-                map.removeControl(control);
-              }
-            });
           }));
           feature.set('isClick', true);
-          map.addControl(new SelectCreateInformationBoxController(feature.get('geometry').getCoordinates()));
+          this.control.show()
+          GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
           useStore().setCustomDisplay(true);
           useStore().setTargetBoxSize('select');
         }

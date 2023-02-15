@@ -1,4 +1,8 @@
 import { Control } from 'ol/control';
 export default class SelectCreateInformationBoxController extends Control {
-    constructor(currentPosition: Array<number>);
+    div: HTMLElement;
+    constructor();
+    disable(): void;
+    show(): void;
+    hide(): void;
 }

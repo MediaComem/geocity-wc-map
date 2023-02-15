@@ -1,0 +1,31 @@
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    visibility: inherit;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 300ms forwards;
+}
+
+.fade-out {
+  animation: fadeOut 300ms forwards;
+}
+
+.disabled {
+  visibility: hidden;
+}

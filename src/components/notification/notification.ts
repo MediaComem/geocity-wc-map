@@ -15,8 +15,6 @@ class NotificationBox extends LitElement {
   type: string = 'info';
   @property()
   message: string = '';
-  @property()
-  layerPosition: number = 0;
 
   @state() icon = '';
   @state() theme = '';
@@ -46,9 +44,11 @@ class NotificationBox extends LitElement {
 
   render() {
     return html`
-      <div class="notification-element ${this.theme}" style="z-index: ${this.layerPosition}">
+      <div class="notification-element ${this.theme}">
         <div class="notification-title">
-          ${unsafeSVG(this.icon)}
+          <div class="notification-icon-container">
+            ${unsafeSVG(this.icon)}
+          </div>
           <div class="notification-title-text">${this.message}</div>
         </div>  
       </div>
@@ -58,15 +58,35 @@ class NotificationBox extends LitElement {
 
 export default class NotificationBoxControl extends Control {
   ruleType: string;
+  div: HTMLElement;
 
-  constructor(notification: NotificationElement, layerPosition: number) {
+  constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number) {
     const notificationBox = document.createElement(
       'notification-box'
     ) as NotificationBox;
     notificationBox.type = notification.type;
     notificationBox.message = notification.message;
-    notificationBox.layerPosition = layerPosition;
+    
     super({ element: notificationBox });
     this.ruleType = notification.rule.type;
+    this.div = notificationBox;
+    this.div.classList.add('notification-box');
+    this.div.style.zIndex = `${layerPosition}`;
+    this.setTarget(target);
+  }
+
+  public disable() {
+    this.div.classList.add('disabled');
+  }
+
+  public show() {
+    this.div.classList.remove('fade-out');
+    this.div.classList.remove('disabled');
+    this.div.classList.add('fade-in');
+  }
+
+  public hide() {
+    this.div.classList.remove('fade-in');
+    this.div.classList.add('fade-out');
   }
 }

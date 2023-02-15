@@ -2,5 +2,9 @@ import { Control } from 'ol/control';
 import NotificationElement from '../../types/notification-element';
 export default class NotificationBoxControl extends Control {
     ruleType: string;
-    constructor(notification: NotificationElement, layerPosition: number);
+    div: HTMLElement;
+    constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number);
+    disable(): void;
+    show(): void;
+    hide(): void;
 }
