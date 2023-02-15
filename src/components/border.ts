@@ -34,6 +34,8 @@ export default class Border {
       const extent = vectorMaskLayer.getSource()?.getExtent();
       if (extent) {
         const options = useStore().getOptions();
+        // view recreation based on https://stackoverflow.com/questions/40107137/how-to-set-extent-property-in-view-after-map-initialize-using-openlayer3
+        // with fit, the border constraint doesn't work but with set view yes
         useStore().getMap().setView(new View({
           extent: extent,   
           projection: 'EPSG:2056',
