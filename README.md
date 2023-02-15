@@ -45,6 +45,7 @@
 | search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
 | inclusionArea    | URL to a WFS server containing the inclusion area information   | string                  | ''   |
 | selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
+| borderUrl    |  URL where a geojson containing the border information is located.  | string                  |   '' |
 |                    |                                                                                                                            |                  |                                                                                                             |
 
 ### Information parameters
