@@ -4,6 +4,7 @@ import SVGCreator from './svg-creator';
 import GeolocationCenter from '../components/geolocation-center';
 import ResetRotationControl from '../components/reset-rotation-control';
 import InformationControl from '../components/information-control';
+import GeoLayerControl from '../components/geo-layer-control';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
@@ -40,6 +41,8 @@ export default class ControlIconManager {
           target: rightControlIconContainer.div,
         })
       );
+    
+    map.addControl(new GeoLayerControl(rightControlIconContainer.div));
 
     if (options.displayZoom)
       map.addControl(

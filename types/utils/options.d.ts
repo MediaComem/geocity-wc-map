@@ -29,7 +29,7 @@ export default interface IOption {
     geolocationInformation: GeolocationInformation;
     notifications: Array<NotificationElement>;
     wfs: WFSConfiguration;
-    wmts: wmtsLayerConfiguration;
+    wmts: Array<wmtsLayerConfiguration>;
     inclusionArea: string;
     selectionTargetBoxMessage: string;
     search: SearchConfig;

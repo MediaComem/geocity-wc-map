@@ -45,7 +45,8 @@ export default class Border {
           constrainOnlyCenter: true,
         }));
       }
-      GeocityEvent.sendEvent('border-contraint-enabled', vectorMaskLayer.getSource()?.getExtent());
+      useStore().setBorderConstraint(vectorMaskLayer.getSource()?.getExtent())
+      GeocityEvent.sendEvent('border-contraint-enabled', undefined);
     })
 
     useStore().getMap().addLayer(vectorMaskLayer);

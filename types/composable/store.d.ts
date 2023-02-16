@@ -1,4 +1,5 @@
 import { Feature, Map } from 'ol';
+import { Extent } from 'ol/extent';
 import Geolocation from 'ol/Geolocation';
 import IOption from '../utils/options';
 declare function setTheme(newVal: string): void;
@@ -15,6 +16,8 @@ declare function setMap(newVal: Map): void;
 declare function getMap(): Map;
 declare function setSelectedFeature(newVal: Feature | undefined): void;
 declare function getSelectedFeature(): Feature<import("ol/geom/Geometry").default> | undefined;
+declare function setBorderConstraint(newVal: Extent | undefined): void;
+declare function getBorderConstraint(): Extent | undefined;
 export declare function useStore(): {
     setTheme: typeof setTheme;
     getTheme: typeof getTheme;
@@ -30,5 +33,7 @@ export declare function useStore(): {
     getMap: typeof getMap;
     setSelectedFeature: typeof setSelectedFeature;
     getSelectedFeature: typeof getSelectedFeature;
+    setBorderConstraint: typeof setBorderConstraint;
+    getBorderConstraint: typeof getBorderConstraint;
 };
 export {};

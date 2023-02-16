@@ -1,4 +1,5 @@
 import { Feature, Map } from 'ol';
+import { Extent } from 'ol/extent';
 import Geolocation from 'ol/Geolocation';
 import IOption from '../utils/options';
 
@@ -9,6 +10,7 @@ let geolocation: Geolocation | undefined;
 let options: IOption;
 let map: Map;
 let selectedFeature: Feature | undefined;
+let borderConstraint: Extent | undefined;
 
 function setTheme(newVal: string) {
   theme = newVal;
@@ -58,12 +60,20 @@ function getMap() {
   return map;
 }
 
-function setSelectedFeature(newVal: Feature| undefined) {
+function setSelectedFeature(newVal: Feature | undefined) {
   selectedFeature = newVal;
 }
 
 function getSelectedFeature() {
   return selectedFeature;
+}
+
+function setBorderConstraint(newVal: Extent | undefined) {
+  borderConstraint = newVal;
+}
+
+function getBorderConstraint() {
+  return borderConstraint;
 }
 
 export function useStore() {
@@ -82,5 +92,7 @@ export function useStore() {
     getMap,
     setSelectedFeature,
     getSelectedFeature,
+    setBorderConstraint,
+    getBorderConstraint,
   };
 }

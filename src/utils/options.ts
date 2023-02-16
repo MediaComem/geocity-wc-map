@@ -31,7 +31,7 @@ export default interface IOption {
   geolocationInformation: GeolocationInformation;
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
-  wmts: wmtsLayerConfiguration;
+  wmts: Array<wmtsLayerConfiguration>;
   inclusionArea: string;
   selectionTargetBoxMessage: string;
   search: SearchConfig;
@@ -79,11 +79,13 @@ export default class Options {
       wfs: {
         url: '',
       },
-      wmts: {
+      wmts: [{
         capability: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
-        layer: 'ch.swisstopo.swissimage',
+        layer: 'ch.swisstopo.pixelkarte-grau',
         projection: 'EPSG:2056',
-      },
+        name: 'Carte de base',
+        thumbnail: ''
+      }],
       inclusionArea: '',
       selectionTargetBoxMessage: '',
       search: {

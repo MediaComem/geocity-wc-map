@@ -45,11 +45,20 @@
                                             }
                                         }
                                         ],
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
                                         "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
                                         "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
