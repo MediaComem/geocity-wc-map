@@ -149,9 +149,9 @@ export class OpenLayersElement extends LitElement {
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.geojson.url != '') new GeojsonLoader()
     if (options.borderUrl !== '') new Border();
-    if (options.wfs.url != '') new SingleSelect();
+    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
     if (options.enableDraw) new Drawer();
-    if (options.inclusionArea !== '') new InclusionArea();
+    if (options.inclusionArea.url !== '') new InclusionArea();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
     new NotificationManager();
     ControlIconManager.setupIcon();
