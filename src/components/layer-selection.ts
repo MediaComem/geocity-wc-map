@@ -64,26 +64,23 @@ class LayerSectionElement extends LitElement {
 
 export default class LayerSelectionControl extends Control {
 
-  div: HTMLElement;
-
   constructor() {
     const box = document.createElement('layer-selection') as LayerSectionElement;
     super({ element: box });
-    this.div = box;
   }
 
   public disable() {
-    this.div.classList.add('disabled');
+    this.element.classList.add('disabled');
   }
 
   public show() {
-    this.div.classList.remove('fade-out');
-    this.div.classList.remove('disabled');
-    this.div.classList.add('fade-in');
+    this.element.classList.remove('fade-out');
+    this.element.classList.remove('disabled');
+    this.element.classList.add('fade-in');
   }
 
   public hide() {
-    this.div.classList.remove('fade-in');
-    this.div.classList.add('fade-out');
+    this.element.classList.remove('fade-in');
+    this.element.classList.add('fade-out');
   }
 }
