@@ -35,6 +35,7 @@ export default interface IOption {
   inclusionArea: string;
   selectionTargetBoxMessage: string;
   search: SearchConfig;
+  borderUrl: string;
 }
 
 export default class Options {
@@ -89,7 +90,8 @@ export default class Options {
         displaySearch: true,
         requestWithoutCustomValue: 'https://api3.geo.admin.ch/rest/services/api/SearchServer?limit=5&&type=locations&sr=2056&lang=fr&origins=address%2Cparcel',
         bboxRestiction: '2523099.818000,1167985.282000,2549752.141000,1192697.773000'
-      }
+      },
+      borderUrl: ''
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -119,6 +121,7 @@ export default class Options {
     if (options.wmts !== undefined) result.wmts = options.wmts;
     if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
     if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
+    if (options.borderUrl !== undefined) result.borderUrl = options.borderUrl;
     useStore().setOptions(result);
   }
 }

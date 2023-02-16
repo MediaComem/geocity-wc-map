@@ -19,6 +19,7 @@
   width: var(--icon-width) !important;
   top: 0px;
   left: 0px;
+  background-color: var(--control-background-color) !important;
 }
 
 .ol-full-screen {
@@ -27,6 +28,7 @@
   top: 0px;
   right: 0px;
   margin-top: var(--top-distance);
+  background-color: var(--control-background-color) !important;
 }
 
 .center-control {

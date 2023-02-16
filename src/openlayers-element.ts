@@ -34,6 +34,7 @@ import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4.js';
 import SingleCreate from './components/single-create';
 import SearchLocationControl from './components/search-location';
+import Border from './components/border';
 
 /**
  * An example element.
@@ -144,16 +145,18 @@ export class OpenLayersElement extends LitElement {
         );
     }
 
-    if (options.wmts.capability != "") new WMTSLoader();
+    if (options.wmts.capability != '') new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
-    if (options.geojson.url != "") new GeojsonLoader()
-    if (options.wfs.url != "") new SingleSelect();
+    if (options.geojson.url != '') new GeojsonLoader()
+    if (options.borderUrl !== '') new Border();
+    if (options.wfs.url != '') new SingleSelect();
     if (options.enableDraw) new Drawer();
     if (options.inclusionArea !== '') new InclusionArea();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
     new NotificationManager();
     ControlIconManager.setupIcon();
     if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
+    
   }
 
   render() {

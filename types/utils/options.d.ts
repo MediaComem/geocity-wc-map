@@ -33,6 +33,7 @@ export default interface IOption {
     inclusionArea: string;
     selectionTargetBoxMessage: string;
     search: SearchConfig;
+    borderUrl: string;
 }
 export default class Options {
     static getOptions(options: IOption): void;
