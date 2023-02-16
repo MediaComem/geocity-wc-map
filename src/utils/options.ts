@@ -83,7 +83,7 @@ export default class Options {
         capability: 'https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml',
         layer: 'ch.swisstopo.pixelkarte-grau',
         projection: 'EPSG:2056',
-        name: 'Carte de base',
+        name: '',
         thumbnail: ''
       }],
       inclusionArea: '',

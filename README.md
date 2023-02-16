@@ -39,7 +39,7 @@
 | cluster            | Data clustering information                                                                                                | Object           | Look at Information parameters table for more details [Cluster parameters](#cluster-parameters)             |
 | geojson            | Information needed to import data via a geojson file                                                                       | Object           | Look at Information parameters table for more details [Geojson parameters](#geojson-parameters)             |
 | wfs                | Information needed to import data via a WFS service                                                                        | Object           | Look at Information parameters table for more details [WFS parameters](#wfs-parameters)                     |
-| wmts               | Information needed to use WMTS layer                                                                                       | Object           | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
+| wmts               | Information needed to use WMTS layer                                                                                       | Array of Object  | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
 | geolocationInformation    | Display options for the geolocation information box   | Object                  |    Look at Information parameters table for more details [geolocation information parameters](#geolocation-information-parameters)                                                                                                         |
 | search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
@@ -90,9 +90,11 @@
 
 | Parameter  | Description                                       | Type   | Default                                                        |
 | ---------- | ------------------------------------------------- | ------ | -------------------------------------------------------------- |
-| capability | URL of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml |
-| layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.swissimage                                        |
+| capability | URL of the WMTS capability                        | string | https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml |
+| layer      | Layer name as advertised in the WMTS capabilities | string | ch.swisstopo.pixelkarte-grau                                   |
 | projection | Target geographic projection                      | string | EPSG:2056                                                      |
+| name       | Name of the layer displayed for selection         | string |                                                                |
+| thumbnail  | Url where the thumbnail image is located          | string |                                                                |
 |            |                                                   |        |                                                                |
 
 ### Notification parameters
