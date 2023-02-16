@@ -24,7 +24,6 @@ export default class InclusionArea {
       const nearestPoint = vectorSource.getClosestFeatureToCoordinate(
         event.detail
       );
-      console.log(nearestPoint)
       if (nearestPoint.getGeometry()?.getType() === 'Polygon') {
         const polygon = nearestPoint.getGeometry();
         GeocityEvent.sendEvent('inclusion-area-included', polygon?.intersectsCoordinate(event.detail));
