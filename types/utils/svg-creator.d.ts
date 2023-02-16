@@ -11,6 +11,7 @@ export default class SVGCreator {
     static iconRemoveSelection: string;
     static search: string;
     static cross: string;
+    static stack: string;
     static zoomInLabel(): HTMLDivElement;
     static zoomOutLabel(): HTMLDivElement;
     static fullScreenLabel(): HTMLDivElement;

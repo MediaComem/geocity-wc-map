@@ -204,7 +204,24 @@ export default class SVGCreator {
         </clipPath>
       </defs>
     </svg>  
-  `
+  `;
+
+  static stack = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+      <g class="Stack" clip-path="url(#a)">
+        <g class="icon">
+          <path d="M4 22L16 29L28 22" class="Vector"/>
+          <path d="M4 16L16 23L28 16" class="Vector"/>
+          <path d="M4 10L16 17L28 10L16 3L4 10Z" class="Vector"/>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="a" class="a">
+          <path fill="#fff" d="M0 0H32V32H0z"/>
+        </clipPath>
+      </defs>
+    </svg>
+  `;
 
   static zoomInLabel() {
     const zoomIn = document.createElement('div');

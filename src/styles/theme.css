@@ -32,7 +32,7 @@
     --information-cross-hover-color: rgb(30 41 59 / 75%);
     --information-box-text-color: #334155;
     --select-icon-background: #1E293B;
-    --search-border-color: #CBD5E1;
+    --icon-border-color: #CBD5E1;
 }
 
 :host > .dark {
@@ -44,7 +44,7 @@
     --information-cross-hover-color: rgb(255 255 255 / 75%);
     --information-box-text-color: #9CA3AF;
     --select-icon-background: rgb(255,255,255, 0.75);
-    --search-border-color: #334155;
+    --icon-border-color: #334155;
 }
 
 :host > #map {

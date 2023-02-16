@@ -145,7 +145,7 @@ export class OpenLayersElement extends LitElement {
         );
     }
 
-    if (options.wmts.capability != '') new WMTSLoader();
+    if (options.wmts.length > 0) new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.geojson.url != '') new GeojsonLoader()
     if (options.borderUrl !== '') new Border();

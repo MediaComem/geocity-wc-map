@@ -38,11 +38,20 @@
                                             }
                                         }
                                         ],
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
                                         "selectionTargetBoxMessage": "Harcèlement signalé"
                                     }'
     />
