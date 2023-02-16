@@ -43,7 +43,7 @@
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
 | geolocationInformation    | Display options for the geolocation information box   | Object                  |    Look at Information parameters table for more details [geolocation information parameters](#geolocation-information-parameters)                                                                                                         |
 | search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
-| inclusionArea    | URL to a WFS server containing the inclusion area information   | string                  | ''   |
+| inclusionArea    | URL to a WFS server containing the inclusion area information   | Object                  | Look at Inclusion parameters table for more details [Inclusion parameters](#inclusion-parameters)     |
 | selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
 | borderUrl    |  URL where a geojson containing the border information is located.  | string                  |   '' |
 |                    |                                                                                                                            |                  |                                                                                                             |
@@ -133,6 +133,21 @@ according to the settings table below:
 | bboxRestiction | Bounding box of the search area  | string | 2523099.818000,1167985.282000,2549752.141000,1192697.773000                                                     |
 |           |                                     |        |                                                                                 |
 
+### Inclusion parameters
+
+| Parameter             | Description                         | Type   | Default                                                                                                                                                                 |
+| -------------------- | ----------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url                  | URL of the WFS service              | string | ''             |
+| filter               | WFS service filter, the filter must be a GeometryOperands and must contain the ```<BBOX>``` pattern | string | ''                                                                                                                                                                      |
+|                      |                                     |        |                                                                                                                                                                         |
+
+The ```<BBOX>``` is mandatory in case of you add a filter because during the process, this pattern is replaced by the actual BBOX of the zoom level and loads only the necessary data.
+* Example of url: ```https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds```
+* Example of filter: ```GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>```
+
+otherwise, only the url is requested:
+* Example of url: ```https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds```
+                                       
 
 #### Rule specification
 
@@ -147,13 +162,18 @@ according to the settings table below:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ "enableDraw": false, 
+<openlayers-element  options='{ "enableDraw": false, 
                                         "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
                                             "type": "select"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": false,
+                                            "currentLocation": false
                                         },
                                         "notifications": [
                                         {
@@ -166,7 +186,7 @@ To activate this mode, add in your HTML code the web component with the followin
                                         },
                                         {
                                             "type": "info",
-                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                            "message": "Sélectionnez un icon sur la carte",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -175,12 +195,20 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "wfs": {
                                             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
                                         },
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
-                                        "inclusionArea": false,
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
                                         "selectionTargetBoxMessage": "Éclairage signalé"
                                     }'
     />
@@ -202,7 +230,7 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ "enableDraw": false, 
+<openlayers-element  options='{ "enableDraw": false, 
                                         "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
@@ -213,7 +241,7 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "geolocationInformation": {
                                             "displayBox": true,
                                             "reverseLocation": false,
-                                            "currentLocation": true
+                                            "currentLocation": false
                                         },
                                         "notifications": [
                                         {
@@ -239,12 +267,24 @@ To activate this mode, add in your HTML code the web component with the followin
                                             }
                                         }
                                         ],
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
-                                        "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
+                                        "inclusionArea": {
+                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
+                                            "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
+                                        },
                                         "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
     />
@@ -293,11 +333,20 @@ To activate this mode, add in your HTML code the web component with the followin
                                         "wfs": {
                                             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
                                         },
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
                                         "inclusionArea": false,
                                         "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
@@ -339,11 +388,20 @@ To activate this mode, add in your HTML code the web component with the followin
                                             }
                                         }
                                         ],
-                                        "wmts": {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:3857"
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "http://localhost:8080/public/base.svg"
                                         },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                        }],
                                         "selectionTargetBoxMessage": "Harcèlement signalé"
                                     }'
     />

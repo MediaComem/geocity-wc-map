@@ -8,6 +8,7 @@ import SearchConfig from '../types/search-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
 import { useStore } from '../composable/store';
+import InclusionAreaConfig from '../types/inclusion-area-config';
 
 export default interface IOption {
   zoom: number;
@@ -32,7 +33,7 @@ export default interface IOption {
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
   wmts: Array<wmtsLayerConfiguration>;
-  inclusionArea: string;
+  inclusionArea: InclusionAreaConfig;
   selectionTargetBoxMessage: string;
   search: SearchConfig;
   borderUrl: string;
@@ -86,7 +87,10 @@ export default class Options {
         name: '',
         thumbnail: ''
       }],
-      inclusionArea: '',
+      inclusionArea: {
+        url: '',
+        filter: ''
+      },
       selectionTargetBoxMessage: '',
       search: {
         displaySearch: true,

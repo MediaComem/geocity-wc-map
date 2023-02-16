@@ -7,6 +7,7 @@ import ClusterConfig from '../types/cluster-config';
 import SearchConfig from '../types/search-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
+import InclusionAreaConfig from '../types/inclusion-area-config';
 export default interface IOption {
     zoom: number;
     minZoom: number;
@@ -30,7 +31,7 @@ export default interface IOption {
     notifications: Array<NotificationElement>;
     wfs: WFSConfiguration;
     wmts: Array<wmtsLayerConfiguration>;
-    inclusionArea: string;
+    inclusionArea: InclusionAreaConfig;
     selectionTargetBoxMessage: string;
     search: SearchConfig;
     borderUrl: string;
