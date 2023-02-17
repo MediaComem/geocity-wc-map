@@ -4,6 +4,7 @@ import { Control } from 'ol/control';
 import { useStore } from '../composable/store';
 
 import boxStyle from '../styles/target-box-information.css?inline';
+import SearchApi from '../utils/search-api';
 
 @customElement('target-information-box-element')
 class TargetInformationBoxElement extends LitElement {
@@ -12,22 +13,40 @@ class TargetInformationBoxElement extends LitElement {
 
   @state() _currentPosition: string = '';
   @state() _reversePosition: string = '';
+  @state() _currentMovement: number[][];
 
   connectedCallback() {
     super.connectedCallback();
   }
 
+  searchAddress(coordiante: number[]) {
+    SearchApi.getAddressFromCoordinate(coordiante).then((data) => {
+      this._reversePosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+    });
+  }
+
   constructor() {
     super();
+    this._currentMovement = [this.defaultPosition, this.defaultPosition];
+    const minCoordinateMoveBeforeSearchAddress = 20;
+
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
-      this._reversePosition = useStore().getOptions().geolocationInformation.reverseLocation ? `${event.detail[0].toFixed(6)}}, ${event.detail[1].toFixed(6)}}` : '';
-      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(6)}}, ${event.detail[1].toFixed(6)}}` : '';
+      if (useStore().getOptions().geolocationInformation.reverseLocation) {
+        this._currentMovement[1] = event.detail;
+        if (Math.abs(this._currentMovement[0][0] - this._currentMovement[1][0]) > minCoordinateMoveBeforeSearchAddress || Math.abs(this._currentMovement[0][1] - this._currentMovement[1][1]) > minCoordinateMoveBeforeSearchAddress) {
+          this._currentMovement[0] = event.detail; 
+          this.searchAddress(event.detail);
+        }
+      }
+      else  this._reversePosition = '';
+      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(6)}, ${event.detail[1].toFixed(6)}` : '';
     }) as EventListener);
   }
 
   protected firstUpdated(): void {
-    this._reversePosition = useStore().getOptions().geolocationInformation.reverseLocation ? `${this.defaultPosition[0].toFixed(6)}}, ${this.defaultPosition[1].toFixed(6)}}` : '';
-    this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${this.defaultPosition[0].toFixed(6)}}, ${this.defaultPosition[1].toFixed(6)}}` : '';
+    if (useStore().getOptions().geolocationInformation.reverseLocation) this.searchAddress(this.defaultPosition)
+    else  this._reversePosition = '';
+    this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${this.defaultPosition[0].toFixed(6)}, ${this.defaultPosition[1].toFixed(6)}` : '';
   }
 
   static styles = [unsafeCSS(boxStyle)];
