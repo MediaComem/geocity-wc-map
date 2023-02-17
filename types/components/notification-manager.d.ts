@@ -22,6 +22,6 @@ export default class NotificationManager {
     setupInclusionAreaConstraint(rule: NotificationElement): void;
     hasValidZoom(rule: NotificationElement): boolean | 0 | undefined;
     checkZoomConstraint(rule: NotificationElement): void;
-    checkInclusionAreaConstraint(isInInclusionArea: boolean): void;
+    checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
 }
 export {};
