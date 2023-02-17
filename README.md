@@ -154,6 +154,9 @@ otherwise, only the url is requested:
 - A minimum zoom level. This is a `warning` type notification. This rule contains two parameters:
   - type: for this rule, the value is `ZOOM_CONSTRAINT`
   - minZoom: The minimum zoom level to allow creation or selection.
+- An inclusion area. This is a `warning` type of notification. This rule contains two paramters:
+  - type: for this rule, the value is `AREA_CONSTRAINT`
+  - couldBypass: Allowed to bypass the rule. If the value is false or undefined, to validate, the user must be in the inclusion zone.
 - Information about the target mode. This is a `info` type of notification. This rule contains only one paramter.
   - type: for this rule, the value is `MOVE_TARGET`
 

@@ -1,6 +1,7 @@
 interface Rule {
   type: string;
   minZoom?: number;
+  couldBypass?: boolean;
 }
 
 export default interface NotificationElement {
