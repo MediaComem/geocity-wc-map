@@ -7,6 +7,7 @@ import { useStore } from '../composable/store';
 
 import boxStyle from '../styles/select-box-information.css?inline';
 import { GeocityEvent } from '../utils/geocity-event';
+import SearchApi from '../utils/search-api';
 import SVGCreator from '../utils/svg-creator';
 
 @customElement('select-information-box-element')
@@ -32,7 +33,9 @@ class SelectCreateInformationBoxElement extends LitElement {
       }
     });
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
-      this._currentPosition = useStore().getOptions().geolocationInformation.currentLocation ? `${event.detail[0].toFixed(4)}}, ${event.detail[1].toFixed(4)}` : '';
+      SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
+        this._currentPosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+      });
     }) as EventListener)
   }
 
