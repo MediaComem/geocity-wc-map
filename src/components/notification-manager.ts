@@ -178,7 +178,7 @@ export default class NotificationManager {
         this.inclusionNotificationControl.disable();
         useStore().getMap().addControl(this.inclusionNotificationControl)
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
-            this.checkInclusionAreaConstraint(event.detail)
+            this.checkInclusionAreaConstraint(event.detail, rule.rule.couldBypass)
         }) as EventListener);
     }
 
@@ -200,14 +200,18 @@ export default class NotificationManager {
         }
     }
 
-    checkInclusionAreaConstraint(isInInclusionArea: boolean) {
+    checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined) {
         if (isInInclusionArea) {
             this.inclusionNotificationControl?.hide();
             this.validAreaConstraint = true;
         }
         else {
             this.inclusionNotificationControl?.show();
-            this.validAreaConstraint = true;
+            if (couldBypass) this.validAreaConstraint = true;
+            else { 
+                this.validAreaConstraint = false;
+                GeocityEvent.sendEvent('position-selected', undefined);
+            };
         }
     }
 }
