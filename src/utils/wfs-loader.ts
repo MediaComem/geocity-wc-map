@@ -9,11 +9,16 @@ export default class WFSLoader {
         version: '2.0.0',
       }),
       url: function (extent) {
-        const bboxFilter = `<BBOX><ValueReference>geometry</ValueReference><Envelope srsName="urn:ogc:def:crs:EPSG::2056"><lowerCorner>${extent[0]} ${extent[1]}</lowerCorner><upperCorner>${extent[2]} ${extent[3]}</upperCorner></Envelope></BBOX>`;
         if (filter === '') {
           url + '&bbox=' + extent.join(',') + ',EPSG:2056';
         } else {
-          url = `${url}&${filter}`.replace('<BBOX>', bboxFilter);
+          if (filter.includes('<BBOX>')) {
+            const bboxFilter = `<BBOX><ValueReference>geometry</ValueReference><Envelope srsName="urn:ogc:def:crs:EPSG::2056"><lowerCorner>${extent[0]} ${extent[1]}</lowerCorner><upperCorner>${extent[2]} ${extent[3]}</upperCorner></Envelope></BBOX>`;
+            url = `${url}&${filter}`.replace('<BBOX>', bboxFilter);
+          } else {
+            console.error('The replacement string <BBOX> cannot be found. You lose the BBOX optimization.')
+            url = `${url}&${filter}`;
+          }
         }
         return url;
       },
