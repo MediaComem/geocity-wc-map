@@ -3,6 +3,7 @@ export default class SVGCreator {
     static warning: string;
     static error: string;
     static mapPin: string;
+    static mapPinClick: string;
     static mapPinSelect: string;
     static information: string;
     static geolocation: string;

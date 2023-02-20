@@ -1,5 +1,5 @@
+import { FeatureLike } from 'ol/Feature';
 import { Style } from 'ol/style';
 export default class CreateStyle {
-    static setupSingleClick(zoomFactor: number): Style;
-    static setupSingleClickCenterCircle(zoomFactor: number): Style;
+    static setupCircles(feature: FeatureLike, zoomFactor: number): Style[];
 }

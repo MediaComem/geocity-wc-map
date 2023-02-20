@@ -157,6 +157,9 @@ otherwise, only the url is requested:
 - An inclusion area. This is a `warning` type of notification. This rule contains two paramters:
   - type: for this rule, the value is `AREA_CONSTRAINT`
   - couldBypass: Allowed to bypass the rule. If the value is false or undefined, to validate, the user must be in the inclusion zone.
+- A maximum number of selected/created elements. This is a `warning` type notification. This rule contains two parameters:
+  - type: for this rule, the value is `MAX_SELECTION`
+  - maxElement: The maximum number of element you can select (-1 or no rules means no limit)
 - Information about the target mode. This is a `info` type of notification. This rule contains only one paramter.
   - type: for this rule, the value is `MOVE_TARGET`
 
@@ -222,8 +225,8 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains the id of the object and the geometry in WTK format.
-    - { id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) };
+  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
+    - [{ id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
 
@@ -298,8 +301,8 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains only the geometry in WTK format.
-    - { geometry: POINT (2538545.7462747833 1180732.9753953428)) };
+  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
+    - [{ geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
 
@@ -415,7 +418,7 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an object in event.detail and this object contains only the geometry in WTK format.
-    - { geometry: POINT (2538545.7462747833 1180732.9753953428)) };
+  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
+    - [{ geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined

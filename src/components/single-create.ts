@@ -10,7 +10,6 @@ import { Map } from 'ol';
 import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleCreate {
-  currentFeature: Feature | undefined;
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
 
   constructor(mapElement: HTMLDivElement) {
@@ -28,10 +27,24 @@ export default class SingleCreate {
     })
 
     window.addEventListener('recenter-selected-element', () => {
-      map.getView().setCenter(useStore().getSelectedFeature()?.get('geometry').getCoordinates())
-    }) 
+      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')?.get('geometry').getCoordinates())
+    })
 
     this.addLongClickEvent(mapElement, map);
+
+    map.on('click', (evt) =>  {
+      map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
+        if (feature && feature.getGeometry()?.getType() === 'Point') {
+          vectorSource.getFeatures().forEach((feature) => {
+            feature.set('isSelected', undefined);
+          });
+          useStore().setCurrentItemId(feature.get('id'));
+          useStore().getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
+          GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates());
+          this.control.show();
+        }
+      });
+    });
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
@@ -41,7 +54,11 @@ export default class SingleCreate {
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       visible: true,
-      style: [CreateStyle.setupSingleClick(1), CreateStyle.setupSingleClickCenterCircle(1)],
+
+    });
+    
+    vectorLayer.setStyle(function (feature) {          
+      return CreateStyle.setupCircles(feature, (1));
     });
 
     map.addLayer(vectorLayer);
@@ -49,21 +66,28 @@ export default class SingleCreate {
     map.getView().on('change:resolution', () => {
       const zoom = map.getView().getZoom();
       const resolution = map.getView().getResolution();
-      if (zoom && resolution && zoom > minZoomAllowed ) vectorLayer.setStyle([CreateStyle.setupSingleClick(zoom / resolution), CreateStyle.setupSingleClickCenterCircle(zoom / resolution)])
+      if (zoom && resolution && zoom > minZoomAllowed ) {
+        vectorLayer.setStyle(function (feature) {          
+          return CreateStyle.setupCircles(feature, (zoom / resolution));
+        });
+      }
     })
     this.control.disable();
     map.addControl(this.control);
   }
 
   createElement( vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature();
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id');
     if (feature) {
-      if (this.currentFeature) {
-        vectorSource.removeFeature(this.currentFeature)
+      if (useStore().getMaxElement() === 1) {
+        vectorSource.getFeatures().forEach((f) => vectorSource.removeFeature(f));
         this.control.hide();
+      } else {
+        vectorSource.getFeatures().forEach((feature) => {
+          if (feature.get('id') !== useStore().getCurrentItemId()) feature.set('isSelected', undefined);
+        });
       }
-      this.currentFeature = feature;
-      vectorSource.addFeature(this.currentFeature);
+      vectorSource.addFeature(feature);
       this.control.show()
       GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
       useStore().setCustomDisplay(true);
@@ -73,11 +97,12 @@ export default class SingleCreate {
   }
 
   deleteElement(vectorSource:Vector) {
-    if (this.currentFeature) {
-      vectorSource.removeFeature(this.currentFeature)
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')
+    if (feature) {
+      vectorSource.removeFeature(feature)
       this.control.hide()
-      vectorSource.removeFeature(this.currentFeature);
-      this.currentFeature = undefined;
+      useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+      GeocityEvent.sendEvent('rule-validation', undefined);
       CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
     useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
@@ -131,8 +156,15 @@ export default class SingleCreate {
         const geomPoint = new Point(coordiante);
         const feature = new Feature({
           geometry: geomPoint,
+          id: Number(`${Math.round(coordiante[0])}${Math.round(coordiante[1])}`),
+          isSelected: true
         });
-        useStore().setSelectedFeature(feature)
+        if (useStore().getMaxElement() === 1) {
+          useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+        }
+        feature.set('geom', feature.get('geometry'));
+        useStore().setCurrentItemId(feature.get('id'))
+        useStore().addSelectedFeature(feature)
         GeocityEvent.sendEvent('icon-created', undefined);
   }
 
