@@ -25,7 +25,7 @@ class SelectCreateInformationBoxElement extends LitElement {
   constructor() {
     super();
     useStore().getMap().getView().on('change:center', () => {
-      const feature = useStore().getSelectedFeature();
+      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), useStore().getOptions().mode.type === 'select' ? 'objectid' : 'id');
       if (feature) {
         let geometry = feature.get('geometry');
         if (geometry === undefined) geometry = feature.get('geom');
@@ -75,7 +75,7 @@ class SelectCreateInformationBoxElement extends LitElement {
 
   unselect() {
     const options = useStore().getOptions();
-    if (options.mode.type === 'select') GeocityEvent.sendEvent('icon-clicked', undefined)
+    if (options.mode.type === 'select') GeocityEvent.sendEvent('icon-clicked', useStore().getCurrentItemId())
     if (options.mode.type === 'create') GeocityEvent.sendEvent('icon-removed', undefined)
   }
 }

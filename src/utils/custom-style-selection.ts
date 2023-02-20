@@ -6,6 +6,5 @@ export default class CustomStyleSelection {
     useStore().setCustomDisplay(options.search.displaySearch);
     const customCSS = options.search.displaySearch ? 'small' : 'no-box';
     useStore().setTargetBoxSize(customCSS);
-    useStore().setSelectedFeature(undefined);
   }
 }
