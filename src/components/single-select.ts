@@ -30,15 +30,17 @@ export default class SingleSelect {
       map.forEachFeatureAtPixel(evt.pixel, function (feature) {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
           if (feature.getProperties().features.length === 1) {
-            useStore().setSelectedFeature(feature.getProperties().features[0]);
-            GeocityEvent.sendEvent('icon-clicked', undefined);                
+            if (useStore().getSelectedFeature(feature.getProperties().features[0].get('objectid'), 'objectid') === undefined) {
+              useStore().addSelectedFeature(feature.getProperties().features[0]);
+            }
+            GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
           }
         }
       });
     });
 
     window.addEventListener('recenter-selected-element', () => {
-      useStore().getMap().getView().setCenter(useStore().getSelectedFeature()?.get('geom').getCoordinates())
+      useStore().getMap().getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.get('geom').getCoordinates())
     })    
   }
 
@@ -61,28 +63,63 @@ export default class SingleSelect {
     this.toogleDataSelection(vectorLayer);
   }
 
+  setCurrentElement(feature: Feature) {
+    useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.set('isSelected', undefined)
+    useStore().setCurrentItemId(feature.get('objectid'));
+  }
+
+  setIconToDisplay(feature: Feature, state: any) {
+    feature.set('isClick', state);
+    feature.set('isSelected', state)
+  }
+
+  removeSelectedIteme(feature: Feature) {
+    this.setIconToDisplay(feature, undefined);
+    useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'objectid');
+    this.control.hide();
+    GeocityEvent.sendEvent('rule-validation', undefined);
+    // Set parameter for icon position display
+    CustomStyleSelection.setCustomStyleWithouInfoBox();
+  }
+
   /*
     Check the selection state to check or uncheck the selected event.
     In addition, unselect all selected events if other icon is selected to keep only one selected element
   */
   toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>) {
-    window.addEventListener('authorize-clicked', () => {
-      const feature = useStore().getSelectedFeature();
+    window.addEventListener('authorize-clicked', ((event: CustomEvent) => {
+      const feature = useStore().getSelectedFeature(event.detail, 'objectid');
       if (feature) {
         const currentState = feature.get('isClick')
-        if (currentState) {
-          feature.set('isClick', undefined)
-          this.control.hide();
-          // Set parameter for icon position display
-          CustomStyleSelection.setCustomStyleWithouInfoBox();
-        } else {
-          // Search all selected icon to deselect them and ensure that only one element is selected.
-          vectorLayer.getSource()?.getFeatures().forEach((feature) => {
-            feature.get('features').forEach((geometryFeature:Feature) => {
-              geometryFeature.set('isClick', undefined);
+        if (currentState && useStore().getMaxElement() === 1) {
+          this.removeSelectedIteme(feature)
+        } else if (currentState) {
+          if (useStore().getCurrentItemId() === feature.get('objectid')) {
+            this.removeSelectedIteme(feature)
+          } else {
+            this.setCurrentElement(feature);
+            feature.set('isSelected', true);
+            GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
+            this.control.show();
+          }
+        }
+        else {
+          if (useStore().getMaxElement() === 1) {
+            vectorLayer.getSource()?.getFeatures().forEach((feature) => {
+              feature.get('features').forEach((geometryFeature:Feature) => {
+                if (geometryFeature.get('isClick')) {
+                  this.setIconToDisplay(geometryFeature, undefined);
+                  useStore().removeSelectedFeature(geometryFeature.get('objectid'), 'objectid')
+                }
+              });
             });
-          });
-          feature.set('isClick', true);
+            useStore().setCurrentItemId(feature.get('objectid'));
+            GeocityEvent.sendEvent('rule-validation', undefined);
+          } else {
+            this.setCurrentElement(feature);
+          }
+          // Search all selected icon to deselect them and ensure that only one element is selected.
+          this.setIconToDisplay(feature, true);
           this.control.show()
           GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
           useStore().setCustomDisplay(true);
@@ -91,7 +128,6 @@ export default class SingleSelect {
       }
       // Set right class to the map
       useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
-    })
-    
+    }) as EventListener)
   }
 }

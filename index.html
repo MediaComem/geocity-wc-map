@@ -15,7 +15,7 @@
         "enableCenterButton": true,
         "enableRotation": true,
         "mode": {
-            "type": "target"
+            "type": "select"
         },
         "geolocationInformation": {
             "displayBox": true,
@@ -33,10 +33,10 @@
         },
         {
           "type": "warning",
-          "message": "L’emplacement sélectionné se situe en dehors des zones autorisées.",
+          "message": "Le maximum de sélection est limité à {x}.",
           "rule": {
-              "type": "AREA_CONSTRAINT",
-              "couldBypass": false
+              "type": "MAX_SELECTION",
+              "maxElement": 3
           }
         },
         {
@@ -47,6 +47,9 @@
             }
         }
         ],
+        "wfs": {
+            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
+        },
         "wmts": [{
             "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
             "layer": "asitvd.fond_cadastral",
@@ -61,10 +64,6 @@
             "name": "Photo aérienne",
             "thumbnail": "http://localhost:5173//aerial.svg"
         }],
-        "inclusionArea": {
-            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
-            "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
-        },
         "selectionTargetBoxMessage": "Emplacement du banc"
     }'
 />

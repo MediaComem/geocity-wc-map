@@ -8,13 +8,26 @@ export default class SingleSelectStyle {
   static clusterWithIcon(feature: FeatureLike) {
     const size = feature.get('features').length;
     let style;
-    if (size === 1 && feature.get('features')[0].get('isClick')) {
+    if (size === 1 && feature.get('features')[0].get('isSelected')) {
       style = new Style({
         zIndex: 1,
         image: new Icon({
           src:
             'data:image/svg+xml;charset=utf-8,' +
             encodeURIComponent(SVGCreator.mapPinSelect),
+          // the svg height is 54px. It's the reason why the anchor is set like that
+          anchor: [0.5, 54],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+        }),
+      });
+    } else if (size === 1 && feature.get('features')[0].get('isClick')) {
+      style = new Style({
+        zIndex: 1,
+        image: new Icon({
+          src:
+            'data:image/svg+xml;charset=utf-8,' +
+            encodeURIComponent(SVGCreator.mapPinClick),
           // the svg height is 54px. It's the reason why the anchor is set like that
           anchor: [0.5, 54],
           anchorXUnits: 'fraction',
