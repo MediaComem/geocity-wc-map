@@ -103,6 +103,7 @@ export default class NotificationManager {
     setupCreateMode() {
         window.addEventListener('icon-created', () => {
             const features = useStore().getSelectedFeatures();
+            console.log(features)
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
@@ -164,7 +165,7 @@ export default class NotificationManager {
 
     setupMaxSelectionConstraint(rule: NotificationElement) {
         const maxElement = rule.rule.maxElement;
-        if (maxElement) useStore().setMaxElement(maxElement);
+        if (maxElement !== undefined) useStore().setMaxElement(maxElement);
         rule.message = rule.message.replace('{x}', `${maxElement}`);
         this.maxElementNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
         this.maxElementNotificationControl.disable();
@@ -205,7 +206,7 @@ export default class NotificationManager {
     }
 
     checkMaxElementContraint(features: Array<Feature>) {
-        if (useStore().getMaxElement() > 1) {
+        if (useStore().getMaxElement() >= 0) {
             if (features.length > useStore().getMaxElement()) {
                 this.validMaxElementConstraint = false;
                 this.maxElementNotificationControl?.show();

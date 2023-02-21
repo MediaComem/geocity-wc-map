@@ -27,8 +27,7 @@ class SelectCreateInformationBoxElement extends LitElement {
     useStore().getMap().getView().on('change:center', () => {
       const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), useStore().getOptions().mode.type === 'select' ? 'objectid' : 'id');
       if (feature) {
-        let geometry = feature.get('geometry');
-        if (geometry === undefined) geometry = feature.get('geom');
+        const geometry = feature.get('geom');
         this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
       }
     });

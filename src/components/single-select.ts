@@ -91,12 +91,10 @@ export default class SingleSelect {
       const feature = useStore().getSelectedFeature(event.detail, 'objectid');
       if (feature) {
         const currentState = feature.get('isClick')
-        if (currentState && useStore().getMaxElement() === 1) {
-          this.removeSelectedIteme(feature)
-        } else if (currentState) {
-          if (useStore().getCurrentItemId() === feature.get('objectid')) {
+        if (currentState) {
+          if (useStore().getMaxElement() === 1 || useStore().getCurrentItemId() === feature.get('objectid')) 
             this.removeSelectedIteme(feature)
-          } else {
+          else {
             this.setCurrentElement(feature);
             feature.set('isSelected', true);
             GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
@@ -104,6 +102,8 @@ export default class SingleSelect {
           }
         }
         else {
+          // Remove old selection to keep only the new one.
+          // Special case when only 1 element could be selected.
           if (useStore().getMaxElement() === 1) {
             vectorLayer.getSource()?.getFeatures().forEach((feature) => {
               feature.get('features').forEach((geometryFeature:Feature) => {
