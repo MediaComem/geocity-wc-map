@@ -11,7 +11,6 @@ let options: IOption;
 let map: Map;
 let selectedFeature: Feature | undefined;
 let borderConstraint: Extent | undefined;
-let currentAddress: string = '';
 
 function setTheme(newVal: string) {
   theme = newVal;
@@ -77,14 +76,6 @@ function getBorderConstraint() {
   return borderConstraint;
 }
 
-function setCurrentAddress(newVal: string) {
-  currentAddress = newVal;
-}
-
-function getCurrentAddress() {
-  return currentAddress;
-}
-
 export function useStore() {
   return {
     setTheme,
@@ -103,7 +94,5 @@ export function useStore() {
     getSelectedFeature,
     setBorderConstraint,
     getBorderConstraint,
-    setCurrentAddress,
-    getCurrentAddress,
   };
 }

@@ -18,8 +18,6 @@ declare function setSelectedFeature(newVal: Feature | undefined): void;
 declare function getSelectedFeature(): Feature<import("ol/geom/Geometry").default> | undefined;
 declare function setBorderConstraint(newVal: Extent | undefined): void;
 declare function getBorderConstraint(): Extent | undefined;
-declare function setCurrentAddress(newVal: string): void;
-declare function getCurrentAddress(): string;
 export declare function useStore(): {
     setTheme: typeof setTheme;
     getTheme: typeof getTheme;
@@ -37,7 +35,5 @@ export declare function useStore(): {
     getSelectedFeature: typeof getSelectedFeature;
     setBorderConstraint: typeof setBorderConstraint;
     getBorderConstraint: typeof getBorderConstraint;
-    setCurrentAddress: typeof setCurrentAddress;
-    getCurrentAddress: typeof getCurrentAddress;
 };
 export {};
