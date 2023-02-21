@@ -31,9 +31,9 @@ export default class SingleSelect {
     map.on('click', (evt) => {
       map.forEachFeatureAtPixel(evt.pixel, (feature) => {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
-          if (feature.getProperties().features.length === 1) {
-            if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid'), 'objectid') === undefined) {
-              this.store.addSelectedFeature(feature.getProperties().features[0]);
+          if (feature.getProperties().features && feature.getProperties().features.length === 1) {
+            if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
+              this.store.addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
             }
             GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
           }
@@ -43,7 +43,7 @@ export default class SingleSelect {
 
     window.addEventListener('recenter-selected-element', () => {
       const currentItemID = this.store.getCurrentItemId();
-      const coords = this.store.getSelectedFeature(currentItemID, 'objectid')?.get('geom').getCoordinates();
+      const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
       map.getView().setCenter(coords);
     })    
   }
@@ -68,8 +68,8 @@ export default class SingleSelect {
   }
 
   setCurrentElement(feature: Feature) {
-    this.store.getSelectedFeature(this.store.getCurrentItemId(), 'objectid')?.set('isSelected', undefined)
-    this.store.setCurrentItemId(feature.get('objectid'));
+  this.store.getSelectedFeature(this.store.getCurrentItemId())?.set('isSelected', undefined)
+  this.store.setCurrentItemId(feature.get('objectid'));
   }
 
   setIconToDisplay(feature: Feature, state: any) {
@@ -87,7 +87,7 @@ export default class SingleSelect {
 
   removeItem(feature: Feature) {
     this.setIconToDisplay(feature, undefined);
-    this.store.removeSelectedFeature(feature.get('objectid'), 'objectid');
+    this.store.removeSelectedFeature(feature.get('objectid'));
   }
 
   setInformationBox(feature: Feature) {
@@ -105,7 +105,7 @@ export default class SingleSelect {
   */
   toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>) {
     window.addEventListener('authorize-clicked', ((event: CustomEvent) => {
-      const feature = this.store.getSelectedFeature(event.detail, 'objectid');
+      const feature = this.store.getSelectedFeature(event.detail);
       if (feature) {
         const currentState = feature.get('isClick')
         if (currentState) {
@@ -126,7 +126,7 @@ export default class SingleSelect {
               feature.get('features').forEach((geometryFeature:Feature) => {
                 if (geometryFeature.get('isClick')) {
                   this.setIconToDisplay(geometryFeature, undefined);
-                  this.store.removeSelectedFeature(geometryFeature.get('objectid'), 'objectid')
+                  this.store.removeSelectedFeature(geometryFeature.get('objectid'))
                 }
               });
             });
