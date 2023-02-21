@@ -104,22 +104,6 @@ function getMaxElement() {
   return maxElement;
 }
 
-function setCurrentItemId(newVal: number) {
-  currentItemId = newVal;
-}
-
-function getCurrentItemId() {
-  return currentItemId;
-}
-
-function setMaxElement(newVal: number) {
-  maxElement = newVal;
-}
-
-function getMaxElement() {
-  return maxElement;
-}
-
 export function useStore() {
   return {
     setTheme,
