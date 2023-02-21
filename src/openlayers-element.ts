@@ -152,6 +152,10 @@ export class OpenLayersElement extends LitElement {
     if (options.enableDraw) new Drawer();
     if (options.inclusionArea.url !== '') new InclusionArea();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
+    if (options.mode.type === 'mix' && options.wfs.url != '') {
+      new SingleCreate(this.mapElement);
+      new SingleSelect();
+    } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
     new NotificationManager();
     ControlIconManager.setupIcon();
     if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
