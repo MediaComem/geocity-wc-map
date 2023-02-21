@@ -12,6 +12,6 @@ export default class SingleSelect {
     displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource): void;
     setCurrentElement(feature: Feature): void;
     setIconToDisplay(feature: Feature, state: any): void;
-    removeSelectedIteme(feature: Feature): void;
+    removeSelectedItem(feature: Feature): void;
     toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>): void;
 }
