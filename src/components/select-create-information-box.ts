@@ -25,7 +25,7 @@ class SelectCreateInformationBoxElement extends LitElement {
   constructor() {
     super();
     useStore().getMap().getView().on('change:center', () => {
-      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), useStore().getOptions().mode.type === 'select' ? 'objectid' : 'id');
+      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
       if (feature) {
         const geometry = feature.get('geom');
         this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
@@ -74,8 +74,14 @@ class SelectCreateInformationBoxElement extends LitElement {
 
   unselect() {
     const options = useStore().getOptions();
-    if (options.mode.type === 'select') GeocityEvent.sendEvent('icon-clicked', useStore().getCurrentItemId())
-    if (options.mode.type === 'create') GeocityEvent.sendEvent('icon-removed', undefined)
+    let type = '';
+    if (options.mode.type === 'mix') type = useStore().getCurrentFeatureType(useStore().getCurrentItemId());
+    else type = options.mode.type
+    
+    switch(type) {
+      case 'select': GeocityEvent.sendEvent('icon-clicked', useStore().getCurrentItemId()); break;
+      case 'create': GeocityEvent.sendEvent('icon-removed', undefined); break;
+    } 
   }
 }
 

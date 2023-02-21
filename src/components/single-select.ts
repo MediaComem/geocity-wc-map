@@ -29,9 +29,9 @@ export default class SingleSelect {
     map.on('click', function (evt) {
       map.forEachFeatureAtPixel(evt.pixel, function (feature) {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
-          if (feature.getProperties().features.length === 1) {
-            if (useStore().getSelectedFeature(feature.getProperties().features[0].get('objectid'), 'objectid') === undefined) {
-              useStore().addSelectedFeature(feature.getProperties().features[0]);
+          if (feature.getProperties().features && feature.getProperties().features.length === 1) {
+            if (useStore().getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
+              useStore().addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
             }
             GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
           }
@@ -40,7 +40,7 @@ export default class SingleSelect {
     });
 
     window.addEventListener('recenter-selected-element', () => {
-      useStore().getMap().getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.get('geom').getCoordinates())
+      useStore().getMap().getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId())?.get('geom').getCoordinates())
     })    
   }
 
@@ -64,7 +64,7 @@ export default class SingleSelect {
   }
 
   setCurrentElement(feature: Feature) {
-    useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.set('isSelected', undefined)
+    useStore().getSelectedFeature(useStore().getCurrentItemId())?.set('isSelected', undefined)
     useStore().setCurrentItemId(feature.get('objectid'));
   }
 
@@ -75,7 +75,7 @@ export default class SingleSelect {
 
   removeSelectedIteme(feature: Feature) {
     this.setIconToDisplay(feature, undefined);
-    useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'objectid');
+    useStore().removeSelectedFeature(useStore().getCurrentItemId());
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
@@ -88,7 +88,7 @@ export default class SingleSelect {
   */
   toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>) {
     window.addEventListener('authorize-clicked', ((event: CustomEvent) => {
-      const feature = useStore().getSelectedFeature(event.detail, 'objectid');
+      const feature = useStore().getSelectedFeature(event.detail);
       if (feature) {
         const currentState = feature.get('isClick')
         if (currentState) {
@@ -109,7 +109,7 @@ export default class SingleSelect {
               feature.get('features').forEach((geometryFeature:Feature) => {
                 if (geometryFeature.get('isClick')) {
                   this.setIconToDisplay(geometryFeature, undefined);
-                  useStore().removeSelectedFeature(geometryFeature.get('objectid'), 'objectid')
+                  useStore().removeSelectedFeature(geometryFeature.get('objectid'))
                 }
               });
             });

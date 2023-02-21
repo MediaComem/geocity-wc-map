@@ -27,7 +27,7 @@ export default class SingleCreate {
     })
 
     window.addEventListener('recenter-selected-element', () => {
-      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')?.get('geom').getCoordinates())
+      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId())?.get('geom').getCoordinates())
     })
 
     this.addLongClickEvent(mapElement, map);
@@ -35,12 +35,12 @@ export default class SingleCreate {
     map.on('click', (evt) =>  {
       map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
-          vectorSource.getFeatures().forEach((feature) => {
-            feature.set('isSelected', undefined);
-          });
-          useStore().setCurrentItemId(feature.get('id'));
-          useStore().getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
-          GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
+          if (feature.get('id')) {
+            useStore().unselectFeatures();
+            useStore().setCurrentItemId(feature.get('id'));
+            useStore().getSelectedFeature(feature.get('id'))?.set('isSelected', true);
+            GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
+          } 
           this.control.show();
         }
       });
@@ -77,7 +77,7 @@ export default class SingleCreate {
   }
 
   createElement( vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id');
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
     if (feature) {
       if (useStore().getMaxElement() === 1) {
         vectorSource.getFeatures().forEach((f) => vectorSource.removeFeature(f));
@@ -97,11 +97,11 @@ export default class SingleCreate {
   }
 
   deleteElement(vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId())
     if (feature) {
       vectorSource.removeFeature(feature)
       this.control.hide()
-      useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+      useStore().removeSelectedFeature(useStore().getCurrentItemId());
       GeocityEvent.sendEvent('rule-validation', undefined);
       CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
@@ -161,10 +161,10 @@ export default class SingleCreate {
         });
         feature.setGeometryName('geom');
         if (useStore().getMaxElement() === 1) {
-          useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+          useStore().removeSelectedFeature(useStore().getCurrentItemId());
         }
         useStore().setCurrentItemId(feature.get('id'))
-        useStore().addSelectedFeature(feature)
+        useStore().addSelectedFeature(feature, feature.get('id'), 'create')
         GeocityEvent.sendEvent('icon-created', undefined);
   }
 

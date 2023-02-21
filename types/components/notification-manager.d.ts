@@ -18,8 +18,12 @@ export default class NotificationManager {
     infosNotificationControl: NotificationBoxControl | undefined;
     constructor();
     setupTargetMode(): void;
+    iconClickedListener(): void;
     setupSelectMode(): void;
+    iconCreatedListener(): void;
     setupCreateMode(): void;
+    ruleValidationListener(): void;
+    setupMixMode(): void;
     setup(notifications: Array<NotificationElement>): void;
     setupZoomContraint(rule: NotificationElement): void;
     setupInclusionAreaConstraint(rule: NotificationElement): void;
