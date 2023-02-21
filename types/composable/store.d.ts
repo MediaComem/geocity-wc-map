@@ -20,11 +20,6 @@ declare function getSelectedFeature(id: number, objectIdName: string): Feature<i
 declare function getSelectedFeatures(): Feature<import("ol/geom/Geometry").default>[];
 declare function setBorderConstraint(newVal: Extent | undefined): void;
 declare function getBorderConstraint(): Extent | undefined;
-<<<<<<< HEAD
-=======
-declare function setCurrentAddress(newVal: string): void;
-declare function getCurrentAddress(): string;
->>>>>>> bbd3ad37511128fc15e73202a270c6e9eb33a865
 declare function setCurrentItemId(newVal: number): void;
 declare function getCurrentItemId(): number;
 declare function setMaxElement(newVal: number): void;
@@ -48,11 +43,6 @@ export declare function useStore(): {
     getSelectedFeatures: typeof getSelectedFeatures;
     setBorderConstraint: typeof setBorderConstraint;
     getBorderConstraint: typeof getBorderConstraint;
-<<<<<<< HEAD
-=======
-    setCurrentAddress: typeof setCurrentAddress;
-    getCurrentAddress: typeof getCurrentAddress;
->>>>>>> bbd3ad37511128fc15e73202a270c6e9eb33a865
     setCurrentItemId: typeof setCurrentItemId;
     getCurrentItemId: typeof getCurrentItemId;
     setMaxElement: typeof setMaxElement;
