@@ -26,14 +26,16 @@ export default class SingleSelect {
   
     this.displayDataOnMap(map, vectorLayer, options, vectorSource);
 
-    map.on('click', function (evt) {
-      map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+    map.on('click', (evt) => {
+      map.forEachFeatureAtPixel(evt.pixel, (feature) => {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
           if (feature.getProperties().features && feature.getProperties().features.length === 1) {
             if (useStore().getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
               useStore().addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
-            }
+            } 
             GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
+          } else {
+            this.control.hide();
           }
         }
       });
@@ -73,9 +75,10 @@ export default class SingleSelect {
     feature.set('isSelected', state)
   }
 
-  removeSelectedIteme(feature: Feature) {
+  removeSelectedItem(feature: Feature) {
     this.setIconToDisplay(feature, undefined);
     useStore().removeSelectedFeature(useStore().getCurrentItemId());
+    console.log('aaaa')
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
@@ -93,7 +96,7 @@ export default class SingleSelect {
         const currentState = feature.get('isClick')
         if (currentState) {
           if (useStore().getMaxElement() === 1 || useStore().getCurrentItemId() === feature.get('objectid')) 
-            this.removeSelectedIteme(feature)
+            this.removeSelectedItem(feature)
           else {
             this.setCurrentElement(feature);
             feature.set('isSelected', true);

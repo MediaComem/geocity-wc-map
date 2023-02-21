@@ -40,8 +40,10 @@ export default class SingleCreate {
             useStore().setCurrentItemId(feature.get('id'));
             useStore().getSelectedFeature(feature.get('id'))?.set('isSelected', true);
             GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
-          } 
-          this.control.show();
+            this.control.show();
+          } else {
+            this.control.hide();
+          }
         }
       });
     });
