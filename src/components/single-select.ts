@@ -52,10 +52,12 @@ export default class SingleSelect {
       minDistance: options.cluster.minDistance,
       source: vectorSource,
     });
+
+    const style = new SingleSelectStyle();
     
     vectorLayer.setSource(clusterSource)
     vectorLayer.setStyle(function (feature) {          
-      return SingleSelectStyle.clusterWithIcon(feature);
+      return style.clusterWithIcon(feature);
     },)
 
     map.addLayer(vectorLayer);
