@@ -78,7 +78,6 @@ export default class SingleSelect {
   removeSelectedItem(feature: Feature) {
     this.setIconToDisplay(feature, undefined);
     useStore().removeSelectedFeature(useStore().getCurrentItemId());
-    console.log('aaaa')
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
