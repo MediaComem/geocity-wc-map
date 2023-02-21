@@ -27,7 +27,7 @@ export default class SingleCreate {
     })
 
     window.addEventListener('recenter-selected-element', () => {
-      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')?.get('geometry').getCoordinates())
+      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')?.get('geom').getCoordinates())
     })
 
     this.addLongClickEvent(mapElement, map);
@@ -40,7 +40,7 @@ export default class SingleCreate {
           });
           useStore().setCurrentItemId(feature.get('id'));
           useStore().getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
-          GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates());
+          GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
           this.control.show();
         }
       });
@@ -89,7 +89,7 @@ export default class SingleCreate {
       }
       vectorSource.addFeature(feature);
       this.control.show()
-      GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
+      GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
       useStore().setCustomDisplay(true);
       useStore().setTargetBoxSize('select');
     }
@@ -155,14 +155,14 @@ export default class SingleCreate {
         const coordiante = map.getCoordinateFromPixel([x - mapElement.offsetLeft, y - mapElement.offsetTop]);
         const geomPoint = new Point(coordiante);
         const feature = new Feature({
-          geometry: geomPoint,
+          geom: geomPoint,
           id: Number(`${Math.round(coordiante[0])}${Math.round(coordiante[1])}`),
           isSelected: true
         });
+        feature.setGeometryName('geom');
         if (useStore().getMaxElement() === 1) {
           useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
         }
-        feature.set('geom', feature.get('geometry'));
         useStore().setCurrentItemId(feature.get('id'))
         useStore().addSelectedFeature(feature)
         GeocityEvent.sendEvent('icon-created', undefined);
