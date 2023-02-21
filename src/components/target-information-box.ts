@@ -13,7 +13,7 @@ class TargetInformationBoxElement extends LitElement {
 
   @state() _currentPosition: string = '';
   @state() _reversePosition: string = '';
-  @state() _currentMovement: number[][];
+  @state() _lastPosition: number[];
 
   connectedCallback() {
     super.connectedCallback();
@@ -27,14 +27,13 @@ class TargetInformationBoxElement extends LitElement {
 
   constructor() {
     super();
-    this._currentMovement = [this.defaultPosition, this.defaultPosition];
+    this._lastPosition = this.defaultPosition;
     const minCoordinateMoveBeforeSearchAddress = 20;
 
     window.addEventListener('current-center-position', ((event: CustomEvent) => {
       if (useStore().getOptions().geolocationInformation.reverseLocation) {
-        this._currentMovement[1] = event.detail;
-        if (Math.abs(this._currentMovement[0][0] - this._currentMovement[1][0]) > minCoordinateMoveBeforeSearchAddress || Math.abs(this._currentMovement[0][1] - this._currentMovement[1][1]) > minCoordinateMoveBeforeSearchAddress) {
-          this._currentMovement[0] = event.detail; 
+        if (Math.abs(this._lastPosition[0] - event.detail[0]) > minCoordinateMoveBeforeSearchAddress || Math.abs(this._lastPosition[1] - event.detail[1]) > minCoordinateMoveBeforeSearchAddress) {
+          this._lastPosition = event.detail; 
           this.searchAddress(event.detail);
         }
       }
