@@ -9,7 +9,6 @@ import Drawer from './components/drawer';
 import GeojsonLoader from './components/geojson-loader';
 import SingleSelect from './components/single-select';
 
-import GeolocationMarker from './components/geolocation-marker';
 import WMTSLoader from './components/wmts-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
@@ -35,6 +34,7 @@ import {register} from 'ol/proj/proj4.js';
 import SingleCreate from './components/single-create';
 import SearchLocationControl from './components/search-location';
 import Border from './components/border';
+import GeolocationManager from './utils/geolocation-manager';
 
 /**
  * An example element.
@@ -133,8 +133,7 @@ export class OpenLayersElement extends LitElement {
         },
         projection: this.view.getProjection(),
       }));
-      useStore().getGeolocation()?.setTracking(true);
-      new GeolocationMarker();
+      new GeolocationManager();
     }
 
     if (options.mode.type === 'target') {
