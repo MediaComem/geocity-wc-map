@@ -36,6 +36,8 @@ export default class SingleSelect {
               this.store.addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
             }
             GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
+          } else {
+            this.control.hide();
           }
         }
       });
