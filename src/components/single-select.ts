@@ -70,8 +70,8 @@ export default class SingleSelect {
   }
 
   setCurrentElement(feature: Feature) {
-  this.store.getSelectedFeature(this.store.getCurrentItemId())?.set('isSelected', undefined)
-  this.store.setCurrentItemId(feature.get('objectid'));
+    this.store.getSelectedFeature(this.store.getCurrentItemId())?.set('isSelected', undefined)
+    this.store.setCurrentItemId(feature.get('objectid'));
   }
 
   setIconToDisplay(feature: Feature, state: any) {
