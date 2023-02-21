@@ -52,7 +52,7 @@ export default class GeolocationCenter extends Control {
         if (map) {
           const size = map.getSize();
           const view = map.getView();
-          if (coordinate && size) view.centerOn(coordinate, size, [570, 500]);
+          if (coordinate && size) view.setCenter(coordinate);
         }
         
       }

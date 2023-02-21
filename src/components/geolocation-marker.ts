@@ -9,38 +9,42 @@ import Vector from 'ol/source/Vector';
 import { useStore } from '../composable/store';
 
 export default class GeolocationMarker {
-    vectorLayer = new VectorLayer();
-    vectorSource = new Vector;
+  vectorLayer = new VectorLayer();
+  vectorSource = new Vector();
 
-    constructor() {
-        const geolocation = useStore().getGeolocation();
-        if (geolocation) {   
-            const positionFeature = new Feature();
-            positionFeature.setStyle(
-            new Style({
-                image: new CircleStyle({
-                radius: 6,
-                fill: new Fill({
-                    color: '#3399CC',
-                }),
-                stroke: new Stroke({
-                    color: '#fff',
-                    width: 2,
-                }),
-                }),
-            })
-            );
-    
-            geolocation.on('change:position', function () {
-                const coordinates = geolocation.getPosition();
-                positionFeature.setGeometry(coordinates ? new Point(coordinates) : undefined);
-            });
-    
-            this.vectorSource?.addFeature(positionFeature);
-            this.vectorLayer.setSource(this.vectorSource)
-            useStore().getMap().addLayer(this.vectorLayer);
-        }
-        
+  removeMarker() {
+    useStore().getMap().removeLayer(this.vectorLayer);
+  }
+
+  constructor() {
+    const geolocation = useStore().getGeolocation();
+    if (geolocation) {
+      const positionFeature = new Feature();
+      positionFeature.setStyle(
+        new Style({
+          image: new CircleStyle({
+            radius: 6,
+            fill: new Fill({
+              color: '#3399CC',
+            }),
+            stroke: new Stroke({
+              color: '#fff',
+              width: 2,
+            }),
+          }),
+        })
+      );
+
+      geolocation.on('change:position', function () {
+        const coordinates = geolocation.getPosition();
+        positionFeature.setGeometry(
+          coordinates ? new Point(coordinates) : undefined
+        );
+      });
+
+      this.vectorSource?.addFeature(positionFeature);
+      this.vectorLayer.setSource(this.vectorSource);
+      useStore().getMap().addLayer(this.vectorLayer);
     }
-
+  }
 }
