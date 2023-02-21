@@ -72,7 +72,7 @@ export default class NotificationManager {
     }
 
     setupSelectMode() {
-        window.addEventListener('icon-clicked', (() => {
+        window.addEventListener('icon-clicked', () => {
             const feature = useStore().getSelectedFeature();
             if (this.validZoomConstraint && feature) {
                 // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
@@ -81,24 +81,24 @@ export default class NotificationManager {
                 } else {
                     const geometry = {
                         type: "Point",
-                        coordinates: feature.get('geometry').getCoordinates()
+                        coordinates: feature.get('geom').getCoordinates()
                       };
                     GeocityEvent.sendEvent('position-selected', {
-                        id: feature.get('name'),
+                        id: feature.get('objectid'),
                         geometry: wtk.stringify(geometry)
                     });
                 }
                 
                 GeocityEvent.sendEvent('authorize-clicked', undefined);
             }
-        }) as EventListener)
+        })
 
         window.addEventListener('rule-validation', () => {
             const feature = useStore().getSelectedFeature();
             if (this.validZoomConstraint && feature) {
                 const geometry = {
                     type: "Point",
-                    coordinates: feature.get('geometry').getCoordinates()
+                    coordinates: feature.get('geom').getCoordinates()
                   };
                 GeocityEvent.sendEvent('position-selected', {
                     id: feature.get('name'),

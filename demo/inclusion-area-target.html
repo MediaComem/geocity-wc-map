@@ -59,7 +59,10 @@
                                             "name": "Photo aérienne",
                                             "thumbnail": "http://localhost:8080/public/aerial.svg"
                                         }],
-                                        "inclusionArea": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo></And></Filter>",
+                                        "inclusionArea": {
+                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
+                                            "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
+                                        },
                                         "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
     />
