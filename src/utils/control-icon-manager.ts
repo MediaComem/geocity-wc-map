@@ -1,10 +1,10 @@
 import { Control, FullScreen, Zoom } from 'ol/control';
 import { useStore } from '../composable/store';
 import SVGCreator from './svg-creator';
-import GeolocationCenter from '../components/geolocation-center';
-import ResetRotationControl from '../components/reset-rotation-control';
-import InformationControl from '../components/information-control';
-import GeoLayerControl from '../components/geo-layer-control';
+import GeolocationCenter from '../components/control/geolocation-center';
+import ResetRotationControl from '../components/control/reset-rotation-control';
+import InformationControl from '../components/control/information-control';
+import GeoLayerControl from '../components/control/geo-layer-control';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
