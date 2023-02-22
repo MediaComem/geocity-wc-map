@@ -25,6 +25,7 @@ export default class SingleSelect {
     const options = this.store.getOptions();
     const vectorLayer = new VectorLayer();
     const vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '', false)
+    
     this.displayDataOnMap(map, vectorLayer, options, vectorSource);
 
     map.on('click', (evt) => {
