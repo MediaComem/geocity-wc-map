@@ -1,5 +1,5 @@
-import GeolocationMarker from '../components/mapView/geolocation-marker';
-import LoaderBoxControl from '../components/notification/loader';
+import GeolocationMarker from '../mapView/geolocation-marker';
+import LoaderBoxControl from '../notification/loader';
 export default class GeolocationManager {
     marker: GeolocationMarker | undefined;
     loaderBox: LoaderBoxControl;

@@ -1,6 +1,5 @@
-import GeojsonConfig from '../types/geojson-config';
 import WFSConfiguration from '../types/wfs-config';
-import wmtsLayerConfiguration from '../components/wmts-loader';
+import wmtsLayerConfiguration from '../components/mapView/wmts-loader';
 import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
@@ -20,15 +19,10 @@ export default interface IOption {
   defaultCenter: Array<number>;
   enableGeolocation: boolean;
   enableCenterButton: boolean;
-  enableDraw: boolean;
-  maxNbDraw: number;
-  drawElement: string;
-  onlyOneDraw: boolean;
   enableRotation: boolean;
   information: InformationElement;
   mode: ModeConfig;
   cluster: ClusterConfig;
-  geojson: GeojsonConfig;
   geolocationInformation: GeolocationInformation;
   notifications: Array<NotificationElement>;
   wfs: WFSConfiguration;
@@ -51,10 +45,6 @@ export default class Options {
       defaultCenter: [2539057, 1181111],
       enableGeolocation: false,
       enableCenterButton: true,
-      enableDraw: true,
-      maxNbDraw: 0,
-      drawElement: 'Point',
-      onlyOneDraw: false,
       enableRotation: true,
       information: {
         duration: 5000,
@@ -67,9 +57,6 @@ export default class Options {
       cluster: {
         distance: 40,
         minDistance: 30,
-      },
-      geojson: {
-        url: '',
       },
       geolocationInformation: {
         displayBox: true,
@@ -112,16 +99,11 @@ export default class Options {
       result.enableGeolocation = options.enableGeolocation;
     if (options.enableCenterButton !== undefined)
       result.enableCenterButton = options.enableCenterButton;
-    if (options.enableDraw !== undefined) result.enableDraw = options.enableDraw;
-    if (options.maxNbDraw !== undefined) result.maxNbDraw = options.maxNbDraw;
-    if (options.drawElement !== undefined) result.drawElement = options.drawElement;
-    if (options.onlyOneDraw !== undefined) result.onlyOneDraw = options.onlyOneDraw;
     if (options.enableRotation !== undefined) result.enableRotation = options.enableRotation;
     if (options.information !== undefined) result.information = options.information;
     if (options.notifications !== undefined && options.notifications.length > 0) result.notifications = options.notifications;
     if (options.mode !== undefined) result.mode = options.mode;
     if (options.cluster !== undefined) result.cluster = options.cluster;
-    if (options.geojson !== undefined) result.geojson = options.geojson;
     if (options.geolocationInformation !== undefined) result.geolocationInformation = options.geolocationInformation;
     if (options.wfs !== undefined) result.wfs = options.wfs;
     if (options.wmts !== undefined) result.wmts = options.wmts;
