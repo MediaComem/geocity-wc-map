@@ -37,7 +37,6 @@
 | information        | Description of what needs to be done and how                                                                               | Object           | Look at Information parameters table for more details [Information parameters](#information-parameters)     |
 | mode               | Information related to the interaciton with the map                                                                        | Object           | Look at Information parameters table for more details [Mode parameters](#mode-parameters)                   |
 | cluster            | Data clustering information                                                                                                | Object           | Look at Information parameters table for more details [Cluster parameters](#cluster-parameters)             |
-| geojson            | Information needed to import data via a geojson file                                                                       | Object           | Look at Information parameters table for more details [Geojson parameters](#geojson-parameters)             |
 | wfs                | Information needed to import data via a WFS service                                                                        | Object           | Look at Information parameters table for more details [WFS parameters](#wfs-parameters)                     |
 | wmts               | Information needed to use WMTS layer                                                                                       | Array of Object  | Look at Information parameters table for more details [WMTS parameters](#wmts-parameters)                   |
 | notifications      | Information and rules for notification. All rules must be respected to send data.                                          | Array of Objects | Look at Information parameters table for more details [Notification parameters](#notification-parameters)   |
@@ -71,13 +70,6 @@
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
 |             |                                                                     |        |         |
-
-### Geojson parameters
-
-| Parameter | Description                     | Type   | Default |
-| -------- | ------------------------------- | ------ | ------- |
-| url      | URL where the geojson is stored | string | ''      |
-|          |                                 |        |         |
 
 ### WFS parameters
 
@@ -168,7 +160,7 @@ otherwise, only the url is requested:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
-<openlayers-element  options='{ "enableDraw": false, 
+<openlayers-element  options='{
                                         "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
@@ -236,7 +228,7 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
-<openlayers-element  options='{ "enableDraw": false, 
+<openlayers-element  options='{
                                         "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
@@ -311,7 +303,7 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ "enableDraw": false, 
+ <openlayers-element  options='{ 
                                         "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
@@ -364,7 +356,7 @@ To activate this mode, add in your HTML code the web component with the followin
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ "enableDraw": false, 
+ <openlayers-element  options='{
                                         "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
@@ -428,7 +420,7 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ "enableDraw": false, 
+ <openlayers-element  options='{
         "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
         "enableGeolocation": true,
         "enableCenterButton": true,
