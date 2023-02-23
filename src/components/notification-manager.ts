@@ -103,7 +103,6 @@ export default class NotificationManager {
     setupCreateMode() {
         window.addEventListener('icon-created', () => {
             const features = useStore().getSelectedFeatures();
-            console.log(features)
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));

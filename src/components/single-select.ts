@@ -17,21 +17,23 @@ import WFSLoader from '../utils/wfs-loader';
 export default class SingleSelect {
 
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+  private store;
 
   constructor() {
-    const map = useStore().getMap();
-    const options = useStore().getOptions();
+    this.store = useStore(); 
+    const map = this.store.getMap();
+    const options = this.store.getOptions();
     const vectorLayer = new VectorLayer();
-    const vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '')
+    const vectorSource = WFSLoader.getSource(this.store.getOptions().wfs.url, '')
   
     this.displayDataOnMap(map, vectorLayer, options, vectorSource);
 
-    map.on('click', function (evt) {
-      map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+    map.on('click', (evt) => {
+      map.forEachFeatureAtPixel(evt.pixel, (feature) => {
         if (feature && feature.getGeometry()?.getType() === 'Point') {
           if (feature.getProperties().features.length === 1) {
-            if (useStore().getSelectedFeature(feature.getProperties().features[0].get('objectid'), 'objectid') === undefined) {
-              useStore().addSelectedFeature(feature.getProperties().features[0]);
+            if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid'), 'objectid') === undefined) {
+              this.store.addSelectedFeature(feature.getProperties().features[0]);
             }
             GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
           }
@@ -40,7 +42,9 @@ export default class SingleSelect {
     });
 
     window.addEventListener('recenter-selected-element', () => {
-      useStore().getMap().getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.get('geom').getCoordinates())
+      const currentItemID = this.store.getCurrentItemId();
+      const coords = this.store.getSelectedFeature(currentItemID, 'objectid')?.get('geom').getCoordinates();
+      map.getView().setCenter(coords);
     })    
   }
 
@@ -64,8 +68,8 @@ export default class SingleSelect {
   }
 
   setCurrentElement(feature: Feature) {
-    useStore().getSelectedFeature(useStore().getCurrentItemId(), 'objectid')?.set('isSelected', undefined)
-    useStore().setCurrentItemId(feature.get('objectid'));
+    this.store.getSelectedFeature(this.store.getCurrentItemId(), 'objectid')?.set('isSelected', undefined)
+    this.store.setCurrentItemId(feature.get('objectid'));
   }
 
   setIconToDisplay(feature: Feature, state: any) {
@@ -75,7 +79,7 @@ export default class SingleSelect {
 
   removeSelectedIteme(feature: Feature) {
     this.setIconToDisplay(feature, undefined);
-    useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'objectid');
+    this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'objectid');
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
@@ -88,11 +92,11 @@ export default class SingleSelect {
   */
   toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>) {
     window.addEventListener('authorize-clicked', ((event: CustomEvent) => {
-      const feature = useStore().getSelectedFeature(event.detail, 'objectid');
+      const feature = this.store.getSelectedFeature(event.detail, 'objectid');
       if (feature) {
         const currentState = feature.get('isClick')
         if (currentState) {
-          if (useStore().getMaxElement() === 1 || useStore().getCurrentItemId() === feature.get('objectid')) 
+          if (this.store.getMaxElement() === 1 || this.store.getCurrentItemId() === feature.get('objectid')) 
             this.removeSelectedIteme(feature)
           else {
             this.setCurrentElement(feature);
@@ -104,16 +108,16 @@ export default class SingleSelect {
         else {
           // Remove old selection to keep only the new one.
           // Special case when only 1 element could be selected.
-          if (useStore().getMaxElement() === 1) {
+          if (this.store.getMaxElement() === 1) {
             vectorLayer.getSource()?.getFeatures().forEach((feature) => {
               feature.get('features').forEach((geometryFeature:Feature) => {
                 if (geometryFeature.get('isClick')) {
                   this.setIconToDisplay(geometryFeature, undefined);
-                  useStore().removeSelectedFeature(geometryFeature.get('objectid'), 'objectid')
+                  this.store.removeSelectedFeature(geometryFeature.get('objectid'), 'objectid')
                 }
               });
             });
-            useStore().setCurrentItemId(feature.get('objectid'));
+            this.store.setCurrentItemId(feature.get('objectid'));
             GeocityEvent.sendEvent('rule-validation', undefined);
           } else {
             this.setCurrentElement(feature);
@@ -122,12 +126,12 @@ export default class SingleSelect {
           this.setIconToDisplay(feature, true);
           this.control.show()
           GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
-          useStore().setCustomDisplay(true);
-          useStore().setTargetBoxSize('select');
+          this.store.setCustomDisplay(true);
+          this.store.setTargetBoxSize('select');
         }
       }
       // Set right class to the map
-      useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
+      this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
     }) as EventListener)
   }
 }

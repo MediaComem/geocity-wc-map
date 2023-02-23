@@ -11,10 +11,13 @@ import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+  private store;
 
   constructor(mapElement: HTMLDivElement) {
-    const map = useStore().getMap();
-    const vectorSource = new Vector();   
+    this.store = useStore(); 
+    const map = this.store.getMap();
+    const vectorSource = new Vector();
+  
 
     this.setupMapForCreation(map, vectorSource);
 
@@ -27,7 +30,9 @@ export default class SingleCreate {
     })
 
     window.addEventListener('recenter-selected-element', () => {
-      map.getView().setCenter(useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')?.get('geom').getCoordinates())
+      const currentItemID = this.store.getCurrentItemId();
+      const coords = this.store.getSelectedFeature(currentItemID, 'id')?.get('geom').getCoordinates();
+      map.getView().setCenter(coords);
     })
 
     this.addLongClickEvent(mapElement, map);
@@ -38,8 +43,8 @@ export default class SingleCreate {
           vectorSource.getFeatures().forEach((feature) => {
             feature.set('isSelected', undefined);
           });
-          useStore().setCurrentItemId(feature.get('id'));
-          useStore().getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
+          this.store.setCurrentItemId(feature.get('id'));
+          this.store.getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
           GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
           this.control.show();
         }
@@ -48,7 +53,7 @@ export default class SingleCreate {
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
-    const options = useStore().getOptions();
+    const options = this.store.getOptions();
     const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
     
     const vectorLayer = new VectorLayer({
@@ -77,35 +82,35 @@ export default class SingleCreate {
   }
 
   createElement( vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id');
+    const feature = this.store.getSelectedFeature(this.store.getCurrentItemId(), 'id');
     if (feature) {
-      if (useStore().getMaxElement() === 1) {
+      if (this.store.getMaxElement() === 1) {
         vectorSource.getFeatures().forEach((f) => vectorSource.removeFeature(f));
         this.control.hide();
       } else {
         vectorSource.getFeatures().forEach((feature) => {
-          if (feature.get('id') !== useStore().getCurrentItemId()) feature.set('isSelected', undefined);
+          if (feature.get('id') !== this.store.getCurrentItemId()) feature.set('isSelected', undefined);
         });
       }
       vectorSource.addFeature(feature);
       this.control.show()
       GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
-      useStore().setCustomDisplay(true);
-      useStore().setTargetBoxSize('select');
+      this.store.setCustomDisplay(true);
+      this.store.setTargetBoxSize('select');
     }
-    useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
+    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
   }
 
   deleteElement(vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId(), 'id')
+    const feature = this.store.getSelectedFeature(this.store.getCurrentItemId(), 'id')
     if (feature) {
       vectorSource.removeFeature(feature)
       this.control.hide()
-      useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+      this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
       GeocityEvent.sendEvent('rule-validation', undefined);
       CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
-    useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
+    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
   }
 
   addLongClickEvent(mapElement: HTMLDivElement, map: Map) {
@@ -160,11 +165,11 @@ export default class SingleCreate {
           isSelected: true
         });
         feature.setGeometryName('geom');
-        if (useStore().getMaxElement() === 1) {
-          useStore().removeSelectedFeature(useStore().getCurrentItemId(), 'id');
+        if (this.store.getMaxElement() === 1) {
+          this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
         }
-        useStore().setCurrentItemId(feature.get('id'))
-        useStore().addSelectedFeature(feature)
+        this.store.setCurrentItemId(feature.get('id'))
+        this.store.addSelectedFeature(feature)
         GeocityEvent.sendEvent('icon-created', undefined);
   }
 

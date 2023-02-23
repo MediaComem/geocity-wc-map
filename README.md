@@ -225,7 +225,7 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
+  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains the geometry in WTK format and the element id.
     - [{ id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
