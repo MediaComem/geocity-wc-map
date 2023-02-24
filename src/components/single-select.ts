@@ -77,13 +77,26 @@ export default class SingleSelect {
     feature.set('isSelected', state)
   }
 
-  removeSelectedIteme(feature: Feature) {
-    this.setIconToDisplay(feature, undefined);
-    this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'objectid');
+  removeSelectedItem(feature: Feature) {
+    this.removeItem(feature)
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
     CustomStyleSelection.setCustomStyleWithouInfoBox();
+  }
+
+  removeItem(feature: Feature) {
+    this.setIconToDisplay(feature, undefined);
+    this.store.removeSelectedFeature(feature.get('objectid'), 'objectid');
+  }
+
+  setInformationBox(feature: Feature) {
+    // Search all selected icon to deselect them and ensure that only one element is selected.
+    this.setIconToDisplay(feature, true);
+    this.control.show()
+    GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
+    this.store.setCustomDisplay(true);
+    this.store.setTargetBoxSize('select');
   }
 
   /*
@@ -97,7 +110,7 @@ export default class SingleSelect {
         const currentState = feature.get('isClick')
         if (currentState) {
           if (this.store.getMaxElement() === 1 || this.store.getCurrentItemId() === feature.get('objectid')) 
-            this.removeSelectedIteme(feature)
+            this.removeSelectedItem(feature)
           else {
             this.setCurrentElement(feature);
             feature.set('isSelected', true);
@@ -119,15 +132,16 @@ export default class SingleSelect {
             });
             this.store.setCurrentItemId(feature.get('objectid'));
             GeocityEvent.sendEvent('rule-validation', undefined);
+            this.setInformationBox(feature);
           } else {
-            this.setCurrentElement(feature);
+            if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
+              this.setCurrentElement(feature);
+              this.setInformationBox(feature)
+            }
+            else {
+              this.removeItem(feature);
+            }
           }
-          // Search all selected icon to deselect them and ensure that only one element is selected.
-          this.setIconToDisplay(feature, true);
-          this.control.show()
-          GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
-          this.store.setCustomDisplay(true);
-          this.store.setTargetBoxSize('select');
         }
       }
       // Set right class to the map

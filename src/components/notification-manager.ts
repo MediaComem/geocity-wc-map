@@ -81,8 +81,6 @@ export default class NotificationManager {
                 this.checkMaxElementContraint(features);
                 if (this.validMaxElementConstraint) {
                     GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-                } else {
-                    GeocityEvent.sendEvent('position-selected', undefined);
                 }
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
@@ -94,9 +92,6 @@ export default class NotificationManager {
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
-            else {
-                GeocityEvent.sendEvent('position-selected', undefined);
-            }
         })
     }
 
@@ -106,8 +101,6 @@ export default class NotificationManager {
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-            } else {
-                GeocityEvent.sendEvent('position-selected', undefined);
             }
             GeocityEvent.sendEvent('authorize-created', undefined);
         })
@@ -206,8 +199,9 @@ export default class NotificationManager {
 
     checkMaxElementContraint(features: Array<Feature>) {
         if (useStore().getMaxElement() >= 0) {
-            if (features.length > useStore().getMaxElement()) {
-                this.validMaxElementConstraint = false;
+            if (features.length >= useStore().getMaxElement()) {
+                if (features.length > useStore().getMaxElement())
+                    this.validMaxElementConstraint = false;
                 this.maxElementNotificationControl?.show();
             } else {
                 this.validMaxElementConstraint = true;

@@ -167,10 +167,12 @@ export default class SingleCreate {
         feature.setGeometryName('geom');
         if (this.store.getMaxElement() === 1) {
           this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
+        } 
+        if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length < this.store.getMaxElement()) {
+          this.store.setCurrentItemId(feature.get('id'))
+          this.store.addSelectedFeature(feature)
+          GeocityEvent.sendEvent('icon-created', undefined);
         }
-        this.store.setCurrentItemId(feature.get('id'))
-        this.store.addSelectedFeature(feature)
-        GeocityEvent.sendEvent('icon-created', undefined);
   }
 
   // The move is on pixel
