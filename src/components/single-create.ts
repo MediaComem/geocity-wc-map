@@ -177,7 +177,7 @@ export default class SingleCreate {
         } 
         if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
           this.store.setCurrentItemId(feature.get('id'))
-          this.store.addSelectedFeature(feature, feature.getProperties().features[0].get('id'), 'create')
+          this.store.addSelectedFeature(feature, feature.get('id'), 'create')
           GeocityEvent.sendEvent('icon-created', undefined);
         }
   }
