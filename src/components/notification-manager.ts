@@ -86,14 +86,6 @@ export default class NotificationManager {
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
         }) as EventListener);
-        
-        window.addEventListener('rule-validation', () => {
-            const features = useStore().getSelectedFeatures();
-            this.checkMaxElementContraint(features);
-            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-            }
-        })
     }
 
     setupSelectMode() {
@@ -128,8 +120,6 @@ export default class NotificationManager {
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-            } else {
-                GeocityEvent.sendEvent('position-selected', undefined);
             }
         })
     }
