@@ -1,10 +1,8 @@
 /// <reference types="node" />
-import Feature from 'ol/Feature';
 import { Vector } from 'ol/source';
 import SelectCreateInformationBoxController from './select-create-information-box';
 import { Map } from 'ol';
 export default class SingleCreate {
-    currentFeature: Feature | undefined;
     control: SelectCreateInformationBoxController;
     constructor(mapElement: HTMLDivElement);
     setupMapForCreation(map: Map, vectorSource: Vector): void;

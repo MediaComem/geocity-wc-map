@@ -10,12 +10,14 @@ import { Map } from 'ol';
 import CustomStyleSelection from '../utils/custom-style-selection';
 
 export default class SingleCreate {
-  currentFeature: Feature | undefined;
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+  private store;
 
   constructor(mapElement: HTMLDivElement) {
-    const map = useStore().getMap();
-    const vectorSource = new Vector();   
+    this.store = useStore(); 
+    const map = this.store.getMap();
+    const vectorSource = new Vector();
+  
 
     this.setupMapForCreation(map, vectorSource);
 
@@ -28,20 +30,40 @@ export default class SingleCreate {
     })
 
     window.addEventListener('recenter-selected-element', () => {
-      map.getView().setCenter(useStore().getSelectedFeature()?.get('geometry').getCoordinates())
-    }) 
+      const currentItemID = this.store.getCurrentItemId();
+      const coords = this.store.getSelectedFeature(currentItemID, 'id')?.get('geom').getCoordinates();
+      map.getView().setCenter(coords);
+    })
 
     this.addLongClickEvent(mapElement, map);
+
+    map.on('click', (evt) =>  {
+      map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
+        if (feature && feature.getGeometry()?.getType() === 'Point') {
+          vectorSource.getFeatures().forEach((feature) => {
+            feature.set('isSelected', undefined);
+          });
+          this.store.setCurrentItemId(feature.get('id'));
+          this.store.getSelectedFeature(feature.get('id'), 'id')?.set('isSelected', true);
+          GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
+          this.control.show();
+        }
+      });
+    });
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
-    const options = useStore().getOptions();
+    const options = this.store.getOptions();
     const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
     
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       visible: true,
-      style: [CreateStyle.setupSingleClick(1), CreateStyle.setupSingleClickCenterCircle(1)],
+
+    });
+    
+    vectorLayer.setStyle(function (feature) {          
+      return CreateStyle.setupCircles(feature, (1));
     });
 
     map.addLayer(vectorLayer);
@@ -49,38 +71,51 @@ export default class SingleCreate {
     map.getView().on('change:resolution', () => {
       const zoom = map.getView().getZoom();
       const resolution = map.getView().getResolution();
-      if (zoom && resolution && zoom > minZoomAllowed ) vectorLayer.setStyle([CreateStyle.setupSingleClick(zoom / resolution), CreateStyle.setupSingleClickCenterCircle(zoom / resolution)])
+      if (zoom && resolution && zoom > minZoomAllowed ) {
+        vectorLayer.setStyle(function (feature) {          
+          return CreateStyle.setupCircles(feature, (zoom / resolution));
+        });
+      }
     })
     this.control.disable();
     map.addControl(this.control);
   }
 
   createElement( vectorSource:Vector) {
-    const feature = useStore().getSelectedFeature();
-    if (feature) {
-      if (this.currentFeature) {
-        vectorSource.removeFeature(this.currentFeature)
-        this.control.hide();
-      }
-      this.currentFeature = feature;
-      vectorSource.addFeature(this.currentFeature);
-      this.control.show()
-      GeocityEvent.sendEvent('open-select-create-box', feature.get('geometry').getCoordinates())
-      useStore().setCustomDisplay(true);
-      useStore().setTargetBoxSize('select');
+    const features = this.store.getSelectedFeatures();
+    if (features.length > this.store.getMaxElement()) {
+      this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
+      return;
     }
-    useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
+    const feature = this.store.getSelectedFeature(this.store.getCurrentItemId(), 'id');
+    if (feature) {
+      if (this.store.getMaxElement() === 1) {
+        vectorSource.getFeatures().forEach((f) => vectorSource.removeFeature(f));
+        this.control.hide();
+      } else {
+        vectorSource.getFeatures().forEach((feature) => {
+          if (feature.get('id') !== this.store.getCurrentItemId()) feature.set('isSelected', undefined);
+        });
+      }
+      vectorSource.addFeature(feature);
+      this.control.show()
+      GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates())
+      this.store.setCustomDisplay(true);
+      this.store.setTargetBoxSize('select');
+    }
+    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
   }
 
   deleteElement(vectorSource:Vector) {
-    if (this.currentFeature) {
-      vectorSource.removeFeature(this.currentFeature)
+    const feature = this.store.getSelectedFeature(this.store.getCurrentItemId(), 'id')
+    if (feature) {
+      vectorSource.removeFeature(feature)
       this.control.hide()
-      vectorSource.removeFeature(this.currentFeature);
-      this.currentFeature = undefined;
+      this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
+      GeocityEvent.sendEvent('rule-validation', undefined);
       CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
-    useStore().getMap().get('target').className = `${useStore().getTargetBoxSize()} ${useStore().getTheme()}`
+    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
   }
 
   addLongClickEvent(mapElement: HTMLDivElement, map: Map) {
@@ -130,10 +165,19 @@ export default class SingleCreate {
         const coordiante = map.getCoordinateFromPixel([x - mapElement.offsetLeft, y - mapElement.offsetTop]);
         const geomPoint = new Point(coordiante);
         const feature = new Feature({
-          geometry: geomPoint,
+          geom: geomPoint,
+          id: Number(`${Math.round(coordiante[0])}${Math.round(coordiante[1])}`),
+          isSelected: true
         });
-        useStore().setSelectedFeature(feature)
-        GeocityEvent.sendEvent('icon-created', undefined);
+        feature.setGeometryName('geom');
+        if (this.store.getMaxElement() === 1) {
+          this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
+        } 
+        if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
+          this.store.setCurrentItemId(feature.get('id'))
+          this.store.addSelectedFeature(feature)
+          GeocityEvent.sendEvent('icon-created', undefined);
+        }
   }
 
   // The move is on pixel

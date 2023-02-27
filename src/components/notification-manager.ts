@@ -7,6 +7,7 @@ import Control from 'ol/control/Control';
 
 import style from '../styles/notification.css?inline';
 import { unsafeCSS } from 'lit';
+import Feature from 'ol/Feature';
 
 /* 
     ZOOM_CONSTRAINT 1
@@ -36,9 +37,11 @@ class ControlNotificationContainer extends Control {
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
+    validMaxElementConstraint: boolean = true;
     notificationControl: ControlNotificationContainer = new ControlNotificationContainer();
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
+    maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
 
     constructor() {
@@ -53,7 +56,7 @@ export default class NotificationManager {
                 rule: {
                     type: "NOT_VALID_MODE"
                 }
-            } as NotificationElement, 4))
+            } as NotificationElement, 5))
         }    
         useStore().getMap().addControl(this.notificationControl)
         this.setup(options.notifications)
@@ -66,78 +69,47 @@ export default class NotificationManager {
                     type: "Point",
                     coordinates: event.detail
                   };
-                GeocityEvent.sendEvent('position-selected', {geometry: wtk.stringify(geometry)});
+                GeocityEvent.sendEvent('position-selected', [{geometry: wtk.stringify(geometry)}]);
             }
         }) as EventListener)
     }
 
     setupSelectMode() {
-        window.addEventListener('icon-clicked', () => {
-            const feature = useStore().getSelectedFeature();
-            if (this.validZoomConstraint && feature) {
-                // If the element is already selected. That means that we unselect it. In this case, we send undefined to inform the state. Otherwise, we select the element and send the coordinate
-                if (feature.get('isClick')) {
-                    GeocityEvent.sendEvent('position-selected', undefined);
-                } else {
-                    const geometry = {
-                        type: "Point",
-                        coordinates: feature.get('geom').getCoordinates()
-                      };
-                    GeocityEvent.sendEvent('position-selected', {
-                        id: feature.get('objectid'),
-                        geometry: wtk.stringify(geometry)
-                    });
+        window.addEventListener('icon-clicked', ((event: CustomEvent) => {
+            const features = useStore().getSelectedFeatures();
+            if (this.validZoomConstraint && features.length > 0) {
+                this.checkMaxElementContraint(features);
+                if (this.validMaxElementConstraint) {
+                    GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
                 }
-                
-                GeocityEvent.sendEvent('authorize-clicked', undefined);
+                GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
-        })
+        }) as EventListener);
 
         window.addEventListener('rule-validation', () => {
-            const feature = useStore().getSelectedFeature();
-            if (this.validZoomConstraint && feature) {
-                const geometry = {
-                    type: "Point",
-                    coordinates: feature.get('geom').getCoordinates()
-                  };
-                GeocityEvent.sendEvent('position-selected', {
-                    id: feature.get('name'),
-                    geometry: wtk.stringify(geometry)
-                });
+            const features = useStore().getSelectedFeatures();
+            this.checkMaxElementContraint(features);
+            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
+                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
         })
     }
 
     setupCreateMode() {
         window.addEventListener('icon-created', () => {
-            const feature = useStore().getSelectedFeature();
-            if (this.validZoomConstraint && feature) {
-                const geometry = {
-                    type: "Point",
-                    coordinates: feature.get('geometry').getCoordinates()
-                  };
-                GeocityEvent.sendEvent('position-selected', {
-                    id: feature.get('name'),
-                    geometry: wtk.stringify(geometry)
-                });
-            } else {
-                useStore().setSelectedFeature(undefined);
-                GeocityEvent.sendEvent('position-selected', undefined);
+            const features = useStore().getSelectedFeatures();
+            this.checkMaxElementContraint(features);
+            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
+                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
             GeocityEvent.sendEvent('authorize-created', undefined);
         })
 
         window.addEventListener('rule-validation', () => {
-            const feature = useStore().getSelectedFeature();
-            if (this.validZoomConstraint && feature) {
-                const geometry = {
-                    type: "Point",
-                    coordinates: feature.get('geometry').getCoordinates()
-                  };
-                GeocityEvent.sendEvent('position-selected', {
-                    id: feature.get('name'),
-                    geometry: wtk.stringify(geometry)
-                });
+            const features = useStore().getSelectedFeatures();
+            this.checkMaxElementContraint(features);
+            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
+                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
         })
 
@@ -151,6 +123,7 @@ export default class NotificationManager {
         notifications.forEach((notification: NotificationElement) => {
             if (notification.rule.type === 'ZOOM_CONSTRAINT') this.setupZoomContraint(notification)
             if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
+            if (notification.rule.type === 'MAX_SELECTION') this.setupMaxSelectionConstraint(notification)
             if (notification.type === 'info') {
                 this.infosNotificationControl = new NotificationBoxControl(this.notificationControl.div, notification, 1)
                 useStore().getMap().addControl(this.infosNotificationControl);
@@ -159,7 +132,7 @@ export default class NotificationManager {
     }
 
     setupZoomContraint(rule: NotificationElement) {
-        this.zoomNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
+        this.zoomNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 4);
         this.zoomNotificationControl.disable();
         useStore().getMap().addControl(this.zoomNotificationControl)
 
@@ -180,6 +153,15 @@ export default class NotificationManager {
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
             this.checkInclusionAreaConstraint(event.detail, rule.rule.couldBypass)
         }) as EventListener);
+    }
+
+    setupMaxSelectionConstraint(rule: NotificationElement) {
+        const maxElement = rule.rule.maxElement;
+        if (maxElement !== undefined) useStore().setMaxElement(maxElement);
+        rule.message = rule.message.replace('{x}', `${maxElement}`);
+        this.maxElementNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
+        this.maxElementNotificationControl.disable();
+        useStore().getMap().addControl(this.maxElementNotificationControl)
     }
 
     hasValidZoom(rule: NotificationElement) {
@@ -213,5 +195,33 @@ export default class NotificationManager {
                 GeocityEvent.sendEvent('position-selected', undefined);
             };
         }
+    }
+
+    checkMaxElementContraint(features: Array<Feature>) {
+        if (useStore().getMaxElement() >= 0) {
+            if (features.length >= useStore().getMaxElement()) {
+                if (features.length > useStore().getMaxElement()) {
+                    this.validMaxElementConstraint = false;
+                    this.maxElementNotificationControl?.show();
+                }
+            } else {
+                this.validMaxElementConstraint = true;
+                this.maxElementNotificationControl?.hide();
+            }
+        }
+    }
+
+    generateExportData(features: Array<Feature>) {
+        const results: Array<Object> = []
+        features.forEach((f) => {
+            results.push({
+                id: f.get('objectid'),
+                geometry: wtk.stringify({
+                    type: "Point",
+                    coordinates: f.get('geom').getCoordinates()
+                })
+            })
+        });
+        return results;
     }
 }
