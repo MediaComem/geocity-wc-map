@@ -82,6 +82,11 @@ export default class SingleCreate {
   }
 
   createElement( vectorSource:Vector) {
+    const features = this.store.getSelectedFeatures();
+    if (features.length > this.store.getMaxElement()) {
+      this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
+      return;
+    }
     const feature = this.store.getSelectedFeature(this.store.getCurrentItemId(), 'id');
     if (feature) {
       if (this.store.getMaxElement() === 1) {
@@ -168,7 +173,7 @@ export default class SingleCreate {
         if (this.store.getMaxElement() === 1) {
           this.store.removeSelectedFeature(this.store.getCurrentItemId(), 'id');
         } 
-        if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length < this.store.getMaxElement()) {
+        if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
           this.store.setCurrentItemId(feature.get('id'))
           this.store.addSelectedFeature(feature)
           GeocityEvent.sendEvent('icon-created', undefined);
