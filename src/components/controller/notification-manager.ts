@@ -3,35 +3,14 @@ import NotificationElement from '../../types/notification-element';
 import { GeocityEvent } from '../../utils/geocity-event';
 import NotificationBoxControl from '../notification/notification';
 import wtk from 'wkt';
-import Control from 'ol/control/Control';
 
-import style from '../../styles/notification.css?inline';
-import { unsafeCSS } from 'lit';
 import Feature from 'ol/Feature';
-
-class ControlNotificationContainer extends Control {
-    public div: HTMLElement;
-
-    static style = [unsafeCSS(style)];
-
-    
-    constructor() {
-      const element = document.createElement('div');
-      element.classList.add('control-notification-manager')
-  
-      super({
-        element: element,
-      });
-  
-      this.div = element;
-    }
-  }
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
     validMaxElementConstraint: boolean = true;
-    notificationControl: ControlNotificationContainer = new ControlNotificationContainer();
+    displayMaxElementConstraint: boolean = false;
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
     maxElementNotificationControl: NotificationBoxControl | undefined;
@@ -44,16 +23,40 @@ export default class NotificationManager {
             case 'select': this.setupSelectMode(); break;
             case 'create': this.setupCreateMode(); break;
             case 'mix': this.setupMixMode(); break;
-            default: useStore().getMap().addControl(new NotificationBoxControl(this.notificationControl.div, {
+            default: useStore().getMap().addControl(new NotificationBoxControl({
                 type: "error",
                 message: "Veuillez sélectionner un mode de fonctionnement valide.",
                 rule: {
                     type: "NOT_VALID_MODE"
                 }
-            } as NotificationElement, 5))
+            } as NotificationElement))
         }    
-        useStore().getMap().addControl(this.notificationControl)
         this.setup(options.notifications)
+        this.displayRightNotification();
+    }
+
+    displayRightNotification() {
+        if (!this.validZoomConstraint) {
+            this.zoomNotificationControl?.show();
+            this.inclusionNotificationControl?.hide();
+            this.maxElementNotificationControl?.hide();
+            this.infosNotificationControl?.hide();
+        } else if (!this.validAreaConstraint) {
+            this.zoomNotificationControl?.hide();
+            this.inclusionNotificationControl?.show();
+            this.maxElementNotificationControl?.hide();
+            this.infosNotificationControl?.hide();
+        } else if (this.displayMaxElementConstraint) {
+            this.zoomNotificationControl?.hide();
+            this.inclusionNotificationControl?.hide();
+            this.maxElementNotificationControl?.show();
+            this.infosNotificationControl?.hide();
+        } else {
+            this.zoomNotificationControl?.hide();
+            this.inclusionNotificationControl?.hide();
+            this.maxElementNotificationControl?.hide();
+            this.infosNotificationControl?.show();
+        }
     }
 
     setupTargetMode() {
@@ -78,6 +81,7 @@ export default class NotificationManager {
                 }
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
+            this.displayRightNotification();
         }) as EventListener);
     }
 
@@ -93,8 +97,11 @@ export default class NotificationManager {
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
+
             GeocityEvent.sendEvent('authorize-created', event.detail);
+            this.displayRightNotification();
         }) as EventListener)
+
 
         window.addEventListener('icon-removed', () => {
             GeocityEvent.sendEvent('position-selected', undefined);
@@ -116,6 +123,7 @@ export default class NotificationManager {
             } else {
                 GeocityEvent.sendEvent('position-selected', undefined);
             }
+            this.displayRightNotification();
         })
     }
 
@@ -131,33 +139,34 @@ export default class NotificationManager {
             if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
             if (notification.rule.type === 'MAX_SELECTION') this.setupMaxSelectionConstraint(notification)
             if (notification.type === 'info') {
-                this.infosNotificationControl = new NotificationBoxControl(this.notificationControl.div, notification, 1)
+                this.infosNotificationControl = new NotificationBoxControl(notification)
                 useStore().getMap().addControl(this.infosNotificationControl);
             }
         })
     }
 
     setupZoomContraint(rule: NotificationElement) {
-        this.zoomNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 4);
+        this.zoomNotificationControl = new NotificationBoxControl(rule);
         this.zoomNotificationControl.disable();
         useStore().getMap().addControl(this.zoomNotificationControl)
 
         if (this.hasValidZoom(rule)) {
             this.validZoomConstraint = false; 
-            this.zoomNotificationControl.show();
         } 
         
         useStore().getMap().getView().on('change:resolution', () => {
-            this.checkZoomConstraint(rule)
+            this.checkZoomConstraint(rule);
+            this.displayRightNotification();
         })
     }
 
     setupInclusionAreaConstraint(rule: NotificationElement) {
-        this.inclusionNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 2);
+        this.inclusionNotificationControl = new NotificationBoxControl(rule);
         this.inclusionNotificationControl.disable();
         useStore().getMap().addControl(this.inclusionNotificationControl)
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
-            this.checkInclusionAreaConstraint(event.detail, rule.rule.couldBypass)
+            this.checkInclusionAreaConstraint(event.detail, rule.rule.couldBypass);
+            this.displayRightNotification();
         }) as EventListener);
     }
 
@@ -165,7 +174,7 @@ export default class NotificationManager {
         const maxElement = rule.rule.maxElement;
         if (maxElement !== undefined) useStore().setMaxElement(maxElement);
         rule.message = rule.message.replace('{x}', `${maxElement}`);
-        this.maxElementNotificationControl = new NotificationBoxControl(this.notificationControl.div, rule, 3);
+        this.maxElementNotificationControl = new NotificationBoxControl(rule);
         this.maxElementNotificationControl.disable();
         useStore().getMap().addControl(this.maxElementNotificationControl)
     }
@@ -177,12 +186,10 @@ export default class NotificationManager {
 
     checkZoomConstraint(rule: NotificationElement) {
         if (!this.hasValidZoom(rule)) {
-            this.zoomNotificationControl?.hide()
             this.validZoomConstraint = true;        
             GeocityEvent.sendEvent('rule-validation', undefined);        
         }
         else {
-            this.zoomNotificationControl?.show()
             this.validZoomConstraint = false;
             GeocityEvent.sendEvent('position-selected', undefined);
         }
@@ -190,11 +197,9 @@ export default class NotificationManager {
 
     checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined) {
         if (isInInclusionArea) {
-            this.inclusionNotificationControl?.hide();
             this.validAreaConstraint = true;
         }
         else {
-            this.inclusionNotificationControl?.show();
             if (couldBypass) this.validAreaConstraint = true;
             else { 
                 this.validAreaConstraint = false;
@@ -208,11 +213,11 @@ export default class NotificationManager {
             if (features.length >= useStore().getMaxElement()) {
                 if (features.length > useStore().getMaxElement()) {
                     this.validMaxElementConstraint = false;
-                    this.maxElementNotificationControl?.show();
+                    this.displayMaxElementConstraint = true;
                 }
             } else {
                 this.validMaxElementConstraint = true;
-                this.maxElementNotificationControl?.hide();
+                this.displayMaxElementConstraint = false;
             }
         }
     }
