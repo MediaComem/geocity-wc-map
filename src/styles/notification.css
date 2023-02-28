@@ -43,8 +43,8 @@
 
 @media only screen and (min-width: 996px) {
   .notification-box {
-    left: calc((100% - ((var(--notification-width) + 30px) / 2)) / 2);
-    max-width: var(--notification-width);
+    left: calc((100% - ((var(--notification-width) + 30px))) / 2);
+    width: var(--notification-width);
   }
 }
 
