@@ -145,8 +145,8 @@ export class OpenLayersElement extends LitElement {
     if (options.wmts.length > 0) new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.borderUrl !== '') new Border();
-    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
     if (options.inclusionArea.url !== '') new InclusionArea();
+    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
     if (options.mode.type === 'mix' && options.wfs.url != '') {
       new SingleCreate(this.mapElement);
