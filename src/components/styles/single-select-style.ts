@@ -5,16 +5,26 @@ import CircleStyle from 'ol/style/Circle';
 import SVGCreator from '../../utils/svg-creator';
 
 export default class SingleSelectStyle {
-  static clusterWithIcon(feature: FeatureLike) {
+
+  clickImage: HTMLImageElement;
+  selectImage: HTMLImageElement;
+
+  constructor() {
+    this.clickImage = document.createElement('img') as HTMLImageElement;
+    this.clickImage.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SVGCreator.mapPinClick)
+    this.selectImage = document.createElement('img') as HTMLImageElement;
+    this.selectImage.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SVGCreator.mapPinSelect)
+  }
+
+  clusterWithIcon(feature: FeatureLike) {
     const size = feature.get('features').length;
     let style;
     if (size === 1 && feature.get('features')[0].get('isSelected')) {
       style = new Style({
         zIndex: 1,
         image: new Icon({
-          src:
-            'data:image/svg+xml;charset=utf-8,' +
-            encodeURIComponent(SVGCreator.mapPinSelect),
+          img: this.selectImage,
+          imgSize: [42, 54],
           // the svg height is 54px. It's the reason why the anchor is set like that
           anchor: [0.5, 54],
           anchorXUnits: 'fraction',
@@ -25,9 +35,8 @@ export default class SingleSelectStyle {
       style = new Style({
         zIndex: 1,
         image: new Icon({
-          src:
-            'data:image/svg+xml;charset=utf-8,' +
-            encodeURIComponent(SVGCreator.mapPinClick),
+          img: this.clickImage,
+          imgSize: [42, 54],
           // the svg height is 54px. It's the reason why the anchor is set like that
           anchor: [0.5, 54],
           anchorXUnits: 'fraction',
