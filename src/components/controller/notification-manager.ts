@@ -211,7 +211,11 @@ export default class NotificationManager {
     checkMaxElementContraint(features: Array<Feature>) {
         if (useStore().getMaxElement() >= 0) {
             if (features.length >= useStore().getMaxElement()) {
-                if (features.length > useStore().getMaxElement()) {
+                if (useStore().getMaxElement() === 1 && features.length === useStore().getMaxElement()) {
+                    this.validMaxElementConstraint = true;
+                    this.displayMaxElementConstraint = false;
+                }
+                else if (features.length > useStore().getMaxElement()) {
                     this.validMaxElementConstraint = false;
                     this.displayMaxElementConstraint = true;
                 }
