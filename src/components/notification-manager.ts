@@ -94,14 +94,14 @@ export default class NotificationManager {
     }
 
     iconCreatedListener() {
-        window.addEventListener('icon-created', () => {
+        window.addEventListener('icon-created', ((event: CustomEvent) => {
             const features = useStore().getSelectedFeatures();
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
-            GeocityEvent.sendEvent('authorize-created', undefined);
-        })
+            GeocityEvent.sendEvent('authorize-created', event.detail);
+        }) as EventListener)
 
         window.addEventListener('icon-removed', () => {
             GeocityEvent.sendEvent('position-selected', undefined);

@@ -21,9 +21,9 @@ export default class SingleCreate {
 
     this.setupMapForCreation(map, vectorSource);
 
-    window.addEventListener('authorize-created', () => {
-      this.createElement(vectorSource)
-    })
+    window.addEventListener('authorize-created', ((event: CustomEvent) => {
+      this.createElement(vectorSource, event)
+    }) as EventListener)
 
     window.addEventListener('remove-created-icon', () => {
       this.deleteElement(vectorSource)
@@ -46,8 +46,6 @@ export default class SingleCreate {
             this.store.getSelectedFeature(feature.get('id'))?.set('isSelected', true);
             GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
             this.control.show();
-          } else {
-            this.control.hide();
           }
         }
       });
@@ -83,12 +81,13 @@ export default class SingleCreate {
     map.addControl(this.control);
   }
 
-  createElement( vectorSource:Vector) {
+  createElement( vectorSource:Vector, event: CustomEvent) {
     const features = this.store.getSelectedFeatures();
     if (features.length > this.store.getMaxElement()) {
-      this.store.removeSelectedFeature(this.store.getCurrentItemId());
+      this.store.removeSelectedFeature(event.detail);
       return;
     }
+    this.store.setCurrentItemId(event.detail);
     const feature = this.store.getSelectedFeature(this.store.getCurrentItemId());
     if (feature) {
       if (this.store.getMaxElement() === 1) {
@@ -176,9 +175,8 @@ export default class SingleCreate {
           this.store.removeSelectedFeature(this.store.getCurrentItemId());
         } 
         if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
-          this.store.setCurrentItemId(feature.get('id'))
           this.store.addSelectedFeature(feature, feature.get('id'), 'create')
-          GeocityEvent.sendEvent('icon-created', undefined);
+          GeocityEvent.sendEvent('icon-created', feature.get('id'));
         }
   }
 
