@@ -1,22 +1,17 @@
 import NotificationElement from '../../types/notification-element';
 import NotificationBoxControl from '../notification/notification';
-import Control from 'ol/control/Control';
 import Feature from 'ol/Feature';
-declare class ControlNotificationContainer extends Control {
-    div: HTMLElement;
-    static style: import("lit").CSSResult[];
-    constructor();
-}
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
     validMaxElementConstraint: boolean;
-    notificationControl: ControlNotificationContainer;
+    displayMaxElementConstraint: boolean;
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
     constructor();
+    displayRightNotification(): void;
     setupTargetMode(): void;
     iconClickedListener(): void;
     setupSelectMode(): void;
@@ -34,4 +29,3 @@ export default class NotificationManager {
     checkMaxElementContraint(features: Array<Feature>): void;
     generateExportData(features: Array<Feature>): Object[];
 }
-export {};
