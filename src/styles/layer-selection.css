@@ -1,99 +1,114 @@
-.layer-container {
+@media only screen and (min-width: 420px) {
+  .layer-container {
+    right: calc(0.5em + 40px);
+  }
+}
+
+@media only screen and (max-width: 419px) {
+  .layer-container {
     left: calc(50% - 151px);
-    position: absolute;
-    max-width: 302px;
-    width: 100%;
-    top: var(--top-distance);
-    z-index: 0;
+  }
+}
+
+.layer-container {
+  position: absolute;
+  max-width: 302px;
+  width: 100%;
+  top: var(--top-distance);
+  z-index: 0;
+  font-family: sans-serif;
 }
 
 .layer-title-container {
-    border-radius: var(--icon-border-radius);
-    border: 1px solid var(--icon-border-color);
-    display: flex;
-    background-color: var(--information-box-background-color);
+  border-top-left-radius: var(--icon-border-radius);
+  border-top-right-radius: var(--icon-border-radius);
+  border-bottom: 1px solid var(--icon-border-color);
+  display: flex;
+  background-color: var(--information-box-background-color);
 }
 
 .layer-text {
-    width: calc(100% - 13px);
-    height: 36px;
-    padding: 0;
-    padding-left: 11px;
-    font-size: 14px;
-    line-height: 17px;
-    font-weight: 400;
-    background-color: var(--information-box-background-color);
-    color: var(--information-box-text-color);
-    margin: 0;
-    align-items: center;
-    display: flex;
+  width: calc(100% - 13px);
+  height: 36px;
+  padding: 0;
+  padding-left: 11px;
+  font-size: 14px;
+  line-height: 17px;
+  font-weight: 400;
+  background-color: var(--information-box-background-color);
+  color: var(--information-box-text-color);
+  margin: 0;
+  align-items: center;
+  display: flex;
 }
 
 .layer-svg-container {
-    width: 29px;
-    height: 36px;
-    margin-right: 11px;
-    display: flex;
-    align-items: center;
+  width: 29px;
+  height: 36px;
+  margin-right: 11px;
+  display: flex;
+  align-items: center;
 }
 
 ul {
-    margin-top: 0px;
-    list-style-type: none;
-    background-color: var(--information-box-background-color);;
-    padding-left: 0;
-    border-radius: var(--icon-border-radius);
+  margin-top: 0px;
+  list-style-type: none;
+  background-color: var(--information-box-background-color);
+  padding-left: 0;
+  border-bottom-left-radius: var(--icon-border-radius);
+  border-bottom-right-radius: var(--icon-border-radius);
 }
 
 li {
-    height: 64px;
-    border-bottom: 1px solid var(--icon-border-color);
-    padding-left: 11px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    color: var(--information-box-text-color)
+  height: 64px;
+  border-bottom: 1px solid var(--icon-border-color);
+  padding-left: 11px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  color: var(--information-box-text-color);
 }
 
 li > .image-container {
-    width: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: inherit;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: inherit;
+  padding-right: 9px;
 }
 
 li > .image-container > img {
-    width: 46px;
-    height: 46px;
-    border-radius: var(--icon-border-radius);;
-    border: 1px solid var(--icon-border-color)
+  width: 46px;
+  height: 46px;
+  border-radius: var(--icon-border-radius);
+  border: 1px solid var(--icon-border-color);
 }
 
 .selected-layer {
-    border: 2px solid #DC2626 !important;
-    border-radius: var(--icon-border-radius);;
+  border: 2px solid #dc2626 !important;
+  border-radius: var(--icon-border-radius);
 }
 
 ul > :last-child {
-    border-bottom-right-radius: var(--icon-border-radius);
-    border-bottom-left-radius: var(--icon-border-radius);
+  border-bottom-right-radius: var(--icon-border-radius);
+  border-bottom-left-radius: var(--icon-border-radius);
 }
 
 li:hover,
 li:focus {
-    background-color: var(--icon-border-color);
+  background-color: var(--icon-border-color);
 }
 
 svg {
-    width: var(--svg-icon-size);
-    height: var(--svg-icon-size);
-    stroke: var(--information-box-title-color);
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
+  stroke: var(--information-box-title-color);
 }
 
 svg:hover {
-    stroke: var(--information-cross-hover-color);
+  stroke: var(--information-cross-hover-color);
 }
 
 svg > g > .icon {
@@ -104,7 +119,7 @@ svg > g > .icon {
 }
 
 .cross-div {
-    width: var(--svg-icon-size);
-    height: var(--svg-icon-size);
-    cursor: pointer
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
+  cursor: pointer;
 }
