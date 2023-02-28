@@ -4,9 +4,10 @@ import SelectCreateInformationBoxController from './select-create-information-bo
 import { Map } from 'ol';
 export default class SingleCreate {
     control: SelectCreateInformationBoxController;
+    private store;
     constructor(mapElement: HTMLDivElement);
     setupMapForCreation(map: Map, vectorSource: Vector): void;
-    createElement(vectorSource: Vector): void;
+    createElement(vectorSource: Vector, event: CustomEvent): void;
     deleteElement(vectorSource: Vector): void;
     addLongClickEvent(mapElement: HTMLDivElement, map: Map): void;
     requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement): void;

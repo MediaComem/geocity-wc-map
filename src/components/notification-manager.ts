@@ -50,6 +50,7 @@ export default class NotificationManager {
             case 'target': this.setupTargetMode(); break;
             case 'select': this.setupSelectMode(); break;
             case 'create': this.setupCreateMode(); break;
+            case 'mix': this.setupMixMode(); break;
             default: useStore().getMap().addControl(new NotificationBoxControl(this.notificationControl.div, {
                 type: "error",
                 message: "Veuillez sélectionner un mode de fonctionnement valide.",
@@ -74,7 +75,7 @@ export default class NotificationManager {
         }) as EventListener)
     }
 
-    setupSelectMode() {
+    iconClickedListener() {
         window.addEventListener('icon-clicked', ((event: CustomEvent) => {
             const features = useStore().getSelectedFeatures();
             if (this.validZoomConstraint && features.length > 0) {
@@ -85,38 +86,50 @@ export default class NotificationManager {
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
         }) as EventListener);
-
-        window.addEventListener('rule-validation', () => {
-            const features = useStore().getSelectedFeatures();
-            this.checkMaxElementContraint(features);
-            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-            }
-        })
     }
 
-    setupCreateMode() {
-        window.addEventListener('icon-created', () => {
-            const features = useStore().getSelectedFeatures();
-            this.checkMaxElementContraint(features);
-            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
-            }
-            GeocityEvent.sendEvent('authorize-created', undefined);
-        })
+    setupSelectMode() {
+        this.iconClickedListener();
+        this.ruleValidationListener();    
+    }
 
-        window.addEventListener('rule-validation', () => {
+    iconCreatedListener() {
+        window.addEventListener('icon-created', ((event: CustomEvent) => {
             const features = useStore().getSelectedFeatures();
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
             }
-        })
+            GeocityEvent.sendEvent('authorize-created', event.detail);
+        }) as EventListener)
 
         window.addEventListener('icon-removed', () => {
             GeocityEvent.sendEvent('position-selected', undefined);
             GeocityEvent.sendEvent('remove-created-icon', undefined);
         })
+    }
+
+    setupCreateMode() {
+        this.iconCreatedListener();
+        this.ruleValidationListener();       
+    }
+
+    ruleValidationListener() {
+        window.addEventListener('rule-validation', () => {
+            const features = useStore().getSelectedFeatures();
+            this.checkMaxElementContraint(features);
+            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
+                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+            } else {
+                GeocityEvent.sendEvent('position-selected', undefined);
+            }
+        })
+    }
+
+    setupMixMode() {
+        this.iconClickedListener();
+        this.iconCreatedListener();
+        this.ruleValidationListener();    
     }
 
     setup(notifications: Array<NotificationElement>) {
