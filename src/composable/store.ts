@@ -1,6 +1,7 @@
 import { Feature, Map } from 'ol';
 import { Extent } from 'ol/extent';
 import Geolocation from 'ol/Geolocation';
+import StoreFeature from '../types/store-feature';
 import IOption from '../utils/options';
 
 let theme: string = '';
@@ -9,7 +10,7 @@ let targetBoxSize: string = '';
 let geolocation: Geolocation | undefined;
 let options: IOption;
 let map: Map;
-let selectedFeatures: Array<Feature> = [];
+let selectedFeatures: Array<StoreFeature> = [];
 let borderConstraint: Extent | undefined;
 let currentItemId: number = -1;
 let maxElement: number = -1;
@@ -62,22 +63,35 @@ function getMap() {
   return map;
 }
 
-function addSelectedFeature(newVal: Feature) {
-  selectedFeatures.push(newVal);
+function addSelectedFeature(newVal: Feature, id: number, type: string) {
+  selectedFeatures.push({
+    id: id,
+    type: type,
+    feature: newVal
+  });
 }
 
-function removeSelectedFeature(id: number, objectIdName: string) {
-  const index = selectedFeatures.findIndex((f) => f.get(objectIdName) === id)
+function removeSelectedFeature(id: number) {
+  const index = selectedFeatures.findIndex((f) => f.id === id)
   if (index !== -1) selectedFeatures.splice(index, 1);
 }
 
-function getSelectedFeature(id: number, objectIdName: string) {
-  const index = selectedFeatures.findIndex((f) => f.get(objectIdName) === id)
-  return index !== -1 ? selectedFeatures[index] : undefined;
+function getSelectedFeature(id: number) {
+  const index = selectedFeatures.findIndex((f) => f.id === id)
+  return index !== -1 ? selectedFeatures[index].feature : undefined;
+}
+
+function getCurrentFeatureType(id: number) {
+  const index = selectedFeatures.findIndex((f) => f.id === id)
+  return index !== -1 ? selectedFeatures[index].type : '';
+}
+
+function unselectFeatures() {
+  selectedFeatures.find((f) => f.feature.get('isSelected'))?.feature.set('isSelected', undefined);
 }
 
 function getSelectedFeatures() {
-  return selectedFeatures
+  return selectedFeatures.map((f) => f.feature);
 }
 
 function setBorderConstraint(newVal: Extent | undefined) {
@@ -121,7 +135,9 @@ export function useStore() {
     addSelectedFeature,
     removeSelectedFeature,
     getSelectedFeature,
+    getCurrentFeatureType,
     getSelectedFeatures,
+    unselectFeatures,
     setBorderConstraint,
     getBorderConstraint,
     setCurrentItemId,

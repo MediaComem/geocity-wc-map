@@ -1,6 +1,5 @@
-import GeojsonConfig from '../types/geojson-config';
 import WFSConfiguration from '../types/wfs-config';
-import wmtsLayerConfiguration from '../components/wmts-loader';
+import wmtsLayerConfiguration from '../components/mapView/wmts-loader';
 import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
@@ -18,15 +17,10 @@ export default interface IOption {
     defaultCenter: Array<number>;
     enableGeolocation: boolean;
     enableCenterButton: boolean;
-    enableDraw: boolean;
-    maxNbDraw: number;
-    drawElement: string;
-    onlyOneDraw: boolean;
     enableRotation: boolean;
     information: InformationElement;
     mode: ModeConfig;
     cluster: ClusterConfig;
-    geojson: GeojsonConfig;
     geolocationInformation: GeolocationInformation;
     notifications: Array<NotificationElement>;
     wfs: WFSConfiguration;

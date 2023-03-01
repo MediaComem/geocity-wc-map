@@ -5,18 +5,15 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { Geolocation } from 'ol';
 import { ScaleLine } from 'ol/control';
-import Drawer from './components/drawer';
-import GeojsonLoader from './components/geojson-loader';
-import SingleSelect from './components/single-select';
+import SingleSelect from './components/mode/select';
 
-import GeolocationMarker from './components/geolocation-marker';
-import WMTSLoader from './components/wmts-loader';
+import WMTSLoader from './components/mapView/wmts-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
 import mapStyle from './styles/map.css?inline';
 import controlsStyle from './styles/controls.css?inline';
 import notificationStyle from './styles/notification.css?inline';
-import NotificationManager from './components/notification-manager';
+import NotificationManager from './components/controller/notification-manager';
 import theme from './styles/theme.css?inline';
 import animationStyle from './styles/animation.css?inline';
 
@@ -25,16 +22,17 @@ import IOption from './utils/options';
 import GeolocationInformation from './types/geolocation-information';
 
 import { useStore } from './composable/store';
-import InclusionArea from './components/inclusion-area';
+import InclusionArea from './components/constraint/inclusion-area';
 import ControlIconManager from './utils/control-icon-manager';
 
-import TargetController from './components/target';
-import TargetInformationBoxElement from './components/target-information-box';
+import TargetController from './components/mode/target';
+import TargetInformationBoxElement from './components/notification/target-information-box';
 import proj4 from 'proj4';
 import {register} from 'ol/proj/proj4.js';
-import SingleCreate from './components/single-create';
-import SearchLocationControl from './components/search-location';
-import Border from './components/border';
+import SingleCreate from './components/mode/create';
+import SearchLocationControl from './components/control/search-location';
+import Border from './components/constraint/border';
+import GeolocationManager from './components/controller/geolocation-manager';
 
 /**
  * An example element.
@@ -133,8 +131,7 @@ export class OpenLayersElement extends LitElement {
         },
         projection: this.view.getProjection(),
       }));
-      useStore().getGeolocation()?.setTracking(true);
-      new GeolocationMarker();
+      new GeolocationManager();
     }
 
     if (options.mode.type === 'target') {
@@ -147,12 +144,14 @@ export class OpenLayersElement extends LitElement {
 
     if (options.wmts.length > 0) new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
-    if (options.geojson.url != '') new GeojsonLoader()
     if (options.borderUrl !== '') new Border();
-    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
-    if (options.enableDraw) new Drawer();
     if (options.inclusionArea.url !== '') new InclusionArea();
+    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
     if (options.mode.type === 'create') new SingleCreate(this.mapElement);
+    if (options.mode.type === 'mix' && options.wfs.url != '') {
+      new SingleCreate(this.mapElement);
+      new SingleSelect();
+    } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
     new NotificationManager();
     ControlIconManager.setupIcon();
     if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());

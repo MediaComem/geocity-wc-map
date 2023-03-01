@@ -1,0 +1,31 @@
+import NotificationElement from '../../types/notification-element';
+import NotificationBoxControl from '../notification/notification';
+import Feature from 'ol/Feature';
+export default class NotificationManager {
+    validZoomConstraint: boolean;
+    validAreaConstraint: boolean;
+    validMaxElementConstraint: boolean;
+    displayMaxElementConstraint: boolean;
+    zoomNotificationControl: NotificationBoxControl | undefined;
+    inclusionNotificationControl: NotificationBoxControl | undefined;
+    maxElementNotificationControl: NotificationBoxControl | undefined;
+    infosNotificationControl: NotificationBoxControl | undefined;
+    constructor();
+    displayRightNotification(): void;
+    setupTargetMode(): void;
+    iconClickedListener(): void;
+    setupSelectMode(): void;
+    iconCreatedListener(): void;
+    setupCreateMode(): void;
+    ruleValidationListener(): void;
+    setupMixMode(): void;
+    setup(notifications: Array<NotificationElement>): void;
+    setupZoomContraint(rule: NotificationElement): void;
+    setupInclusionAreaConstraint(rule: NotificationElement): void;
+    setupMaxSelectionConstraint(rule: NotificationElement): void;
+    hasValidZoom(rule: NotificationElement): boolean | 0 | undefined;
+    checkZoomConstraint(rule: NotificationElement): void;
+    checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
+    checkMaxElementContraint(features: Array<Feature>): void;
+    generateExportData(features: Array<Feature>): Object[];
+}

@@ -3,7 +3,7 @@ import NotificationElement from '../../types/notification-element';
 export default class NotificationBoxControl extends Control {
     ruleType: string;
     div: HTMLElement;
-    constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number);
+    constructor(notification: NotificationElement);
     disable(): void;
     show(): void;
     hide(): void;

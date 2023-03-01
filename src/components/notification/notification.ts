@@ -60,7 +60,7 @@ export default class NotificationBoxControl extends Control {
   ruleType: string;
   div: HTMLElement;
 
-  constructor(target: HTMLElement, notification: NotificationElement, layerPosition: number) {
+  constructor(notification: NotificationElement) {
     const notificationBox = document.createElement(
       'notification-box'
     ) as NotificationBox;
@@ -71,8 +71,17 @@ export default class NotificationBoxControl extends Control {
     this.ruleType = notification.rule.type;
     this.div = notificationBox;
     this.div.classList.add('notification-box');
-    this.div.style.zIndex = `${layerPosition}`;
-    this.setTarget(target);
+    const size = useStore().getMap().getSize();
+    if (size) {
+      this.div.style.setProperty('--notification-width', size[0] *  0.33 + 'px') 
+    }
+      
+    window.addEventListener('resize', () => {
+      const size = useStore().getMap().getSize();
+      if (size) {
+        this.div.style.setProperty('--notification-width', size[0] *  0.33 + 'px') 
+      }
+    })
   }
 
   public disable() {

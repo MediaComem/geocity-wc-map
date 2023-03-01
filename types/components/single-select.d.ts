@@ -8,10 +8,13 @@ import SelectCreateInformationBoxController from './select-create-information-bo
 import IOption from '../utils/options';
 export default class SingleSelect {
     control: SelectCreateInformationBoxController;
+    private store;
     constructor();
     displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource): void;
     setCurrentElement(feature: Feature): void;
     setIconToDisplay(feature: Feature, state: any): void;
-    removeSelectedIteme(feature: Feature): void;
+    removeSelectedItem(feature: Feature): void;
+    removeItem(feature: Feature): void;
+    setInformationBox(feature: Feature): void;
     toogleDataSelection(vectorLayer: VectorLayer<Vector<Geometry>>): void;
 }
