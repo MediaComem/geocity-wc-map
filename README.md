@@ -17,7 +17,6 @@
 
 - Demos on static HTML page:
   - Run `npm run demo`
-  - Run `[demo-name].html` with a local server (e.g. _live-server_ or _vite_)
 
 ## Web Component Parameters
 
