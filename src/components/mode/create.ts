@@ -163,7 +163,8 @@ export default class SingleCreate {
   requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
         // To have the coordinate, we use the pixel position and the map position to find the exact pixel in the window.
         // Then use map pixel converter
-        const coordiante = map.getCoordinateFromPixel([x - mapElement.offsetLeft, y - mapElement.offsetTop]);
+        const mapPosition = mapElement.getBoundingClientRect()
+        const coordiante = map.getCoordinateFromPixel([x - mapPosition.left - document.documentElement.scrollLeft, y - mapPosition.top - document.documentElement.scrollTop]);
         const geomPoint = new Point(coordiante);
         const feature = new Feature({
           geom: geomPoint,
