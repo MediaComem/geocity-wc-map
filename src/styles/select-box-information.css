@@ -1,0 +1,75 @@
+  .box-element {
+    position: absolute;
+    top: 10px;
+    background-color: var(--information-box-background-color);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: var(--box-border-radius);
+    border: 1px solid var(--information-box-background-color);
+    margin-left: 5px;
+    margin-right: 5px;
+    max-width: 302px;
+    width: 100%;
+    left: calc(50% - 172px);
+    font-family: sans-serif;
+    display: flex;
+    z-index: 5;
+  }
+
+  .box-text-container {
+    width: 70%;
+  }
+
+  .box-icon-container {
+    width: 30%;
+    display: flex;
+  }
+  
+  .box-element-title {
+    display: flex;
+  }
+  
+  .box-element-title-text {
+    width: 900%;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    color: var(--information-box-title-color);
+  }
+  
+  .box-element-content {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: var(--information-box-text-color);
+    width: 90%;
+  }
+  
+  .position-icon {
+    display: flex;
+    justify-content: center;
+    width: 50%;
+  }
+
+  .icon-container {
+    width: 36px;
+    height: 36px;
+    background-color: var(--select-icon-background);
+    border-radius: var(--icon-border-radius);
+  }
+
+  .icon-container > svg {
+    display: block;
+    margin-left: calc((var(--icon-width) - var(--svg-icon-size)) / 2);
+    margin-top: calc((var(--icon-height) - var(--svg-icon-size)) / 2);
+    width: var(--svg-icon-size) !important;
+    height: var(--svg-icon-size) !important;
+  }
+
+  .icon-container > svg > g > .icon {
+    fill: none;
+    stroke: var(--control-icon-color);
+    stroke-width: var(--icon-stroke-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}

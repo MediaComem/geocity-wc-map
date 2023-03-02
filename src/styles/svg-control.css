@@ -1,0 +1,14 @@
+svg {
+    margin-left: calc((var(--icon-width) - var(--svg-icon-size)) / 2);
+    margin-top: calc((var(--icon-height) - var(--svg-icon-size)) / 2);
+    width: var(--svg-icon-size);
+    height: var(--svg-icon-size);
+}
+
+svg > g > .icon {
+  fill: none;
+  stroke: var(--control-icon-color);
+  stroke-width: var(--icon-stroke-width);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}

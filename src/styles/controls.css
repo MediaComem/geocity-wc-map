@@ -1,9 +1,128 @@
-.information-control {
-  right: 0.5em;
-  top: 2.5em;
+.left-buttons-control-container {
+  display: flex;
+  position: absolute;
+  width: var(--icon-width);
+  flex-direction: column;
+  left: var(--side-distance);
+}
+
+.right-buttons-control-container {
+  display: flex;
+  position: absolute;
+  right: var(--side-distance);
+  width: var(--icon-width);
+  flex-direction: column;
+}
+
+.ol-zoom {
+  position: relative;
+  width: var(--icon-width) !important;
+  top: 0px;
+  left: 0px;
+}
+
+.ol-full-screen {
+  position: relative;
+  width: var(--icon-width) !important;
+  top: 0px;
+  right: 0px;
+  margin-top: var(--top-distance);
 }
 
 .center-control {
-  top: 95%;
-  left: 0.5em;
+  margin-top: var(--top-distance)
+}
+
+.rotation-control {
+  margin-top: var(--top-distance);
+}
+
+.ol-zoom > button {
+  margin: 0px;
+}
+
+.ol-full-screen > button,
+.ol-full-screen-custom-small > button,
+.ol-full-screen-custom-medium > button,
+.ol-full-screen-custom-large > button {
+  border-radius: var(--icon-border-radius);
+  margin: 0px;
+  cursor: pointer;
+}
+
+.ol-zoom-in,
+.ol-zoom-out,
+.information-control,
+.center-control,
+.rotation-control,
+.ol-full-screen-true,
+.ol-full-screen-false {
+  width: var(--icon-width) !important;
+  height: var(--icon-height) !important;
+  background-color: var(--control-background-color) !important;
+  border-radius: var(--icon-border-radius);
+  cursor: pointer;
+}
+
+.ol-zoom-in:hover,
+.ol-zoom-out:hover,
+.information-control:hover,
+.center-control:hover,
+.rotation-control:hover,
+.ol-full-screen-true:hover,
+.ol-full-screen-false:hover {
+  background-color: var(--control-background-color-hover) !important;
+  outline: none !important;
+}
+
+.ol-zoom-in {
+  border-radius: 0px !important;
+  border-top-right-radius: var(--icon-border-radius) !important;
+  border-top-left-radius: var(--icon-border-radius) !important;
+}
+
+.ol-zoom-out {
+  border-radius: 0px !important;
+  border-bottom-right-radius: var(--icon-border-radius) !important;
+  border-bottom-left-radius: var(--icon-border-radius) !important;
+}
+
+.ol-zoom-in > div > svg,
+.ol-zoom-out > div > svg,
+.ol-full-screen-true > div > svg,
+.ol-full-screen-false > div > svg { 
+  width: var(--svg-icon-size) !important;
+  height: var(--svg-icon-size) !important;
+}
+
+.ol-zoom-in > div > svg > g > .icon,
+.ol-zoom-out > div > svg > g > .icon,
+.ol-full-screen-true > div > svg > g > .icon,
+.ol-full-screen-false > div > svg > g > .icon {
+    fill: none;
+    stroke: var(--control-icon-color);
+    stroke-width: var(--icon-stroke-width);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+@media only screen and (min-width: 420px) {
+  .left-buttons-control-container {
+    top: var(--top-distance);
+  }
+
+  .right-buttons-control-container {
+    top: var(--top-distance);
+  }
+
+}
+
+@media only screen and (max-width: 419px) {
+  .left-buttons-control-container {
+    top: calc(calc(var(--top-distance) * 2 ) + var(--box-height));
+  }
+
+  .right-buttons-control-container {
+    top: calc(calc(var(--top-distance) * 2 ) + var(--box-height));
+  }
 }

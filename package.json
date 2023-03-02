@@ -16,6 +16,7 @@
     "dev": "vite",
     "dev-expose": "vite --host",
     "build": "tsc && vite build",
+    "demo": "npm run build && shx cp dist/geocity-wc-map.js demo/lib && vite",
     "deploy": "gh-pages -d dist",
     "test": "vitest run"
   },
@@ -23,12 +24,15 @@
     "lit": "^2.4.0",
     "ol": "^7.1.0",
     "proj4": "^2.8.0",
-    "typedoc": "^0.23.21"
+    "typedoc": "^0.23.21",
+    "wkt": "^0.1.1"
   },
   "devDependencies": {
     "@types/proj4": "^2.5.2",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "gh-pages": "^4.0.0",
     "happy-dom": "^7.7.0",
+    "shx": "^0.3.4",
     "typescript": "^4.6.4",
     "vite": "^3.2.3",
     "vitest": "^0.25.3"

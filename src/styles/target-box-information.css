@@ -1,0 +1,37 @@
+.box-element {
+  left: calc(50% - 172px);
+  font-family: sans-serif;
+}
+
+.box-element {
+  position: absolute;
+  top: 10px;
+  background-color: var(--information-box-background-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  border-radius: var(--box-border-radius);
+  border: 1px solid var(--information-box-background-color);
+  margin-left: 5px;
+  margin-right: 5px;
+  max-width: 302px;
+  width: 100%;
+}
+
+.box-element-title {
+  display: flex;
+}
+
+.box-element-title-text {
+  width: 90%;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--information-box-title-color);
+}
+
+.box-element-content {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--information-box-text-color);
+}

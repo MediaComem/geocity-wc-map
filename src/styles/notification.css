@@ -1,29 +1,98 @@
-.notification-element {
+.notification-element-info-light {
+  --notification-background-color: #DBEAFE;
+  --notification-stroke-color: #1D4ED8;
+  --notification-text-color: #1D4ED8;
+}
+
+.notification-element-info-dark {
+  --notification-background-color: #2563EB;
+  --notification-stroke-color: #FFFFFF;
+  --notification-text-color: #FFFFFF;
+}
+
+.notification-element-warning-light {
+  --notification-background-color: #FEF3C7;
+  --notification-stroke-color: #B45309;
+  --notification-text-color: #B45309;
+}
+
+.notification-element-warning-dark {
+  --notification-background-color: #D97706;
+  --notification-stroke-color: #FFFFFF;
+  --notification-text-color: #FFFFFF;
+}
+
+.notification-element-error-light {
+  --notification-background-color: #FEE2E2;
+  --notification-stroke-color: #B91C1C;
+  --notification-text-color: #B91C1C;
+}
+
+.notification-element-error-dark {
+  --notification-background-color: #DC2626;
+  --notification-stroke-color: #FFFFFF;
+  --notification-text-color: #FFFFFF;
+}
+
+@media only screen and (max-width: 995px) {
+  .notification-box {
+    left: calc((100% - 334px) / 2);
+    max-width: 302px;
+  }
+}
+
+@media only screen and (min-width: 996px) {
+  .notification-box {
+    left: calc((100% - (var(--notification-width) + 30px)) / 2);
+    width: var(--notification-width);
+  }
+}
+
+.notification-box {
   position: absolute;
-  bottom: 5%;
+  bottom: 10px;
+}
+
+.notification-element {
+  display: block;
+  font-family: sans-serif;
+  --icon-size: 32px;
   background-color: var(--notification-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #cccccc;
+  border-radius: var(--box-border-radius);
   z-index: 10;
-  margin-left: 5px;
-  margin-right: 5px;
-  max-width: 302px;
   width: 100%;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
+}
+
+.notification-title > div > svg {
+  display: block;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  padding-right: 10px;
+}
+
+.notification-icon-container {
+  height: 100%;
+}
+
+.notification-title > div > svg > g > .icon {
+  fill: none;
+  stroke: var(--notification-stroke-color);
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
 .notification-title {
   display: flex;
-} 
+}
 
 .notification-title-text {
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;
   color: var(--notification-text-color);
-}
-
-.notification-title-svg {
-  margin-right: 10px;
 }
