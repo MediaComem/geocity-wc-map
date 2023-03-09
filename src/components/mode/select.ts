@@ -71,7 +71,7 @@ export default class SingleSelect {
 
     map.getView().on('change:resolution', () => {
       const zoom = map.getView().getZoom();
-      if (zoom && zoom >= options.cluster.maxZoom)
+      if (zoom && zoom >= options.maxZoom)
         clusterSource.setDistance(0)
       else
         clusterSource.setDistance(options.cluster.distance) 
