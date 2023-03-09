@@ -83,7 +83,6 @@ export default class SingleSelect {
       })
     }
     
-
     map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
   }
 
