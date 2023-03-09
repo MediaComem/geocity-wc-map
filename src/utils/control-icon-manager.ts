@@ -59,7 +59,7 @@ export default class ControlIconManager {
     if (options.enableCenterButton)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
     if (options.enableRotation) {
-      if (options.borderUrl !== '') {
+      if (options.border.url !== '') {
         window.addEventListener('border-contraint-enabled', () => {
           useStore().getMap().getView().un('change:rotation', (event) => setRotationChange(map, event, leftControlIconContainer.div))
           useStore().getMap().getView().on('change:rotation', (event) => setRotationChange(map, event, leftControlIconContainer.div))

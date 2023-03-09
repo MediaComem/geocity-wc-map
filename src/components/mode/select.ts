@@ -76,7 +76,7 @@ export default class SingleSelect {
     this.control.disable();
     map.addControl(this.control);
     this.toogleDataSelection(vectorLayer);
-    if (options.borderUrl !== '') {
+    if (options.border.url !== '') {
       window.addEventListener('border-contraint-enabled', () => {
         map.getView().un('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
         map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))

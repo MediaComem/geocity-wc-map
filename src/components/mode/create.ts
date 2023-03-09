@@ -82,7 +82,7 @@ export default class SingleCreate {
 
     map.addLayer(vectorLayer);
 
-    if (useStore().getOptions().borderUrl !== '') {
+    if (useStore().getOptions().border.url !== '') {
       window.addEventListener('border-contraint-enabled', () => {
         map.getView().un('change:resolution', () => this.setChangeResolution(map, vectorLayer))
         map.getView().on('change:resolution', () => this.setChangeResolution(map, vectorLayer))

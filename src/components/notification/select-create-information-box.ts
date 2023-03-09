@@ -32,7 +32,7 @@ class SelectCreateInformationBoxElement extends LitElement {
 
   constructor() {
     super();
-    if (useStore().getOptions().borderUrl !== '') {
+    if (useStore().getOptions().border.url !== '') {
       window.addEventListener('border-contraint-enabled', () => {
         useStore().getMap().getView().un('change:center', () => this.setCenterChange())
         useStore().getMap().getView().on('change:center', () => this.setCenterChange())

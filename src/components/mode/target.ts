@@ -11,7 +11,7 @@ class TargetInformation {
     useStore().getMap().getView().on('change:center', (event:any) => {
         GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
     });
-    if (useStore().getOptions().borderUrl !== '') {
+    if (useStore().getOptions().border.url !== '') {
         window.addEventListener('border-contraint-enabled', () => {
             useStore().getMap().getView().un('change:center', (event:any) => {
                 GeocityEvent.sendEvent('current-center-position', event.target.getCenter())

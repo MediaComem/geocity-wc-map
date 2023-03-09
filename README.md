@@ -43,7 +43,7 @@
 | search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
 | inclusionArea    | URL to a WFS server containing the inclusion area information   | Object                  | Look at Inclusion parameters table for more details [Inclusion parameters](#inclusion-parameters)     |
 | selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
-| borderUrl    |  URL where a geojson containing the border information is located.  | string                  |   '' |
+| border            | Data border information                                                                                                     | Object           | Look at Information parameters table for more details [Border parameters](#border-parameters)     
 |                    |                                                                                                                            |                  |                                                                                                             |
 
 ### Information parameters
@@ -69,6 +69,14 @@
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
 |             |                                                                     |        |         |
+
+### Border parameters
+
+| Parameter    | Description                                                         | Type   | Default |
+| ------------ | ------------------------------------------------------------------- | ------ | ------- |
+| url          | Url where the Geojson is located with border information            | string | ''      |
+| notification | Message displayed if you try to add element outside of border       | string | ''      |
+|              |                                                                     |        |         |
 
 ### WFS parameters
 

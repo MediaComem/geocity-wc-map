@@ -160,10 +160,10 @@ export default class NotificationManager {
                 useStore().getMap().addControl(this.infosNotificationControl);
             }
         })
-        if (useStore().getOptions().borderUrl !== '') {
+        if (useStore().getOptions().border.url !== '') {
             this.borderContraintNotificationControl = new NotificationBoxControl({
                 type: "warning",
-                message: "Veuillez placer votre élément dans les limites autorisées",
+                message:useStore().getOptions().border.notification,
                 rule: {
                     type: "BORDER_CONSTRAINT"
                 }
@@ -266,7 +266,7 @@ export default class NotificationManager {
     }
 
     checkIsInBorder(features: Array<Feature>) {
-        if (useStore().getOptions().borderUrl !== '') {
+        if (useStore().getOptions().border.url !== '') {
             const feature: Feature = features[features.length - 1]
             const geom: Point | undefined = feature.getGeometry() as Point;
             const isInBorder = useStore().getBorderConstraint()?.getSource()?.getFeatures()[0].getGeometry()?.intersectsCoordinate(geom.getCoordinates())

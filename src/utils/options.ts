@@ -4,6 +4,7 @@ import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import SearchConfig from '../types/search-config';
+import BorderConfig from '../types/border-config';
 import NotificationElement from '../types/notification-element';
 import GeolocationInformation from '../types/geolocation-information';
 import { useStore } from '../composable/store';
@@ -30,7 +31,7 @@ export default interface IOption {
   inclusionArea: InclusionAreaConfig;
   selectionTargetBoxMessage: string;
   search: SearchConfig;
-  borderUrl: string;
+  border: BorderConfig;
 }
 
 export default class Options {
@@ -84,7 +85,10 @@ export default class Options {
         requestWithoutCustomValue: 'https://api3.geo.admin.ch/rest/services/api/SearchServer?limit=5&&type=locations&sr=2056&lang=fr&origins=address%2Cparcel',
         bboxRestiction: '2523099.818000,1167985.282000,2549752.141000,1192697.773000'
       },
-      borderUrl: ''
+      border: {
+        url: '',
+        notification: '' 
+      }
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
@@ -109,7 +113,7 @@ export default class Options {
     if (options.wmts !== undefined) result.wmts = options.wmts;
     if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
     if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
-    if (options.borderUrl !== undefined) result.borderUrl = options.borderUrl;
+    if (options.border !== undefined) result.border = options.border;
     useStore().setOptions(result);
   }
 }

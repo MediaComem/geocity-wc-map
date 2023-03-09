@@ -41,7 +41,7 @@ export default class WMTSLoader {
       })
     }))
     
-    if (options.borderUrl !== '') {
+    if (options.border.url !== '') {
       window.addEventListener('border-contraint-enabled', () => {
         layers.forEach((wmtsLayer) => wmtsLayer.setExtent(useStore().getBorderConstraint()?.getSource()?.getExtent()))
       })
