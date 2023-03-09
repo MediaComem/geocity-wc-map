@@ -22,7 +22,7 @@ class InformationControlButton extends LitElement {
   }
 
   render() {
-    return html`<div class="information-control">
+    return html`<div class="information-control" tabindex="0">
                   <div>
                     <div class="control-${useStore().getTheme()}">
                       ${unsafeSVG(SVGCreator.information)}
