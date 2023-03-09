@@ -26,7 +26,7 @@ export default class SingleSelectStyle {
           img: this.selectImage,
           imgSize: [42, 54],
           // the svg height is 54px. It's the reason why the anchor is set like that
-          anchor: [0.5, 54],
+          anchor: [0.52, 55],
           anchorXUnits: 'fraction',
           anchorYUnits: 'pixels',
         }),
