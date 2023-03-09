@@ -14,6 +14,10 @@
   flex-direction: column;
 }
 
+.ol-control button:focus {
+  outline: none !important;
+}
+
 .ol-zoom {
   position: relative;
   width: var(--icon-width) !important;
