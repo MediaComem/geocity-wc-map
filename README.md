@@ -68,6 +68,7 @@
 | ----------- | ------------------------------------------------------------------- | ------ | ------- |
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
+| maxZoom     | The maximum zoom where cluster mode is activated .                  | number | 19      |
 |             |                                                                     |        |         |
 
 ### WFS parameters

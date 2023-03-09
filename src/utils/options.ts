@@ -57,6 +57,7 @@ export default class Options {
       cluster: {
         distance: 40,
         minDistance: 30,
+        maxZoom: 19,
       },
       geolocationInformation: {
         displayBox: true,
