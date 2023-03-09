@@ -68,6 +68,14 @@ export default class SingleSelect {
     this.control.disable();
     map.addControl(this.control);
     this.toogleDataSelection(vectorLayer);
+
+    map.getView().on('change:resolution', () => {
+      const zoom = map.getView().getZoom();
+      if (zoom && zoom >= options.maxZoom)
+        clusterSource.setDistance(0)
+      else
+        clusterSource.setDistance(options.cluster.distance) 
+    })
   }
 
   setCurrentElement(feature: Feature) {
