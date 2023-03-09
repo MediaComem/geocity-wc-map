@@ -33,7 +33,7 @@ class SelectCreateInformationBoxElement extends LitElement {
     });
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
       SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
-        this._currentPosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+        this._currentPosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
       });
     }) as EventListener)
   }
