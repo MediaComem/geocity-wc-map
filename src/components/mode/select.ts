@@ -49,6 +49,14 @@ export default class SingleSelect {
     })    
   }
 
+  setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {
+    const zoom = map.getView().getZoom();
+    if (zoom && zoom >= options.maxZoom)
+      clusterSource.setDistance(0)
+    else
+      clusterSource.setDistance(options.cluster.distance) 
+  }
+
   displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource) {
     const clusterSource = new Cluster({
       distance: options.cluster.distance,
@@ -68,14 +76,15 @@ export default class SingleSelect {
     this.control.disable();
     map.addControl(this.control);
     this.toogleDataSelection(vectorLayer);
+    if (options.borderUrl !== '') {
+      window.addEventListener('border-contraint-enabled', () => {
+        map.getView().un('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
+        map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
+      })
+    }
+    
 
-    map.getView().on('change:resolution', () => {
-      const zoom = map.getView().getZoom();
-      if (zoom && zoom >= options.maxZoom)
-        clusterSource.setDistance(0)
-      else
-        clusterSource.setDistance(options.cluster.distance) 
-    })
+    map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
   }
 
   setCurrentElement(feature: Feature) {

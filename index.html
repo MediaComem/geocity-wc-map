@@ -14,6 +14,9 @@
             <a href="demo/harassment-alert-create.html">harassment-alert-create</a>
         </li>
         <li>
+            <a href="demo/harassment-alert-create-with-border.html">harassment-alert-create-with-border</a>
+        </li>
+        <li>
             <a href="demo/harassment-alert-multiple-create.html">harassment-alert-multiple-create</a>
         </li>
         <li>
@@ -21,6 +24,9 @@
         </li>
         <li>
             <a href="demo/inclusion-area-target.html">inclusion-area-target</a>
+        </li>
+        <li>
+            <a href="demo/inclusion-area-target-with-strong-constraint.html">inclusion-area-target-with-strong-constraint</a>
         </li>
         <li>
             <a href="demo/street-lamp-multiple-select.html">street-lamp-multiple-select</a>
@@ -37,7 +43,7 @@
         "enableCenterButton": true,
         "enableRotation": true,
         "mode": {
-            "type": "select"
+            "type": "create"
         },
         "geolocationInformation": {
             "displayBox": true,
@@ -58,7 +64,7 @@
           "message": "Le maximum de sélections est limité à {x}.",
           "rule": {
               "type": "MAX_SELECTION",
-              "maxElement": 1
+              "maxElement": 3
           }
         },
         {
@@ -69,6 +75,7 @@
             }
         }
         ],
+        "borderUrl": "https://localhost:5173/border.json",
         "wfs": {
             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
         },

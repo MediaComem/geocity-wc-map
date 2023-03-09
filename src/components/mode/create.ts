@@ -1,4 +1,4 @@
-import Feature from 'ol/Feature';
+import Feature, { FeatureLike } from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Vector } from 'ol/source';
 import { useStore } from '../../composable/store';
@@ -8,6 +8,7 @@ import { GeocityEvent } from '../../utils/geocity-event';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 import { Map } from 'ol';
 import CustomStyleSelection from '../../utils/custom-style-selection';
+import { Geometry } from 'ol/geom';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
@@ -24,6 +25,10 @@ export default class SingleCreate {
     window.addEventListener('authorize-created', ((event: CustomEvent) => {
       this.createElement(vectorSource, event)
     }) as EventListener)
+
+    window.addEventListener('refused-created', () => {
+      this.store.removeLastSelectedFeature();
+    })
 
     window.addEventListener('remove-created-icon', () => {
       this.deleteElement(vectorSource)
@@ -52,10 +57,19 @@ export default class SingleCreate {
     });
   }
 
-  setupMapForCreation(map: Map, vectorSource: Vector) {
+  setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>> ) {
     const options = this.store.getOptions();
     const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
-    
+    const zoom = map.getView().getZoom();
+    const resolution = map.getView().getResolution();
+    if (zoom && resolution && zoom > minZoomAllowed ) {
+      vectorLayer.setStyle(function (feature: FeatureLike) {          
+        return CreateStyle.setupCircles(feature, (zoom / resolution));
+      });
+    }
+  }
+
+  setupMapForCreation(map: Map, vectorSource: Vector) {
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       visible: true,
@@ -68,15 +82,14 @@ export default class SingleCreate {
 
     map.addLayer(vectorLayer);
 
-    map.getView().on('change:resolution', () => {
-      const zoom = map.getView().getZoom();
-      const resolution = map.getView().getResolution();
-      if (zoom && resolution && zoom > minZoomAllowed ) {
-        vectorLayer.setStyle(function (feature) {          
-          return CreateStyle.setupCircles(feature, (zoom / resolution));
-        });
-      }
-    })
+    if (useStore().getOptions().borderUrl !== '') {
+      window.addEventListener('border-contraint-enabled', () => {
+        map.getView().un('change:resolution', () => this.setChangeResolution(map, vectorLayer))
+        map.getView().on('change:resolution', () => this.setChangeResolution(map, vectorLayer))
+      })
+    }
+
+    map.getView().on('change:resolution', () => this.setChangeResolution(map, vectorLayer))
     this.control.disable();
     map.addControl(this.control);
   }

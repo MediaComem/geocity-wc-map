@@ -4,12 +4,14 @@ import Feature from 'ol/Feature';
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
+    validBorderContraint: boolean;
     validMaxElementConstraint: boolean;
     displayMaxElementConstraint: boolean;
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
+    borderContraintNotificationControl: NotificationBoxControl | undefined;
     constructor();
     displayRightNotification(): void;
     setupTargetMode(): void;
@@ -27,5 +29,6 @@ export default class NotificationManager {
     checkZoomConstraint(rule: NotificationElement): void;
     checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
     checkMaxElementContraint(features: Array<Feature>): void;
+    checkIsInBorder(features: Array<Feature>): void;
     generateExportData(features: Array<Feature>): Object[];
 }

@@ -5,6 +5,8 @@ import GeolocationCenter from '../components/control/geolocation-center';
 import ResetRotationControl from '../components/control/reset-rotation-control';
 import InformationControl from '../components/control/information-control';
 import GeoLayerControl from '../components/control/geo-layer-control';
+import { Map } from 'ol';
+import { ObjectEvent } from 'ol/Object';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
@@ -56,16 +58,26 @@ export default class ControlIconManager {
 
     if (options.enableCenterButton)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
-    if (options.enableRotation)
-      map.getView().on('change:rotation', (event) => {
-        map.getControls().forEach((control) => {
-          if (control instanceof ResetRotationControl) {
-            map.removeControl(control);
-          }
-        });
-        if (event.target.getRotation() !== 0) {
-          map.addControl(new ResetRotationControl(leftControlIconContainer.div));
-        }
-      });
+    if (options.enableRotation) {
+      if (options.borderUrl !== '') {
+        window.addEventListener('border-contraint-enabled', () => {
+          useStore().getMap().getView().un('change:rotation', (event) => setRotationChange(map, event, leftControlIconContainer.div))
+          useStore().getMap().getView().on('change:rotation', (event) => setRotationChange(map, event, leftControlIconContainer.div))
+        })
+      }
+      map.getView().on('change:rotation', (event) => setRotationChange(map, event, leftControlIconContainer.div));
+    }
+      
   }
 }
+function setRotationChange(map: Map, event: ObjectEvent, div: HTMLElement) {
+  map.getControls().forEach((control) => {
+    if (control instanceof ResetRotationControl) {
+      map.removeControl(control);
+    }
+  });
+  if (event.target.getRotation() !== 0) {
+    map.addControl(new ResetRotationControl(div));
+  }
+}
+

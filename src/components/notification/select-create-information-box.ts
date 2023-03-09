@@ -18,19 +18,27 @@ class SelectCreateInformationBoxElement extends LitElement {
   @state() _isRecenterButton: boolean = true;
   @state() _currentPosition = '';
 
+  setCenterChange() {
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
+      if (feature) {
+        const geometry = feature.get('geom');
+        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
+      }
+  }
+
   connectedCallback() {
     super.connectedCallback();
   }
 
   constructor() {
     super();
-    useStore().getMap().getView().on('change:center', () => {
-      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
-      if (feature) {
-        const geometry = feature.get('geom');
-        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
-      }
-    });
+    if (useStore().getOptions().borderUrl !== '') {
+      window.addEventListener('border-contraint-enabled', () => {
+        useStore().getMap().getView().un('change:center', () => this.setCenterChange())
+        useStore().getMap().getView().on('change:center', () => this.setCenterChange())
+      })
+    }
+    useStore().getMap().getView().on('change:center', () => this.setCenterChange())
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
       SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
         this._currentPosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';

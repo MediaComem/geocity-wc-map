@@ -35,7 +35,7 @@ export default class WMTSLoader {
           useStore().getMap().getLayers().insertAt(0, wmtsLayer);
           isVisible = false;
           if (useStore().getBorderConstraint()) {
-            wmtsLayer.setExtent(useStore().getBorderConstraint());
+            wmtsLayer.setExtent(useStore().getBorderConstraint()?.getSource()?.getExtent());
           }
         }
       })
@@ -43,7 +43,7 @@ export default class WMTSLoader {
     
     if (options.borderUrl !== '') {
       window.addEventListener('border-contraint-enabled', () => {
-        layers.forEach((wmtsLayer) => wmtsLayer.setExtent(useStore().getBorderConstraint()))
+        layers.forEach((wmtsLayer) => wmtsLayer.setExtent(useStore().getBorderConstraint()?.getSource()?.getExtent()))
       })
     }
 

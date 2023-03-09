@@ -1,6 +1,6 @@
 import { Feature } from 'ol';
 import Map from 'ol/Map';
-import { Vector } from 'ol/source';
+import { Cluster, Vector } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Geometry } from 'ol/geom';
 import VectorSource from "ol/source/Vector.js";
@@ -10,6 +10,7 @@ export default class SingleSelect {
     control: SelectCreateInformationBoxController;
     private store;
     constructor();
+    setChangeResolution(map: Map, clusterSource: Cluster, options: IOption): void;
     displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource): void;
     setCurrentElement(feature: Feature): void;
     setIconToDisplay(feature: Feature, state: any): void;

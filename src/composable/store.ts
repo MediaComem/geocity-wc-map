@@ -1,6 +1,8 @@
 import { Feature, Map } from 'ol';
-import { Extent } from 'ol/extent';
 import Geolocation from 'ol/Geolocation';
+import { Geometry } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import { Vector } from 'ol/source';
 import StoreFeature from '../types/store-feature';
 import IOption from '../utils/options';
 
@@ -11,7 +13,7 @@ let geolocation: Geolocation | undefined;
 let options: IOption;
 let map: Map;
 let selectedFeatures: Array<StoreFeature> = [];
-let borderConstraint: Extent | undefined;
+let borderConstraint: VectorLayer<Vector<Geometry>> | undefined;
 let currentItemId: number = -1;
 let maxElement: number = -1;
 
@@ -76,6 +78,10 @@ function removeSelectedFeature(id: number) {
   if (index !== -1) selectedFeatures.splice(index, 1);
 }
 
+function removeLastSelectedFeature() {
+  selectedFeatures.splice(-1);
+}
+
 function getSelectedFeature(id: number) {
   const index = selectedFeatures.findIndex((f) => f.id === id)
   return index !== -1 ? selectedFeatures[index].feature : undefined;
@@ -94,7 +100,7 @@ function getSelectedFeatures() {
   return selectedFeatures.map((f) => f.feature);
 }
 
-function setBorderConstraint(newVal: Extent | undefined) {
+function setBorderConstraint(newVal: VectorLayer<Vector<Geometry>> | undefined) {
   borderConstraint = newVal;
 }
 
@@ -134,6 +140,7 @@ export function useStore() {
     getMap,
     addSelectedFeature,
     removeSelectedFeature,
+    removeLastSelectedFeature,
     getSelectedFeature,
     getCurrentFeatureType,
     getSelectedFeatures,
