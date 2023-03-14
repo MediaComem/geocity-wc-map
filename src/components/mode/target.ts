@@ -2,7 +2,9 @@ import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 import { Control } from 'ol/control';
+import { EventTypes } from 'ol/Observable';
 import { useStore } from '../../composable/store';
+import EventManager from '../../utils/event-manager';
 
 import { GeocityEvent } from '../../utils/geocity-event';
 
@@ -12,13 +14,8 @@ class TargetInformation {
         GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
     });
     if (useStore().getOptions().border.url !== '') {
-        window.addEventListener('border-contraint-enabled', () => {
-            useStore().getMap().getView().un('change:center', (event:any) => {
-                GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
-            });
-            useStore().getMap().getView().on('change:center', (event:any) => {
-                GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
-            });
+        EventManager.registerWindowListener('border-contraint-enabled', 'current-center-position' as EventTypes, (event:any) => {
+            GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
         })
     }
   }

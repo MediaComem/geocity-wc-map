@@ -3,9 +3,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { Control } from 'ol/control';
+import { EventTypes } from 'ol/Observable';
 import { useStore } from '../../composable/store';
 
 import boxStyle from '../../styles/select-box-information.css?inline';
+import EventManager from '../../utils/event-manager';
 import { GeocityEvent } from '../../utils/geocity-event';
 import SearchApi from '../../utils/search-api';
 import SVGCreator from '../../utils/svg-creator';
@@ -32,17 +34,12 @@ class SelectCreateInformationBoxElement extends LitElement {
 
   constructor() {
     super();
-    if (useStore().getOptions().border.url !== '') {
-      window.addEventListener('border-contraint-enabled', () => {
-        useStore().getMap().getView().un('change:center', () => this.setCenterChange())
-        useStore().getMap().getView().on('change:center', () => this.setCenterChange())
-      })
-    }
-    useStore().getMap().getView().on('change:center', () => this.setCenterChange())
+    EventManager.registerBorderConstaintMapEvent('change:center' as EventTypes, () => this.setCenterChange())
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
       SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
         this._currentPosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
       });
+      this.setCenterChange();
     }) as EventListener)
   }
 

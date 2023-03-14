@@ -9,6 +9,8 @@ import SelectCreateInformationBoxController from '../notification/select-create-
 import { Map } from 'ol';
 import CustomStyleSelection from '../../utils/custom-style-selection';
 import { Geometry } from 'ol/geom';
+import EventManager from '../../utils/event-manager';
+import { EventTypes } from 'ol/Observable';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
@@ -82,14 +84,8 @@ export default class SingleCreate {
 
     map.addLayer(vectorLayer);
 
-    if (useStore().getOptions().border.url !== '') {
-      window.addEventListener('border-contraint-enabled', () => {
-        map.getView().un('change:resolution', () => this.setChangeResolution(map, vectorLayer))
-        map.getView().on('change:resolution', () => this.setChangeResolution(map, vectorLayer))
-      })
-    }
+    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, vectorLayer))
 
-    map.getView().on('change:resolution', () => this.setChangeResolution(map, vectorLayer))
     this.control.disable();
     map.addControl(this.control);
   }

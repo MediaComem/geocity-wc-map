@@ -6,6 +6,8 @@ import wtk from 'wkt';
 
 import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
+import EventManager from '../../utils/event-manager';
+import { EventTypes } from 'ol/Observable';
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
@@ -182,18 +184,7 @@ export default class NotificationManager {
             this.validZoomConstraint = false; 
         }
 
-        window.addEventListener('border-contraint-enabled', () => {
-            useStore().getMap().getView().un('change:resolution',  () => {
-                this.checkZoomConstraint(rule);
-                this.displayRightNotification();
-            })
-            useStore().getMap().getView().on('change:resolution', () => {
-                this.checkZoomConstraint(rule);
-                this.displayRightNotification();
-            })
-        })
-        
-        useStore().getMap().getView().on('change:resolution', () => {
+        EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes,  () => {
             this.checkZoomConstraint(rule);
             this.displayRightNotification();
         })

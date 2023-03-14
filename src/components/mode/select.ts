@@ -13,6 +13,8 @@ import SingleSelectStyle from '../styles/single-select-style';
 import IOption from '../../utils/options';
 import CustomStyleSelection from '../../utils/custom-style-selection';
 import WFSLoader from '../../utils/wfs-loader';
+import EventManager from '../../utils/event-manager';
+import { EventTypes } from 'ol/Observable';
 
 export default class SingleSelect {
 
@@ -76,14 +78,8 @@ export default class SingleSelect {
     this.control.disable();
     map.addControl(this.control);
     this.toogleDataSelection(vectorLayer);
-    if (options.border.url !== '') {
-      window.addEventListener('border-contraint-enabled', () => {
-        map.getView().un('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
-        map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
-      })
-    }
-    
-    map.getView().on('change:resolution', () => this.setChangeResolution(map, clusterSource, options))
+
+    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, clusterSource, options))
   }
 
   setCurrentElement(feature: Feature) {
