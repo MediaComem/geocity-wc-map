@@ -21,7 +21,7 @@ class TargetInformationBoxElement extends LitElement {
 
   searchAddress(coordiante: number[]) {
     SearchApi.getAddressFromCoordinate(coordiante).then((data) => {
-      this._reversePosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+      this._reversePosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
     });
   }
 

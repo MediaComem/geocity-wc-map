@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Signaler Harcèlement Demo</title>
+    <title>Target Mode Demo</title>
     <script type="module" src="./lib/geocity-wc-map.js"></script>
   </head>
   <body>
     <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
         <openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
+                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
                                         "enableGeolocation": true,
                                         "enableCenterButton": true,
                                         "enableRotation": true,
@@ -29,6 +29,14 @@
                                                 "type": "ZOOM_CONSTRAINT",
                                                 "minZoom": 16
                                             }
+                                        },
+                                        {
+                                          "type": "warning",
+                                          "message": "L’emplacement sélectionné se situe en dehors des zones autorisées.",
+                                          "rule": {
+                                              "type": "AREA_CONSTRAINT",
+                                              "couldBypass": false
+                                          }
                                         },
                                         {
                                             "type": "info",
@@ -52,7 +60,11 @@
                                             "name": "Photo aérienne",
                                             "thumbnail": "https://localhost:5173/aerial.svg"
                                         }],
-                                        "selectionTargetBoxMessage": "Harcèlement signalé"
+                                        "inclusionArea": {
+                                            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
+                                            "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
+                                        },
+                                        "selectionTargetBoxMessage": "Emplacement du banc"
                                     }'
     />
     </div>

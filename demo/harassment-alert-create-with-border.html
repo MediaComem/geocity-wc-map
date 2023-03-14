@@ -14,7 +14,7 @@
                                         "enableCenterButton": true,
                                         "enableRotation": true,
                                         "mode": {
-                                            "type": "target"
+                                            "type": "create"
                                         },
                                         "geolocationInformation": {
                                             "displayBox": true,
@@ -31,13 +31,25 @@
                                             }
                                         },
                                         {
+                                            "type": "warning",
+                                            "message": "Le maximum de sélection est limité à {x}.",
+                                            "rule": {
+                                                "type": "MAX_SELECTION",
+                                                "maxElement": 1
+                                            }
+                                          },
+                                        {
                                             "type": "info",
-                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
                                         }
                                         ],
+                                        "border": {
+                                            "url": "https://localhost:5173/border.json",
+                                            "notification": "Veuillez placer votre élément dans les limites autorisées"
+                                        },
                                         "wmts": [{
                                             "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
                                             "layer": "asitvd.fond_cadastral",

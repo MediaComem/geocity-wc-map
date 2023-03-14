@@ -5,6 +5,10 @@ import GeolocationCenter from '../components/control/geolocation-center';
 import ResetRotationControl from '../components/control/reset-rotation-control';
 import InformationControl from '../components/control/information-control';
 import GeoLayerControl from '../components/control/geo-layer-control';
+import { Map } from 'ol';
+import EventManager from './event-manager';
+import { EventTypes } from 'ol/Observable';
+import BaseEvent from 'ol/events/Event';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
@@ -56,16 +60,19 @@ export default class ControlIconManager {
 
     if (options.enableCenterButton)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
+    
     if (options.enableRotation)
-      map.getView().on('change:rotation', (event) => {
-        map.getControls().forEach((control) => {
-          if (control instanceof ResetRotationControl) {
-            map.removeControl(control);
-          }
-        });
-        if (event.target.getRotation() !== 0) {
-          map.addControl(new ResetRotationControl(leftControlIconContainer.div));
-        }
-      });
+      EventManager.registerBorderConstaintMapEvent('change:rotation' as EventTypes, (event) => setRotationChange(map, event, leftControlIconContainer.div))      
   }
 }
+function setRotationChange(map: Map, event: BaseEvent, div: HTMLElement) {
+  map.getControls().forEach((control) => {
+    if (control instanceof ResetRotationControl) {
+      map.removeControl(control);
+    }
+  });
+  if (event.target.getRotation() !== 0) {
+    map.addControl(new ResetRotationControl(div));
+  }
+}
+

@@ -21,7 +21,7 @@ export default class Border {
     const vectorMaskLayer = new VectorLayer({
       source: new Vector({
         url: () => {
-          return useStore().getOptions().borderUrl;
+          return useStore().getOptions().border.url;
         },
         format: new GeoJSON(),
       }),
@@ -47,7 +47,7 @@ export default class Border {
           constrainOnlyCenter: true,
         }));
       }
-      useStore().setBorderConstraint(vectorMaskLayer.getSource()?.getExtent())
+      useStore().setBorderConstraint(vectorMaskLayer)
       GeocityEvent.sendEvent('border-contraint-enabled', undefined);
     })
 

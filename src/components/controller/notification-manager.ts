@@ -5,16 +5,21 @@ import NotificationBoxControl from '../notification/notification';
 import wtk from 'wkt';
 
 import Feature from 'ol/Feature';
+import { Point } from 'ol/geom';
+import EventManager from '../../utils/event-manager';
+import { EventTypes } from 'ol/Observable';
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
     validAreaConstraint: boolean = true;
+    validBorderContraint: boolean = true;
     validMaxElementConstraint: boolean = true;
     displayMaxElementConstraint: boolean = false;
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
+    borderContraintNotificationControl: NotificationBoxControl | undefined;
 
     constructor() {
         const options = useStore().getOptions();
@@ -41,21 +46,31 @@ export default class NotificationManager {
             this.inclusionNotificationControl?.hide();
             this.maxElementNotificationControl?.hide();
             this.infosNotificationControl?.hide();
+            this.borderContraintNotificationControl?.hide();
+        } else if (!this.validBorderContraint) {
+            this.zoomNotificationControl?.hide();
+            this.inclusionNotificationControl?.hide();
+            this.maxElementNotificationControl?.hide();
+            this.infosNotificationControl?.hide();
+            this.borderContraintNotificationControl?.show();
         } else if (!this.validAreaConstraint) {
             this.zoomNotificationControl?.hide();
             this.inclusionNotificationControl?.show();
             this.maxElementNotificationControl?.hide();
             this.infosNotificationControl?.hide();
+            this.borderContraintNotificationControl?.hide();
         } else if (this.displayMaxElementConstraint) {
             this.zoomNotificationControl?.hide();
             this.inclusionNotificationControl?.hide();
             this.maxElementNotificationControl?.show();
             this.infosNotificationControl?.hide();
+            this.borderContraintNotificationControl?.hide();
         } else {
             this.zoomNotificationControl?.hide();
             this.inclusionNotificationControl?.hide();
             this.maxElementNotificationControl?.hide();
             this.infosNotificationControl?.show();
+            this.borderContraintNotificationControl?.hide();
         }
     }
 
@@ -94,11 +109,15 @@ export default class NotificationManager {
         window.addEventListener('icon-created', ((event: CustomEvent) => {
             const features = useStore().getSelectedFeatures();
             this.checkMaxElementContraint(features);
-            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
+            this.checkIsInBorder(features);
+            if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0 && this.validBorderContraint) {
                 GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                GeocityEvent.sendEvent('authorize-created', event.detail);
+            } else {
+                GeocityEvent.sendEvent('refused-created', event.detail);
             }
 
-            GeocityEvent.sendEvent('authorize-created', event.detail);
+            
             this.displayRightNotification();
         }) as EventListener)
 
@@ -143,6 +162,17 @@ export default class NotificationManager {
                 useStore().getMap().addControl(this.infosNotificationControl);
             }
         })
+        if (useStore().getOptions().border.url !== '') {
+            this.borderContraintNotificationControl = new NotificationBoxControl({
+                type: "warning",
+                message:useStore().getOptions().border.notification,
+                rule: {
+                    type: "BORDER_CONSTRAINT"
+                }
+            } as NotificationElement)
+            this.borderContraintNotificationControl.hide();
+            useStore().getMap().addControl(this.borderContraintNotificationControl)
+        }
     }
 
     setupZoomContraint(rule: NotificationElement) {
@@ -152,9 +182,9 @@ export default class NotificationManager {
 
         if (this.hasValidZoom(rule)) {
             this.validZoomConstraint = false; 
-        } 
-        
-        useStore().getMap().getView().on('change:resolution', () => {
+        }
+
+        EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes,  () => {
             this.checkZoomConstraint(rule);
             this.displayRightNotification();
         })
@@ -224,6 +254,26 @@ export default class NotificationManager {
                 this.displayMaxElementConstraint = false;
             }
         }
+    }
+
+    checkIsInBorder(features: Array<Feature>) {
+        if (useStore().getOptions().border.url !== '') {
+            const feature: Feature = features[features.length - 1]
+            const geom: Point | undefined = feature.getGeometry() as Point;
+            const isInBorder = useStore().getBorderConstraint()?.getSource()?.getFeatures()[0].getGeometry()?.intersectsCoordinate(geom.getCoordinates())
+            if (isInBorder) {
+                this.validBorderContraint = true;
+            } else {
+                this.validBorderContraint = false;
+                this.displayRightNotification();
+                setTimeout(() => {
+                    this.validBorderContraint = true;
+                    this.displayRightNotification();
+                }, 2000)
+            }
+        } else {
+            this.validBorderContraint = true;
+        }   
     }
 
     generateExportData(features: Array<Feature>) {

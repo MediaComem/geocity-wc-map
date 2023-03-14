@@ -15,7 +15,7 @@ class RotationControlButton extends LitElement {
   static styles = [unsafeCSS(style)];
 
   render() {
-    return html`<div class="control-${useStore().getTheme()}">${unsafeSVG(SVGCreator.rotation)}</div>`;
+    return html`<div class="control-${useStore().getTheme()}" tabindex="0">${unsafeSVG(SVGCreator.rotation)}</div>`;
   }
 }
 

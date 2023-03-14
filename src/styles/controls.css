@@ -14,16 +14,20 @@
   flex-direction: column;
 }
 
+.ol-control button:focus {
+  background-color: var(--control-background-color-hover);
+  outline: none;
+}
+
 .ol-zoom {
   position: relative;
-  width: var(--icon-width) !important;
   top: 0px;
   left: 0px;
 }
 
 .ol-full-screen {
   position: relative;
-  width: var(--icon-width) !important;
+  width: var(--icon-width);
   top: 0px;
   right: 0px;
   margin-top: var(--top-distance);
@@ -50,6 +54,12 @@
   cursor: pointer;
 }
 
+.ol-control button {
+  background-color: var(--control-background-color);
+  width: var(--icon-width);
+  height: var(--icon-height);
+}
+
 .ol-zoom-in,
 .ol-zoom-out,
 .information-control,
@@ -57,9 +67,9 @@
 .rotation-control,
 .ol-full-screen-true,
 .ol-full-screen-false {
-  width: var(--icon-width) !important;
-  height: var(--icon-height) !important;
-  background-color: var(--control-background-color) !important;
+  width: var(--icon-width);
+  height: var(--icon-height);
+  background-color: var(--control-background-color);
   border-radius: var(--icon-border-radius);
   cursor: pointer;
 }
@@ -70,29 +80,30 @@
 .center-control:hover,
 .rotation-control:hover,
 .ol-full-screen-true:hover,
-.ol-full-screen-false:hover {
-  background-color: var(--control-background-color-hover) !important;
-  outline: none !important;
+.ol-full-screen-false:hover,
+.information-control:focus,
+.center-control:focus,
+.rotation-control:focus {
+  background-color: var(--control-background-color-hover);
+  outline: none;
 }
 
 .ol-zoom-in {
-  border-radius: 0px !important;
-  border-top-right-radius: var(--icon-border-radius) !important;
-  border-top-left-radius: var(--icon-border-radius) !important;
+  border-top-right-radius: var(--icon-border-radius);
+  border-top-left-radius: var(--icon-border-radius);
 }
 
 .ol-zoom-out {
-  border-radius: 0px !important;
-  border-bottom-right-radius: var(--icon-border-radius) !important;
-  border-bottom-left-radius: var(--icon-border-radius) !important;
+  border-bottom-right-radius: var(--icon-border-radius);
+  border-bottom-left-radius: var(--icon-border-radius);
 }
 
 .ol-zoom-in > div > svg,
 .ol-zoom-out > div > svg,
 .ol-full-screen-true > div > svg,
 .ol-full-screen-false > div > svg { 
-  width: var(--svg-icon-size) !important;
-  height: var(--svg-icon-size) !important;
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
 }
 
 .ol-zoom-in > div > svg > g > .icon,

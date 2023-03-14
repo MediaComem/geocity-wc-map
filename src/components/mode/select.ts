@@ -13,6 +13,8 @@ import SingleSelectStyle from '../styles/single-select-style';
 import IOption from '../../utils/options';
 import CustomStyleSelection from '../../utils/custom-style-selection';
 import WFSLoader from '../../utils/wfs-loader';
+import EventManager from '../../utils/event-manager';
+import { EventTypes } from 'ol/Observable';
 
 export default class SingleSelect {
 
@@ -49,6 +51,14 @@ export default class SingleSelect {
     })    
   }
 
+  setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {
+    const zoom = map.getView().getZoom();
+    if (zoom && zoom >= options.maxZoom)
+      clusterSource.setDistance(0)
+    else
+      clusterSource.setDistance(options.cluster.distance) 
+  }
+
   displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource) {
     const clusterSource = new Cluster({
       distance: options.cluster.distance,
@@ -69,13 +79,7 @@ export default class SingleSelect {
     map.addControl(this.control);
     this.toogleDataSelection(vectorLayer);
 
-    map.getView().on('change:resolution', () => {
-      const zoom = map.getView().getZoom();
-      if (zoom && zoom >= options.maxZoom)
-        clusterSource.setDistance(0)
-      else
-        clusterSource.setDistance(options.cluster.distance) 
-    })
+    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, clusterSource, options))
   }
 
   setCurrentElement(feature: Feature) {

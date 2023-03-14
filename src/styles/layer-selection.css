@@ -1,6 +1,7 @@
 @media only screen and (min-width: 420px) {
   .layer-container {
     right: calc(0.5em + 40px);
+    margin-right: 5px;
   }
 }
 

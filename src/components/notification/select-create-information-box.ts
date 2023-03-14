@@ -3,9 +3,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { Control } from 'ol/control';
+import { EventTypes } from 'ol/Observable';
 import { useStore } from '../../composable/store';
 
 import boxStyle from '../../styles/select-box-information.css?inline';
+import EventManager from '../../utils/event-manager';
 import { GeocityEvent } from '../../utils/geocity-event';
 import SearchApi from '../../utils/search-api';
 import SVGCreator from '../../utils/svg-creator';
@@ -18,23 +20,26 @@ class SelectCreateInformationBoxElement extends LitElement {
   @state() _isRecenterButton: boolean = true;
   @state() _currentPosition = '';
 
+  setCenterChange() {
+    const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
+      if (feature) {
+        const geometry = feature.get('geom');
+        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
+      }
+  }
+
   connectedCallback() {
     super.connectedCallback();
   }
 
   constructor() {
     super();
-    useStore().getMap().getView().on('change:center', () => {
-      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
-      if (feature) {
-        const geometry = feature.get('geom');
-        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
-      }
-    });
+    EventManager.registerBorderConstaintMapEvent('change:center' as EventTypes, () => this.setCenterChange())
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
       SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
-        this._currentPosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+        this._currentPosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
       });
+      this.setCenterChange();
     }) as EventListener)
   }
 

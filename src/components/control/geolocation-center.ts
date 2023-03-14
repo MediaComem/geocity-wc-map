@@ -20,7 +20,7 @@ class GeolocationControlButton extends LitElement {
   }
 
   render() {
-    return html`<div class="ol-unselectable ol-control center-control">
+    return html`<div class="ol-unselectable ol-control center-control" tabindex="0">
                   <div>
                     <div class="control-${useStore().getTheme()}">
                       ${unsafeSVG(SVGCreator.geolocation)}
