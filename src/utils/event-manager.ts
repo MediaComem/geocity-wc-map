@@ -36,6 +36,8 @@ export default class EventManager {
   ) {
     const options = useStore().getOptions();
     if (options.border.url !== '') {
+      // In case of border constraint, the view is replaced so all the events on the view is vanished.
+      // We need to reset all the events. The unset is to ensure no side effects.
       EventManager.registerWindowListener(
         'border-contraint-enabled',
         eventName,
