@@ -143,5 +143,17 @@ export default class SearchLocationControl extends Control {
       const box = document.createElement('search-location') as SearchLocation;
       super({ element: box });
       this.div = box;
+
+      const size = useStore().getMap().getSize();
+      if (size) {
+        this.div.style.setProperty('--search-width', size[0] *  0.33 + 'px') 
+      }
+        
+      window.addEventListener('resize', () => {
+        const size = useStore().getMap().getSize();
+        if (size) {
+          this.div.style.setProperty('--search-width', size[0] *  0.33 + 'px') 
+        }
+      })
     }
   }

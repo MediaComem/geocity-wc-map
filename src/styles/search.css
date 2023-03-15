@@ -1,19 +1,28 @@
-@media only screen and (min-width: 376px) {
+@media only screen and (min-width: 376px) and (max-width: 995px) {
     .search-container {
       left: calc(50% - 151px);
+      width: 100%;
+      max-width: 302px;
     }
-  }
+}
   
-  @media only screen and (max-width: 375px) {
+@media only screen and (max-width: 375px) {
     .search-container {
       left: 0;
+      width: 100%;
+      max-width: 302px;
     }
-  }
+}
+
+@media only screen and (min-width: 996px) {
+    .search-container {
+      left: calc((100% - (var(--search-width) + 30px)) / 2);
+      width: calc(var(--search-width) + 30px);
+    }
+}
 
 .search-container {
     position: absolute;
-    max-width: 302px;
-    width: 100%;
     top: var(--top-distance);
     z-index: 0;
 }
