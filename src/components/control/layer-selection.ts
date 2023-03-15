@@ -67,6 +67,7 @@ export default class LayerSelectionControl extends Control {
   constructor() {
     const box = document.createElement('layer-selection') as LayerSectionElement;
     super({ element: box });
+    this.element.classList.add('layer-container-position')
   }
 
   public disable() {

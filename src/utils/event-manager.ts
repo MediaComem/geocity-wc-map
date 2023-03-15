@@ -55,4 +55,19 @@ export default class EventManager {
       useStore().getMap().getViewport().style.cursor = "default";
     });
   }
+
+
+  static setResizeEvent(div: HTMLElement, variable: string) {
+    const size = useStore().getMap().getSize();
+    if (size) {
+      div.style.setProperty(variable, size[0] *  0.33 + 'px') 
+    }
+      
+    window.addEventListener('resize', () => {
+      const size = useStore().getMap().getSize();
+      if (size) {
+        div.style.setProperty(variable, size[0] *  0.33 + 'px') 
+      }
+    })
+  }
 }

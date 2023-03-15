@@ -8,8 +8,8 @@
   
 @media only screen and (max-width: 375px) {
     .search-container {
-      left: 0;
-      width: 100%;
+      left: 10px;
+      width: calc(100% - 20px);
       max-width: 302px;
     }
 }

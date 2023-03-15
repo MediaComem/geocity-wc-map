@@ -8,6 +8,7 @@ import style from '../../styles/notification.css?inline';
 import SVGCreator from '../../utils/svg-creator';
 import NotificationElement from '../../types/notification-element';
 import { useStore } from '../../composable/store';
+import EventManager from '../../utils/event-manager';
 
 @customElement('notification-box')
 class NotificationBox extends LitElement {
@@ -70,18 +71,7 @@ export default class NotificationBoxControl extends Control {
     super({ element: notificationBox });
     this.ruleType = notification.rule.type;
     this.div = notificationBox;
-    this.div.classList.add('notification-box');
-    const size = useStore().getMap().getSize();
-    if (size) {
-      this.div.style.setProperty('--notification-width', size[0] *  0.33 + 'px') 
-    }
-      
-    window.addEventListener('resize', () => {
-      const size = useStore().getMap().getSize();
-      if (size) {
-        this.div.style.setProperty('--notification-width', size[0] *  0.33 + 'px') 
-      }
-    })
+    EventManager.setResizeEvent(this.div, '--notification-width');
   }
 
   public disable() {

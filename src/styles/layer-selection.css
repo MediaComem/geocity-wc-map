@@ -1,28 +1,4 @@
-@media only screen and (min-width: 420px) {
-  .layer-container {
-    right: calc(0.5em + 40px);
-    margin-right: 5px;
-  }
-}
-
-@media only screen and (min-width: 376px) and (max-width: 419px) {
-  .layer-container {
-    left: calc(50% - 151px);
-  }
-}
-
-@media only screen and (max-width: 375px) {
-  .layer-container {
-    left: 0;
-  }
-}
-
 .layer-container {
-  position: absolute;
-  max-width: 302px;
-  width: 100%;
-  top: var(--top-distance);
-  z-index: 0;
   font-family: sans-serif;
 }
 

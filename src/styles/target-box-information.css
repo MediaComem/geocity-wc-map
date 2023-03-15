@@ -1,6 +1,24 @@
-.box-element {
-  left: calc(50% - 172px);
-  font-family: sans-serif;
+@media only screen and (min-width: 461px) and (max-width: 995px) {
+  .box-element {
+    left: calc(50% - 151px);
+    width: calc(100% - 30px);
+    max-width: 302px;
+  }
+}
+
+@media only screen and (max-width: 460px) {
+  .box-element {
+    left: 10px;
+    width: calc(100% - 50px);
+    max-width: 302px;
+  }
+}
+
+@media only screen and (min-width: 996px) {
+  .box-element {
+    left: calc((100% - (var(--target-box-width) + 30px)) / 2);
+    width: calc(var(--target-box-width));
+  }
 }
 
 .box-element {
@@ -11,10 +29,6 @@
   padding: 15px;
   border-radius: var(--box-border-radius);
   border: 1px solid var(--information-box-background-color);
-  margin-left: 5px;
-  margin-right: 5px;
-  max-width: 302px;
-  width: 100%;
 }
 
 .box-element-title {

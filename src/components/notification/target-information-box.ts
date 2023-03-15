@@ -4,6 +4,7 @@ import { Control } from 'ol/control';
 import { useStore } from '../../composable/store';
 
 import boxStyle from '../../styles/target-box-information.css?inline';
+import EventManager from '../../utils/event-manager';
 import SearchApi from '../../utils/search-api';
 
 @customElement('target-information-box-element')
@@ -68,5 +69,6 @@ export default class TargetInformationBoxController extends Control {
     const box = document.createElement('target-information-box-element') as TargetInformationBoxElement;
     box.defaultPosition = useStore().getOptions().defaultCenter;
     super({ element: box });
+    EventManager.setResizeEvent(this.element, '--target-box-width');
   }
 }

@@ -9,6 +9,7 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import SVGCreator from "../../utils/svg-creator";
 import { cache } from "lit/directives/cache.js";
 import { GeocityEvent } from "../../utils/geocity-event";
+import EventManager from "../../utils/event-manager";
 
 interface SearchLocationElement {
   address: string;
@@ -143,17 +144,6 @@ export default class SearchLocationControl extends Control {
       const box = document.createElement('search-location') as SearchLocation;
       super({ element: box });
       this.div = box;
-
-      const size = useStore().getMap().getSize();
-      if (size) {
-        this.div.style.setProperty('--search-width', size[0] *  0.33 + 'px') 
-      }
-        
-      window.addEventListener('resize', () => {
-        const size = useStore().getMap().getSize();
-        if (size) {
-          this.div.style.setProperty('--search-width', size[0] *  0.33 + 'px') 
-        }
-      })
+      EventManager.setResizeEvent(this.div, '--search-width');
     }
   }

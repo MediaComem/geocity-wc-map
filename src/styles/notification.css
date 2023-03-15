@@ -35,32 +35,31 @@
 }
 
 @media only screen and (max-width: 425px) {
-  .notification-box {
-    left: 0;
+  .notification-element {
+    left: 10px;
+    width: calc(100% - 50px);
     max-width: 302px;
   }
 }
 
 @media only screen and (min-width: 426px) and (max-width: 995px) {
-  .notification-box {
+  .notification-element {
     left: calc((100% - 334px) / 2);
+    width: 100%;
     max-width: 302px;
   }
 }
 
 @media only screen and (min-width: 996px) {
-  .notification-box {
+  .notification-element {
     left: calc((100% - (var(--notification-width) + 30px)) / 2);
     width: var(--notification-width);
   }
 }
 
-.notification-box {
+.notification-element {
   position: absolute;
   bottom: 10px;
-}
-
-.notification-element {
   display: block;
   font-family: sans-serif;
   --icon-size: 32px;
@@ -69,7 +68,6 @@
   padding: 15px;
   border-radius: var(--box-border-radius);
   z-index: 5;
-  width: 100%;
   grid-template-columns: 100%;
   grid-template-rows: 100%;
 }

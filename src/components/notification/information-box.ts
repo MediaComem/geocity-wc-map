@@ -71,6 +71,7 @@ export default class InformationBoxControl extends Control {
     const infoBox = document.createElement('information-box') as InformationBox;
     super({ element: infoBox});
     this.div = infoBox;
+    this.div.classList.add('custom-popup-element-position')
   }
 
   public show() {
