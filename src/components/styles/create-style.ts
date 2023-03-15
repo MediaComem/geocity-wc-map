@@ -7,6 +7,7 @@ export default class CreateStyle {
     feature: FeatureLike,
     zoomFactor: number
   ) {
+    console.log(zoomFactor)
     let style: Array<Style> = [];
     if (feature.get('isSelected')) {
       style = [
@@ -26,7 +27,7 @@ export default class CreateStyle {
         new Style({
           zIndex: 2,
           image: new CircleStyle({
-            radius: 0.2 * zoomFactor,
+            radius: zoomFactor * 2 > 16 ? 4 : 0.2 * zoomFactor,
             stroke: new Stroke({
               color: '#FFFFFF',
               width: 3,
@@ -55,7 +56,7 @@ export default class CreateStyle {
         new Style({
           zIndex: 2,
           image: new CircleStyle({
-            radius: 0.2 * zoomFactor,
+            radius: zoomFactor * 2 > 16 ? 4 : 0.2 * zoomFactor,
             stroke: new Stroke({
               color: '#FFFFFF',
               width: 1,

@@ -41,7 +41,10 @@
   line-height: 17px;
   font-weight: 400;
   background-color: var(--information-box-background-color);
-  color: var(--information-box-text-color);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--information-box-title-color);
   margin: 0px 0px 0px 11px;
   align-items: center;
   display: flex;

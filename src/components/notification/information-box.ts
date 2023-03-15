@@ -32,7 +32,7 @@ class InformationBox extends LitElement {
           this._width--;
           
         } else {
-          //this.closeBox();
+          this.closeBox();
         }
       }, intervalDuration);
     });
