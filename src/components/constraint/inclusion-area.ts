@@ -1,19 +1,14 @@
 import { Vector as VectorLayer } from "ol/layer.js";
-import { Style, Stroke } from "ol/style";
 import { useStore } from "../../composable/store";
 import { GeocityEvent } from "../../utils/geocity-event";
 import WFSLoader from "../../utils/wfs-loader";
+import InclusionAreaStyle from "../styles/inclusion-area-style";
 export default class InclusionArea {
   constructor() {
     const vectorSource = WFSLoader.getSource(useStore().getOptions().inclusionArea.url, useStore().getOptions().inclusionArea.filter, true)
     const vector = new VectorLayer({
       source: vectorSource,
-      style: new Style({
-        stroke: new Stroke({
-          color: 'red',
-          width: 1,
-        }),
-      }),
+      style: InclusionAreaStyle.setupStyle(),
     });
     useStore().getMap().addLayer(vector);
 
