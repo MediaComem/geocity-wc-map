@@ -15,6 +15,7 @@ export default class GeolocationManager {
 
   chromeBasePermissionAnalyzer() {
     const geolocation = useStore().getGeolocation()
+    
     navigator.permissions
       .query({ name: 'geolocation' })
       .then((permissionStatus) => {
@@ -55,9 +56,27 @@ export default class GeolocationManager {
     this.marker?.removeMarker();
   }
 
+  geolocationSuccess() {
+    this.granted()
+  }
+
+  geolocationError() {
+    this.denied()
+  }
+
+  getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.geolocationSuccess.bind(this),this.geolocationError.bind(this));
+    } else {
+      this.denied();
+    }
+  }
+
   openInfo() {
     useStore().getMap().addOverlay(this.overlay);
     this.loaderBox.show();
+    // This test is used to detect mobile device location enabled or disabled
+    this.getLocation();
   }
 
   checkGeolocation() {
