@@ -44,7 +44,7 @@ class LayerSectionElement extends LitElement {
   static styles = [unsafeCSS(layerStyle)];
 
   render() {
-    return html`<div class="layer-container" style="z-index: 5">
+    return html`<div class="layer-container">
                   <div class="layer-title-container">
                       <p class="layer-text">Affichage de la carte</p>
                       <div class="layer-svg-container">

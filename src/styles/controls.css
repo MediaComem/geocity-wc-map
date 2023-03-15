@@ -14,6 +14,11 @@
   flex-direction: column;
 }
 
+.ol-control button:hover {
+  background-color: var(--control-background-color-hover);
+  outline: none;
+}
+
 .ol-control button:focus {
   background-color: var(--control-background-color-hover);
   outline: none;
@@ -23,6 +28,10 @@
   position: relative;
   top: 0px;
   left: 0px;
+}
+
+.ol-zoom > .ol-zoom-in {
+  margin-bottom: 1px;
 }
 
 .ol-full-screen {
@@ -67,6 +76,8 @@
 .rotation-control,
 .ol-full-screen-true,
 .ol-full-screen-false {
+  z-index: 0;
+  position: relative;
   width: var(--icon-width);
   height: var(--icon-height);
   background-color: var(--control-background-color);

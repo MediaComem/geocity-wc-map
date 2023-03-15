@@ -80,6 +80,7 @@ class SearchLocation extends LitElement {
   @state() results: Object = {};
 
   @state() _hasSearch: boolean = false;
+  @state() _hasSelected: boolean = false;
 
   static styles = [unsafeCSS(style)];
 
@@ -88,6 +89,7 @@ class SearchLocation extends LitElement {
     window.addEventListener('address_selected', ((e: CustomEvent) => {
       this.inputElement.value = e.detail;
       this._hasSearch = false;
+      this._hasSelected = true;
     }) as EventListener)
   }
 
@@ -112,6 +114,7 @@ class SearchLocation extends LitElement {
     this.inputElement.value = '';
     this.results = {}; 
     this._hasSearch = false;
+    this._hasSelected = false;
   }
  
   render() {
@@ -119,7 +122,7 @@ class SearchLocation extends LitElement {
                     <div class="search-input-container">
                         <input id="search" type="text" class="search-input">
                         <div class="search-svg-container">
-                        ${cache(this._hasSearch
+                        ${cache(this._hasSearch || this._hasSelected
                             ? html`<div class="cross-div" @click="${this.clear}">
                                         ${unsafeSVG(SVGCreator.cross)}
                                     </div>`

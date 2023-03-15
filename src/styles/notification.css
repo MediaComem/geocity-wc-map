@@ -34,7 +34,14 @@
   --notification-text-color: #FFFFFF;
 }
 
-@media only screen and (max-width: 995px) {
+@media only screen and (max-width: 425px) {
+  .notification-box {
+    left: 0;
+    max-width: 302px;
+  }
+}
+
+@media only screen and (min-width: 426px) and (max-width: 995px) {
   .notification-box {
     left: calc((100% - 334px) / 2);
     max-width: 302px;
@@ -61,7 +68,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   border-radius: var(--box-border-radius);
-  z-index: 10;
+  z-index: 5;
   width: 100%;
   grid-template-columns: 100%;
   grid-template-rows: 100%;

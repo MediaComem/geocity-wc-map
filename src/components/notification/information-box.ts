@@ -5,6 +5,8 @@ import { GeocityEvent } from '../../utils/geocity-event';
 
 import popupStyle from '../../styles/popup-information.css?inline';
 import { useStore } from '../../composable/store';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+import SVGCreator from '../../utils/svg-creator';
 
 @customElement('information-box')
 class InformationBox extends LitElement {
@@ -30,7 +32,7 @@ class InformationBox extends LitElement {
           this._width--;
           
         } else {
-          this.closeBox();
+          //this.closeBox();
         }
       }, intervalDuration);
     });
@@ -41,10 +43,9 @@ class InformationBox extends LitElement {
       <div class="information-box-${useStore().getTheme()} custom-popup-element" style="--progress-width: ${this._width}%; --border-radius-right: ${this._borderRadiusRight}px">
         <div class="custom-popup-title">
           <div class="custom-popup-title-text">${useStore().getOptions().information.title}</div>
-          <svg _width="20" height="20" viewBox="0 0 20 20" class="custom-popup-title-svg" @click="${this.closeBox}">
-            <path d="M15.4 4.59998L4.60004 15.4"></path>
-            <path d="M15.4 15.4L4.60004 4.59998"></path>
-          </svg>
+          <div class="cross-div" @click="${this.closeBox}">
+            ${unsafeSVG(SVGCreator.cross)}
+          </div>
         </div>
         <div class="custom-popup-content">${useStore().getOptions().information.content}</div>
         <div class="custom-progress-element"></div>

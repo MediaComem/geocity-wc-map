@@ -33,6 +33,7 @@ import SingleCreate from './components/mode/create';
 import SearchLocationControl from './components/control/search-location';
 import Border from './components/constraint/border';
 import GeolocationManager from './components/controller/geolocation-manager';
+import EventManager from './utils/event-manager';
 
 /**
  * An example element.
@@ -124,6 +125,7 @@ export class OpenLayersElement extends LitElement {
       layers: [],
       view: this.view,
     }));
+    ControlIconManager.setupIcon();
     if (options.enableGeolocation) {
       useStore().setGeolocation(new Geolocation({
         trackingOptions: {
@@ -132,8 +134,8 @@ export class OpenLayersElement extends LitElement {
         projection: this.view.getProjection(),
       }));
       new GeolocationManager();
-    }
-
+    } 
+    if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
     if (options.mode.type === 'target') {
       useStore().getMap().addControl(new TargetController());
       if (options.geolocationInformation.displayBox)
@@ -141,7 +143,6 @@ export class OpenLayersElement extends LitElement {
           new TargetInformationBoxElement()
         );
     }
-
     if (options.wmts.length > 0) new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.border.url !== '') new Border();
@@ -153,15 +154,13 @@ export class OpenLayersElement extends LitElement {
       new SingleSelect();
     } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
     new NotificationManager();
-    ControlIconManager.setupIcon();
-    if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
-    
+    EventManager.setCursorEvent();    
   }
 
   render() {
     return html`
     <div id="map" class="${useStore().getTargetBoxSize()} ${useStore().getTheme()}">
-    </div>   
+    </div>
     `
   }
 

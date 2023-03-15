@@ -46,4 +46,13 @@ export default class EventManager {
     }
     EventManager.setEvent(eventName, listener);
   }
+
+  static setCursorEvent() {
+    useStore().getMap().on('movestart', () => {
+      useStore().getMap().getViewport().style.cursor = "all-scroll";
+    });
+    useStore().getMap().on('moveend', () => {
+      useStore().getMap().getViewport().style.cursor = "default";
+    });
+  }
 }
