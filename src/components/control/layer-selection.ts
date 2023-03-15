@@ -44,7 +44,7 @@ class LayerSectionElement extends LitElement {
   static styles = [unsafeCSS(layerStyle)];
 
   render() {
-    return html`<div class="layer-container" style="z-index: 5">
+    return html`<div class="layer-container">
                   <div class="layer-title-container">
                       <p class="layer-text">Affichage de la carte</p>
                       <div class="layer-svg-container">
@@ -67,6 +67,7 @@ export default class LayerSelectionControl extends Control {
   constructor() {
     const box = document.createElement('layer-selection') as LayerSectionElement;
     super({ element: box });
+    this.element.classList.add('layer-container-position')
   }
 
   public disable() {

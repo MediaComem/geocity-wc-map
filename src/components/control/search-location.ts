@@ -9,6 +9,7 @@ import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import SVGCreator from "../../utils/svg-creator";
 import { cache } from "lit/directives/cache.js";
 import { GeocityEvent } from "../../utils/geocity-event";
+import EventManager from "../../utils/event-manager";
 
 interface SearchLocationElement {
   address: string;
@@ -80,6 +81,7 @@ class SearchLocation extends LitElement {
   @state() results: Object = {};
 
   @state() _hasSearch: boolean = false;
+  @state() _hasSelected: boolean = false;
 
   static styles = [unsafeCSS(style)];
 
@@ -88,6 +90,7 @@ class SearchLocation extends LitElement {
     window.addEventListener('address_selected', ((e: CustomEvent) => {
       this.inputElement.value = e.detail;
       this._hasSearch = false;
+      this._hasSelected = true;
     }) as EventListener)
   }
 
@@ -112,6 +115,7 @@ class SearchLocation extends LitElement {
     this.inputElement.value = '';
     this.results = {}; 
     this._hasSearch = false;
+    this._hasSelected = false;
   }
  
   render() {
@@ -119,7 +123,7 @@ class SearchLocation extends LitElement {
                     <div class="search-input-container">
                         <input id="search" type="text" class="search-input">
                         <div class="search-svg-container">
-                        ${cache(this._hasSearch
+                        ${cache(this._hasSearch || this._hasSelected
                             ? html`<div class="cross-div" @click="${this.clear}">
                                         ${unsafeSVG(SVGCreator.cross)}
                                     </div>`
@@ -140,5 +144,6 @@ export default class SearchLocationControl extends Control {
       const box = document.createElement('search-location') as SearchLocation;
       super({ element: box });
       this.div = box;
+      EventManager.setResizeEvent(this.div, '--search-width');
     }
   }

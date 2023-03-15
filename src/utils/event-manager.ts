@@ -46,4 +46,28 @@ export default class EventManager {
     }
     EventManager.setEvent(eventName, listener);
   }
+
+  static setCursorEvent() {
+    useStore().getMap().on('movestart', () => {
+      useStore().getMap().getViewport().style.cursor = "all-scroll";
+    });
+    useStore().getMap().on('moveend', () => {
+      useStore().getMap().getViewport().style.cursor = "default";
+    });
+  }
+
+
+  static setResizeEvent(div: HTMLElement, variable: string) {
+    const size = useStore().getMap().getSize();
+    if (size) {
+      div.style.setProperty(variable, size[0] *  0.33 + 'px') 
+    }
+      
+    window.addEventListener('resize', () => {
+      const size = useStore().getMap().getSize();
+      if (size) {
+        div.style.setProperty(variable, size[0] *  0.33 + 'px') 
+      }
+    })
+  }
 }

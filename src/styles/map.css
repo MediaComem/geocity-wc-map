@@ -6,3 +6,11 @@
 .ol-layer {
   background-color: rgba(128, 128, 128, 0.125);
 }
+
+.map-overlay {
+  width: 100vw;
+  height: 100vh;
+  background-color: gray;
+  opacity: 0.3;
+  z-index: 6;
+}

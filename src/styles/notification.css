@@ -34,26 +34,32 @@
   --notification-text-color: #FFFFFF;
 }
 
-@media only screen and (max-width: 995px) {
-  .notification-box {
+@media only screen and (max-width: 425px) {
+  .notification-element {
+    left: 10px;
+    width: calc(100% - 50px);
+    max-width: 302px;
+  }
+}
+
+@media only screen and (min-width: 426px) and (max-width: 995px) {
+  .notification-element {
     left: calc((100% - 334px) / 2);
+    width: 100%;
     max-width: 302px;
   }
 }
 
 @media only screen and (min-width: 996px) {
-  .notification-box {
+  .notification-element {
     left: calc((100% - (var(--notification-width) + 30px)) / 2);
     width: var(--notification-width);
   }
 }
 
-.notification-box {
+.notification-element {
   position: absolute;
   bottom: 10px;
-}
-
-.notification-element {
   display: block;
   font-family: sans-serif;
   --icon-size: 32px;
@@ -61,8 +67,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   border-radius: var(--box-border-radius);
-  z-index: 10;
-  width: 100%;
+  z-index: 5;
   grid-template-columns: 100%;
   grid-template-rows: 100%;
 }

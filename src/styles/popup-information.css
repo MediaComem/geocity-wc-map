@@ -1,33 +1,9 @@
-@media only screen and (min-width: 420px) {
-
-  .custom-popup-element {
-    right: calc(0.5em + 40px);
-  }
-
-}
-
-@media only screen and (max-width: 419px) {
-  
-  .custom-popup-element {
-    left: calc(50% - 172px);
-  }
-
-}
-
 .custom-popup-element {
-  font-family: sans-serif;
-  position: absolute;
-  top: 10px;
   background-color: var(--information-box-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 15px;
   border-radius: var(--box-border-radius);
   border: 1px solid var(--information-box-background-color);
-  z-index: 10;
-  margin-left: 5px;
-  margin-right: 5px;
-  max-width: 302px;
-  width: 100%;
 }
 
 .custom-popup-element:after {
@@ -52,6 +28,8 @@
   font-size: 14px;
   line-height: 17px;
   color: var(--information-box-title-color);
+  align-items: center;
+  display: flex;
 }
 
 .custom-popup-title-svg {
@@ -75,4 +53,27 @@
   font-size: 12px;
   line-height: 15px;
   color: var(--information-box-text-color);
+}
+
+svg {
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
+  stroke: var(--information-box-title-color);
+}
+
+svg:hover {
+  stroke: var(--information-cross-hover-color);
+}
+
+svg > g > .icon {
+  fill: none;
+  stroke-width: var(--icon-stroke-width);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cross-div {
+  width: var(--svg-icon-size);
+  height: var(--svg-icon-size);
+  cursor: pointer;
 }

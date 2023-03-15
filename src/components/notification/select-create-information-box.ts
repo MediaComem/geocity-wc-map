@@ -98,6 +98,7 @@ export default class SelectCreateInformationBoxController extends Control {
     const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
     super({ element: box });
     this.div = box;
+    EventManager.setResizeEvent(this.div, '--select-box-width');
   }
 
   public disable() {
