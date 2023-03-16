@@ -1,6 +1,7 @@
 import NotificationElement from '../../types/notification-element';
 import NotificationBoxControl from '../notification/notification';
 import Feature from 'ol/Feature';
+import { Geometry, MultiPoint } from 'ol/geom';
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
@@ -30,5 +31,8 @@ export default class NotificationManager {
     checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
     checkMaxElementContraint(features: Array<Feature>): void;
     checkIsInBorder(features: Array<Feature>): void;
-    generateExportData(features: Array<Feature>): Object[];
+    convertToMultiPoint(coordinate: number[]): MultiPoint | undefined;
+    generateGeometryCollection(geometries: Geometry[]): string;
+    generateTargetGeometry(coordinate: number[]): string;
+    generateExportData(features: Array<Feature>): string;
 }

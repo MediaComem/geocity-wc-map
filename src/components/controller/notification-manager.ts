@@ -2,12 +2,12 @@ import { useStore } from '../../composable/store';
 import NotificationElement from '../../types/notification-element';
 import { GeocityEvent } from '../../utils/geocity-event';
 import NotificationBoxControl from '../notification/notification';
-import wtk from 'wkt';
 
 import Feature from 'ol/Feature';
-import { Point } from 'ol/geom';
+import { Geometry, GeometryCollection, MultiPoint, Point } from 'ol/geom';
 import EventManager from '../../utils/event-manager';
 import { EventTypes } from 'ol/Observable';
+import GeoJSON from 'ol/format/GeoJSON';
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
@@ -77,11 +77,7 @@ export default class NotificationManager {
     setupTargetMode() {
         window.addEventListener('current-center-position', ((event: CustomEvent) => {
             if (this.validZoomConstraint && this.validAreaConstraint) {
-                const geometry = {
-                    type: "Point",
-                    coordinates: event.detail
-                  };
-                GeocityEvent.sendEvent('position-selected', [{geometry: wtk.stringify(geometry)}]);
+                GeocityEvent.sendEvent('position-selected', this.generateTargetGeometry(event.detail));
             }
         }) as EventListener)
     }
@@ -276,17 +272,40 @@ export default class NotificationManager {
         }   
     }
 
-    generateExportData(features: Array<Feature>) {
-        const results: Array<Object> = []
-        features.forEach((f) => {
-            results.push({
-                id: f.get('objectid'),
-                geometry: wtk.stringify({
-                    type: "Point",
-                    coordinates: f.get('geom').getCoordinates()
-                })
-            })
+    convertToMultiPoint(coordinate: number[]) {
+        return new Feature({
+            geometry: new MultiPoint([[coordinate[0], coordinate[1]]]),
+        }).getGeometry();
+    }
+
+    generateGeometryCollection (geometries: Geometry[]) {
+        const geojsonFormat = new GeoJSON();
+        const geometry = new GeometryCollection(geometries);
+        const geojsongeom = geojsonFormat.writeGeometry(geometry, {
+            decimals: 2,
         });
-        return results;
+        return geojsongeom;
+    }
+
+    generateTargetGeometry(coordinate: number[]) {
+        const geometries: Geometry[] = [];
+        const multiPoint = this.convertToMultiPoint(coordinate)
+        if (multiPoint)
+            geometries.push(multiPoint)
+        return this.generateGeometryCollection(geometries)
+    }
+
+    generateExportData(features: Array<Feature>) {
+        const geometries: Geometry[] = [];
+        features.forEach((feature) => {
+            const geometry = feature.getGeometry();
+            if (geometry) {
+                const point: Point = geometry as Point;
+                const multiPoint = this.convertToMultiPoint(point.getCoordinates())
+                if (multiPoint)
+                    geometries.push(multiPoint)
+            }    
+        })
+        return this.generateGeometryCollection(geometries)
     }
 }
