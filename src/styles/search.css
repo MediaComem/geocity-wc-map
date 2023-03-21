@@ -1,16 +1,16 @@
-@media only screen and (min-width: 376px) and (max-width: 995px) {
+@media only screen and (min-width: 351px) and (max-width: 995px) {
     .search-container {
-      left: calc(50% - 151px);
+      left: calc((100% - 334px) / 2);
       width: 100%;
-      max-width: 302px;
+      max-width: 332px;
     }
 }
   
-@media only screen and (max-width: 375px) {
+@media only screen and (max-width: 350px) {
     .search-container {
       left: 10px;
       width: calc(100% - 20px);
-      max-width: 302px;
+      max-width: 332px;
     }
 }
 
@@ -79,6 +79,7 @@ li {
     justify-content: start;
     color: var(--information-box-text-color);
     font-family: sans-serif;
+    cursor: pointer;
 }
 
 ul > :last-child {
