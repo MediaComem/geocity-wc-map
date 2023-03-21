@@ -43,8 +43,10 @@ class InformationBox extends LitElement {
       <div class="information-box-${useStore().getTheme()} custom-popup-element" style="--progress-width: ${this._width}%; --border-radius-right: ${this._borderRadiusRight}px">
         <div class="custom-popup-title">
           <div class="custom-popup-title-text">${useStore().getOptions().information.title}</div>
-          <div class="cross-div" @click="${this.closeBox}">
-            ${unsafeSVG(SVGCreator.cross)}
+          <div class="custom-popup-title-svg-container">
+            <div class="cross-div" @click="${this.closeBox}">
+              ${unsafeSVG(SVGCreator.cross)}
+            </div>
           </div>
         </div>
         <div class="custom-popup-content">${useStore().getOptions().information.content}</div>
