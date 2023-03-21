@@ -35,11 +35,11 @@
 }
 
 .box-text-container {
-  width: 70%;
+  width: calc(100% - 80px);
 }
 
 .box-icon-container {
-  width: 30%;
+  width: 80px;
   display: flex;
 }
 
