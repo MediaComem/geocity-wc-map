@@ -5,12 +5,14 @@ import VectorLayer from 'ol/layer/Vector';
 import { Vector } from 'ol/source';
 import StoreFeature from '../types/store-feature';
 import IOption from '../utils/options';
+import IStates from '../utils/states';
 
 let theme: string = '';
 let customDisplay: boolean = false;
 let targetBoxSize: string = '';
 let geolocation: Geolocation | undefined;
 let options: IOption;
+let states: IStates;
 let map: Map;
 let selectedFeatures: Array<StoreFeature> = [];
 let borderConstraint: VectorLayer<Vector<Geometry>> | undefined;
@@ -55,6 +57,14 @@ function setOptions(newVal: IOption) {
 
 function getOptions() {
   return options;
+}
+
+function setStates(newVal: IStates) {
+  states = newVal;
+}
+
+function getStates() {
+  return states;
 }
 
 function setMap(newVal: Map) {
@@ -136,6 +146,8 @@ export function useStore() {
     getGeolocation,
     setOptions,
     getOptions,
+    setStates,
+    getStates,
     setMap,
     getMap,
     addSelectedFeature,

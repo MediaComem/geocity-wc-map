@@ -1,16 +1,12 @@
-import Feature, { FeatureLike } from 'ol/Feature';
+import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Vector } from 'ol/source';
 import { useStore } from '../../composable/store';
-import { Vector as VectorLayer } from 'ol/layer';
-import CreateStyle from '../styles/create-style';
 import { GeocityEvent } from '../../utils/geocity-event';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 import { Map } from 'ol';
 import CustomStyleSelection from '../../utils/custom-style-selection';
-import { Geometry } from 'ol/geom';
-import EventManager from '../../utils/event-manager';
-import { EventTypes } from 'ol/Observable';
+import { Render } from '../../utils/render';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
@@ -44,48 +40,27 @@ export default class SingleCreate {
 
     this.addLongClickEvent(mapElement, map);
 
-    map.on('click', (evt) =>  {
-      map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
-        if (feature && feature.getGeometry()?.getType() === 'Point') {
-          if (feature.get('id')) {
-            this.store.unselectFeatures();
-            this.store.setCurrentItemId(feature.get('id'));
-            this.store.getSelectedFeature(feature.get('id'))?.set('isSelected', true);
-            GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
-            this.control.show();
+    if (!useStore().getStates().readonly) {
+      map.on('click', (evt) =>  {
+        map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
+          if (feature && feature.getGeometry()?.getType() === 'Point') {
+            if (feature.get('id')) {
+              this.store.unselectFeatures();
+              this.store.setCurrentItemId(feature.get('id'));
+              this.store.getSelectedFeature(feature.get('id'))?.set('isSelected', true);
+              GeocityEvent.sendEvent('open-select-create-box', feature.get('geom').getCoordinates());
+              this.control.show();
+            }
           }
-        }
-      });
-    });
-  }
-
-  setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>> ) {
-    const options = this.store.getOptions();
-    const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
-    const zoom = map.getView().getZoom();
-    const resolution = map.getView().getResolution();
-    if (zoom && resolution && zoom > minZoomAllowed ) {
-      vectorLayer.setStyle(function (feature: FeatureLike) {          
-        return CreateStyle.setupCircles(feature, (zoom / resolution));
+        });
       });
     }
+
+    Render.displayCurrentElementCreateTargetMode(vectorSource);
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-      visible: true,
-
-    });
-    
-    vectorLayer.setStyle(function (feature) {          
-      return CreateStyle.setupCircles(feature, (1));
-    });
-
-    map.addLayer(vectorLayer);
-
-    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, vectorLayer))
-
+    Render.setupAndLoadLayer(vectorSource)
     this.control.disable();
     map.addControl(this.control);
   }
@@ -170,6 +145,7 @@ export default class SingleCreate {
   }
 
   requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
+    if (!useStore().getStates().readonly) {
         // To have the coordinate, we use the pixel position and the map position to find the exact pixel in the window.
         // Then use map pixel converter
         const mapPosition = mapElement.getBoundingClientRect()
@@ -188,6 +164,7 @@ export default class SingleCreate {
           this.store.addSelectedFeature(feature, feature.get('id'), 'create')
           GeocityEvent.sendEvent('icon-created', feature.get('id'));
         }
+      }
   }
 
   // The move is on pixel

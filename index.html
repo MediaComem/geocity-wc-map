@@ -64,7 +64,7 @@
           "message": "Le maximum de sélections est limité à {x}.",
           "rule": {
               "type": "MAX_SELECTION",
-              "maxElement": 1
+              "maxElement": 3
           }
         },
         {
@@ -101,6 +101,9 @@
             "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
         },
         "selectionTargetBoxMessage": "Emplacement du banc"
+    }' states='{
+        "readonly": false,
+        "currentSelections": [[2539063.19,1181419.5], [2539064.6,1181401.67]]
     }'
 />
     </div>
