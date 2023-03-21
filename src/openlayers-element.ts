@@ -7,6 +7,8 @@ import { Geolocation } from 'ol';
 import { ScaleLine } from 'ol/control';
 import SingleSelect from './components/mode/select';
 
+
+
 import WMTSLoader from './components/mapView/wmts-loader';
 
 import styles from '../node_modules/ol/ol.css?inline';
@@ -35,6 +37,8 @@ import SearchLocationControl from './components/control/search-location';
 import Border from './components/constraint/border';
 import GeolocationManager from './components/controller/geolocation-manager';
 import EventManager from './utils/event-manager';
+import States from './utils/states';
+import IStates from './utils/states';
 
 /**
  * An example element.
@@ -50,6 +54,8 @@ export class OpenLayersElement extends LitElement {
   @state() view:View | undefined;
 
   @property({type: Object, attribute: 'options'}) options = {}
+
+  @property({type: Object, attribute: 'states'}) states = {}
 
   constructor() {
     super();
@@ -105,7 +111,9 @@ export class OpenLayersElement extends LitElement {
 
   firstUpdated() {
     Options.getOptions(this.options as IOption);
+    States.getStates(this.states as IStates);
     const options = useStore().getOptions()
+    const readonly = useStore().getStates().readonly;
     this.setupTheme(options);
     this.setupCustomDisplay(options);
     proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
@@ -127,7 +135,7 @@ export class OpenLayersElement extends LitElement {
       view: this.view,
     }));
     ControlIconManager.setupIcon();
-    if (options.enableGeolocation) {
+    if (options.enableGeolocation && !readonly) {
       useStore().setGeolocation(new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
@@ -136,13 +144,16 @@ export class OpenLayersElement extends LitElement {
       }));
       new GeolocationManager();
     } 
-    if (options.search.displaySearch && options.mode.type !== 'target') useStore().getMap().addControl(new SearchLocationControl());
+    if (options.search.displaySearch && options.mode.type !== 'target' && !readonly) useStore().getMap().addControl(new SearchLocationControl());
     if (options.mode.type === 'target') {
-      useStore().getMap().addControl(new TargetController());
-      if (options.geolocationInformation.displayBox)
-        useStore().getMap().addControl(
-          new TargetInformationBoxElement()
-        );
+      TargetController.renderExistingSelection();
+      if (!readonly) {
+        useStore().getMap().addControl(new TargetController());
+        if (options.geolocationInformation.displayBox)
+          useStore().getMap().addControl(
+            new TargetInformationBoxElement()
+          );
+      }
     }
     if (options.wmts.length > 0) new WMTSLoader();
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
@@ -154,7 +165,7 @@ export class OpenLayersElement extends LitElement {
       new SingleCreate(this.mapElement);
       new SingleSelect();
     } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
-    new NotificationManager();
+    if (!readonly) new NotificationManager();
     EventManager.setCursorEvent();    
   }
 

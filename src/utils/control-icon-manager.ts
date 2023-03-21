@@ -28,6 +28,7 @@ class ControlIconContainer extends Control {
 export default class ControlIconManager {
   static setupIcon() {
     const options = useStore().getOptions();
+    const readonly = useStore().getStates().readonly;
     const map = useStore().getMap()
 
     const leftControlIconContainer = new ControlIconContainer('left-buttons-control-container');
@@ -35,7 +36,9 @@ export default class ControlIconManager {
     const rightControlIconContainer = new ControlIconContainer('right-buttons-control-container');
     map.addControl(rightControlIconContainer);
 
-    map.addControl(new InformationControl(rightControlIconContainer.div));
+    if (!readonly)
+      map.addControl(new InformationControl(rightControlIconContainer.div));
+      
     if (options.fullscreen)
       map.addControl(
         new FullScreen({

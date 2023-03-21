@@ -15,6 +15,7 @@ import CustomStyleSelection from '../../utils/custom-style-selection';
 import WFSLoader from '../../utils/wfs-loader';
 import EventManager from '../../utils/event-manager';
 import { EventTypes } from 'ol/Observable';
+import { Render } from '../../utils/render';
 
 export default class SingleSelect {
 
@@ -28,27 +29,30 @@ export default class SingleSelect {
     const vectorLayer = new VectorLayer();
     const vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '', false)
     this.displayDataOnMap(map, vectorLayer, options, vectorSource);
-
-    map.on('click', (evt) => {
-      map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-        if (feature && feature.getGeometry()?.getType() === 'Point') {
-          if (feature.getProperties().features && feature.getProperties().features.length === 1) {
-            if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
-              this.store.addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
+    if (!useStore().getStates().readonly) {
+      map.on('click', (evt) => {
+        map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+          if (feature && feature.getGeometry()?.getType() === 'Point') {
+            if (feature.getProperties().features && feature.getProperties().features.length === 1) {
+              if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
+                this.store.addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
+              }
+              GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
+            } else {
+              this.control.hide();
             }
-            GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
-          } else {
-            this.control.hide();
           }
-        }
+        });
       });
-    });
+    }
 
     window.addEventListener('recenter-selected-element', () => {
       const currentItemID = this.store.getCurrentItemId();
       const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
       map.getView().setCenter(coords);
-    })    
+    })
+
+    Render.displayCurrentElementSelectMode(vectorSource);
   }
 
   setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {

@@ -12,6 +12,7 @@ export declare class OpenLayersElement extends LitElement {
     mapElement: HTMLDivElement;
     view: View | undefined;
     options: {};
+    states: {};
     constructor();
     connectedCallback(): void;
     setupTheme(options: any): void;
