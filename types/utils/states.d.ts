@@ -3,5 +3,5 @@ export default interface IStates {
     currentSelections: Array<number[]>;
 }
 export default class States {
-    static getStates(states: IStates): void;
+    static getStates(states: IStates): IStates;
 }

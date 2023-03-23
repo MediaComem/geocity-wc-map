@@ -108,7 +108,7 @@ export default class GeolocationManager {
     const div = document.createElement('div');
     div.classList.add('map-overlay');
     const extent = useStore().getMap().getView().calculateExtent(useStore().getMap().getSize())
-    this.overlay = new Overlay({ element: div, position: getTopLeft(extent)});
+    this.overlay = new Overlay({ element: div, position: getTopLeft(extent), className: 'ol-overlay-container ol-selectable overlay-index'});
     this.loaderBox = new LoaderBoxControl('Chargement des données GPS');
     useStore().getMap().addControl(this.loaderBox);
     this.checkGeolocation();

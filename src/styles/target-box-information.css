@@ -1,12 +1,12 @@
-@media only screen and (min-width: 461px) and (max-width: 995px) {
+@media only screen and (min-width: 351px) and (max-width: 995px) {
   .box-element {
-    left: calc(50% - 151px);
+    left: calc(50% - 167px);
     width: calc(100% - 30px);
     max-width: 302px;
   }
 }
 
-@media only screen and (max-width: 460px) {
+@media only screen and (max-width: 350px) {
   .box-element {
     left: 10px;
     width: calc(100% - 50px);

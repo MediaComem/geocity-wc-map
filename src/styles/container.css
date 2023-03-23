@@ -5,14 +5,14 @@
   }
 }
 
-@media only screen and (min-width: 402px) and (max-width: 512px) {
+@media only screen and (min-width: 315px) and (max-width: 512px) {
   .layer-container-position {
     left: calc(50% - 151px);
     width: 100%;
   }
 }
 
-@media only screen and (max-width: 401px) {
+@media only screen and (max-width: 314px) {
   .layer-container-position {
     left: 10px;
     width: calc(100% - 20px);
@@ -34,14 +34,14 @@
     }
   }
   
-  @media only screen and (min-width: 402px) and (max-width: 512px) {
+  @media only screen and (min-width: 315px) and (max-width: 512px) {
     .custom-popup-element-position {
       left: calc(50% - 151px);
       width: 100%;
     }
   }
   
-  @media only screen and (max-width: 401px) {
+  @media only screen and (max-width: 314px) {
     .custom-popup-element-position {
       left: 10px;
       width: calc(100% - 20px);

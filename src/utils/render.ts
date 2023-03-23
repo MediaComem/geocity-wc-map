@@ -7,15 +7,21 @@ import { useStore } from '../composable/store';
 import { FeatureLike } from 'ol/Feature';
 import { EventTypes } from 'ol/Observable';
 import EventManager from './event-manager';
+import IStates from './states';
 
 export class Render {
-  static getDefaultZoomFactor() {
+
+  vectorIsLoaded: Boolean = false;
+
+  constructor(){}
+
+  getDefaultZoomFactor() {
     let zoom = useStore().getMap().getView().getZoom() || 1;
     if (zoom > 1) zoom = zoom / 2;
     return zoom;
   }
 
-  static setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>) {
+  setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>) {
     const options = useStore().getOptions();
     const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
     const zoom = map.getView().getZoom();
@@ -27,20 +33,20 @@ export class Render {
     }
   }
 
-  static setupAndLoadLayer(vectorSource: Vector<Geometry>) {
+  setupAndLoadLayer(vectorSource: Vector<Geometry>) {
     const vectorLayer = new VectorLayer({
       source: vectorSource,
       visible: true,
     });
     vectorLayer.setStyle((feature) => {          
-      return CreateStyle.setupCircles(feature, Render.getDefaultZoomFactor());
+      return CreateStyle.setupCircles(feature, this.getDefaultZoomFactor());
     });
     useStore().getMap().addLayer(vectorLayer);
-    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => Render.setChangeResolution(useStore().getMap(), vectorLayer))
+    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(useStore().getMap(), vectorLayer))
   
   }
 
-  static generateFeaturePointFromCoordinate(coordinates: number[]) {
+  generateFeaturePointFromCoordinate(coordinates: number[]) {
     const coordinate = coordinates;
     const geomPoint = new Point(coordinate);
     const feature = new Feature({
@@ -52,34 +58,75 @@ export class Render {
     return feature;
   }
 
-  static displayCurrentElementCreateTargetMode(vectorSource: Vector<Geometry>) {
-    const currentSelections = useStore().getStates().currentSelections;
-    if (currentSelections.length > 0) {
-      currentSelections.forEach((coordinate) => {
-        const feature = Render.generateFeaturePointFromCoordinate(coordinate);
+  displayCurrentElementCreateTargetMode(vectorSource: Vector<Geometry>, states: IStates) {
+    vectorSource.getFeatures().forEach((feature) => vectorSource.removeFeature(feature));
+    if (states.currentSelections.length > 0) {
+      states.currentSelections.forEach((coordinate) => {
+        const feature = this.generateFeaturePointFromCoordinate(coordinate);
+        if (!states.readonly) {
+          useStore().addSelectedFeature(feature, feature.get('id'), 'create');
+        }
         vectorSource.addFeature(feature);
-        useStore().addSelectedFeature(feature, feature.get('id'), 'create');
       })
     }
   }
 
-  static displayCurrentElementSelectMode(vectorSource: Vector<Geometry>) {
-    vectorSource.on('featuresloadend', () => {
-      const currentSelections = useStore().getStates().currentSelections;
-      if (currentSelections && currentSelections.length > 0) {
-        currentSelections.forEach((coordinate) => {
-          vectorSource.getFeatures().forEach((feature: Feature) => {
-            const fCoordinate = feature.get('geom').getCoordinates();
-            if (
-              fCoordinate[0].toFixed(2) == coordinate[0] &&
-              fCoordinate[1].toFixed(2) == coordinate[1]
-            ) {
-              feature.set('isClick', true);
+  loadSelectMode(vectorSource: Vector<Geometry>, states: IStates) {
+    const usedCoordinates: Array<number[]> = [];
+    if (states.currentSelections && states.currentSelections.length > 0) {
+      vectorSource.getFeatures().forEach((feature) => {
+        if (feature.get('isClick'))
+          feature.set('isClick', false)
+      });
+      states.currentSelections.forEach((coordinate) => {
+        vectorSource.getFeatures().forEach((feature: Feature) => {
+          const fCoordinate = feature.get('geom').getCoordinates();
+          if (
+            fCoordinate[0].toFixed(2) == coordinate[0] &&
+            fCoordinate[1].toFixed(2) == coordinate[1]
+          ) {
+            usedCoordinates.push(coordinate)
+            feature.set('isClick', true);
+            if (!states.readonly)
               useStore().addSelectedFeature(feature, feature.get('objectid'), 'select');
-            }
-          });
+          }
         });
-      }
-    });
+      });
+    }
+    return usedCoordinates;
+  }
+
+  displayCurrentElementSelectMode(vectorSource: Vector<Geometry>, states: IStates) {
+    if (!this.vectorIsLoaded){
+      vectorSource.on('featuresloadend', () => {
+        this.loadSelectMode(vectorSource, states);
+        this.vectorIsLoaded = true;
+      })
+    } else {
+      this.loadSelectMode(vectorSource, states);
+    }
+  }
+
+  loadMixMode(vectorSourceSelect: Vector<Geometry>, vectorSourceCreate: Vector<Geometry>, states: IStates) {
+    const usedCoordinates = this.loadSelectMode(vectorSourceSelect, states);
+  
+    const updateStates: IStates = {
+      readonly: states.readonly,
+      currentSelections: states.currentSelections.filter((coordiante) => !usedCoordinates.includes(coordiante))
+    }
+
+    this.displayCurrentElementCreateTargetMode(vectorSourceCreate, updateStates);
+  }
+
+  displayMixMode(vectorSourceSelect: Vector<Geometry>, vectorSourceCreate: Vector<Geometry>, states: IStates) {
+    if (!this.vectorIsLoaded){
+      vectorSourceSelect.on('featuresloadend', () => {
+        this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
+        this.vectorIsLoaded = true;
+      })
+    } else {
+      this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
+    }
+    
   }
 }

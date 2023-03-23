@@ -35,7 +35,8 @@ export default interface IOption {
 }
 
 export default class Options {
-  static getOptions(options: IOption) {
+
+  constructor(options: IOption) {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
