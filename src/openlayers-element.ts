@@ -164,18 +164,14 @@ export class OpenLayersElement extends LitElement {
     if (options.border.url !== '') new Border();
     if (options.inclusionArea.url !== '') new InclusionArea();
     if (options.mode.type === 'select' && options.wfs.url != '') {
-      const controller = new SingleSelect(this.renderUtils, states)
-      this.renderUtils.displayCurrentElementSelectMode(controller.vectorSource, states);
-      this.modeControllers.push(controller);
+      this.modeControllers.push(new SingleSelect(this.renderUtils, states));
     }
     if (options.mode.type === 'create') {
       this.modeControllers.push(new SingleCreate(this.mapElement, this.renderUtils, states));
     }
     if (options.mode.type === 'mix' && options.wfs.url != '') {
-      const controllerSelect = new SingleSelect(this.renderUtils, states)
-      this.modeControllers.push(controllerSelect);
-      const controllerCreate = new SingleCreate(this.mapElement, this.renderUtils, states);
-      this.modeControllers.push(controllerCreate);
+      this.modeControllers.push( new SingleSelect(this.renderUtils, states));
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.renderUtils, states));
     }
     if (!readonly) new NotificationManager();
     EventManager.setCursorEvent();    

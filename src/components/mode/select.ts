@@ -60,7 +60,7 @@ export default class SingleSelect {
   }
 
   renderCurrentSelection(states: IStates) {
-    this.renderUtils.loadSelectMode(this.vectorSource, states);
+    this.renderUtils.displayCurrentElementSelectMode(this.vectorSource, states);
   }
 
   setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {

@@ -97,9 +97,14 @@ export class Render {
   }
 
   displayCurrentElementSelectMode(vectorSource: Vector<Geometry>, states: IStates) {
-    vectorSource.on('featuresloadend', () => {
+    if (!this.vectorIsLoaded){
+      vectorSource.on('featuresloadend', () => {
+        this.loadSelectMode(vectorSource, states);
+        this.vectorIsLoaded = true;
+      })
+    } else {
       this.loadSelectMode(vectorSource, states);
-    })
+    }
   }
 
   loadMixMode(vectorSourceSelect: Vector<Geometry>, vectorSourceCreate: Vector<Geometry>, states: IStates) {
