@@ -32,5 +32,5 @@ export default interface IOption {
     border: BorderConfig;
 }
 export default class Options {
-    static getOptions(options: IOption): void;
+    constructor(options: IOption);
 }

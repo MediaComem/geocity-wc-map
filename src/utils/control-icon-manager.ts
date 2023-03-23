@@ -9,6 +9,7 @@ import { Map } from 'ol';
 import EventManager from './event-manager';
 import { EventTypes } from 'ol/Observable';
 import BaseEvent from 'ol/events/Event';
+import IStates from './states';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
@@ -26,9 +27,9 @@ class ControlIconContainer extends Control {
 }
 
 export default class ControlIconManager {
-  static setupIcon() {
+  static setupIcon(states: IStates) {
     const options = useStore().getOptions();
-    const readonly = useStore().getStates().readonly;
+    const readonly = states.readonly;
     const map = useStore().getMap()
 
     const leftControlIconContainer = new ControlIconContainer('left-buttons-control-container');
@@ -61,7 +62,7 @@ export default class ControlIconManager {
         })
       );
 
-    if (options.enableCenterButton)
+    if (options.enableCenterButton && !readonly)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
     
     if (options.enableRotation)

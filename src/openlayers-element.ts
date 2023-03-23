@@ -39,6 +39,8 @@ import GeolocationManager from './components/controller/geolocation-manager';
 import EventManager from './utils/event-manager';
 import States from './utils/states';
 import IStates from './utils/states';
+import TargetRenderer from './components/mapView/target.renderer';
+import { Render } from './utils/render';
 
 /**
  * An example element.
@@ -52,6 +54,8 @@ export class OpenLayersElement extends LitElement {
   public mapElement!: HTMLDivElement;
 
   @state() view:View | undefined;
+  @state() modeControllers: Array<SingleCreate | SingleSelect | TargetRenderer> = [];
+  @state() renderUtils: Render = new Render()
 
   @property({type: Object, attribute: 'options'}) options = {}
 
@@ -110,10 +114,10 @@ export class OpenLayersElement extends LitElement {
   }
 
   firstUpdated() {
-    Options.getOptions(this.options as IOption);
-    States.getStates(this.states as IStates);
+    new Options(this.options as IOption);
+    const states = States.getStates(this.states as IStates);
     const options = useStore().getOptions()
-    const readonly = useStore().getStates().readonly;
+    const readonly = states.readonly;
     this.setupTheme(options);
     this.setupCustomDisplay(options);
     proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
@@ -134,7 +138,7 @@ export class OpenLayersElement extends LitElement {
       layers: [],
       view: this.view,
     }));
-    ControlIconManager.setupIcon();
+    ControlIconManager.setupIcon(states);
     if (options.enableGeolocation && !readonly) {
       useStore().setGeolocation(new Geolocation({
         trackingOptions: {
@@ -146,7 +150,7 @@ export class OpenLayersElement extends LitElement {
     } 
     if (options.search.displaySearch && options.mode.type !== 'target' && !readonly) useStore().getMap().addControl(new SearchLocationControl());
     if (options.mode.type === 'target') {
-      TargetController.renderExistingSelection();
+      this.modeControllers.push(new TargetRenderer(this.renderUtils))
       if (!readonly) {
         useStore().getMap().addControl(new TargetController());
         if (options.geolocationInformation.displayBox)
@@ -159,14 +163,36 @@ export class OpenLayersElement extends LitElement {
     if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.border.url !== '') new Border();
     if (options.inclusionArea.url !== '') new InclusionArea();
-    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
-    if (options.mode.type === 'create') new SingleCreate(this.mapElement);
+    if (options.mode.type === 'select' && options.wfs.url != '') {
+      const controller = new SingleSelect(this.renderUtils, states)
+      this.renderUtils.displayCurrentElementSelectMode(controller.vectorSource, states);
+      this.modeControllers.push(controller);
+    }
+    if (options.mode.type === 'create') {
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.renderUtils, states));
+    }
     if (options.mode.type === 'mix' && options.wfs.url != '') {
-      new SingleCreate(this.mapElement);
-      new SingleSelect();
-    } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
+      const controllerSelect = new SingleSelect(this.renderUtils, states)
+      this.modeControllers.push(controllerSelect);
+      const controllerCreate = new SingleCreate(this.mapElement, this.renderUtils, states);
+      this.modeControllers.push(controllerCreate);
+    }
     if (!readonly) new NotificationManager();
     EventManager.setCursorEvent();    
+  }
+
+  updated(changedProperties: any) {
+    if (changedProperties.has('states'))
+      if (this.states) {
+        const states = States.getStates(this.states as IStates);
+        switch(useStore().getOptions().mode.type) {
+          case 'target': this.modeControllers[0].renderCurrentSelection(states); break;
+          case 'select': this.modeControllers[0].renderCurrentSelection(states); break;
+          case 'create': this.modeControllers[0].renderCurrentSelection(states); break;
+          case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0].vectorSource, this.modeControllers[1].vectorSource, states);; 
+                      break;
+        }
+      }
   }
 
   render() {

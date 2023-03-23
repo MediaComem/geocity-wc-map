@@ -32,6 +32,7 @@
   position: relative;
   top: 0px;
   left: 0px;
+  margin-bottom: var(--top-distance);
 }
 
 .ol-zoom > .ol-zoom-in {
@@ -43,15 +44,15 @@
   width: var(--icon-width);
   top: 0px;
   right: 0px;
-  margin-top: var(--top-distance);
+  margin-bottom: var(--top-distance);
 }
 
 .center-control {
-  margin-top: var(--top-distance)
+  margin-bottom: var(--top-distance)
 }
 
-.rotation-control {
-  margin-top: var(--top-distance);
+.information-control {
+  margin-bottom: var(--top-distance)
 }
 
 .ol-zoom > button {

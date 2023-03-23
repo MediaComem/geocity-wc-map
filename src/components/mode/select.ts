@@ -16,20 +16,26 @@ import WFSLoader from '../../utils/wfs-loader';
 import EventManager from '../../utils/event-manager';
 import { EventTypes } from 'ol/Observable';
 import { Render } from '../../utils/render';
+import IStates from '../../utils/states';
 
 export default class SingleSelect {
 
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
   private store;
+  vectorSource: VectorSource;
+  states: IStates;
+  renderUtils: Render;
 
-  constructor() {
-    this.store = useStore(); 
+  constructor(renderUtils: Render, states: IStates) {
+    this.store = useStore();
+    this.states = states;
+    this.renderUtils = renderUtils;
     const map = this.store.getMap();
     const options = this.store.getOptions();
     const vectorLayer = new VectorLayer();
-    const vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '', false)
-    this.displayDataOnMap(map, vectorLayer, options, vectorSource);
-    if (!useStore().getStates().readonly) {
+    this.vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '', false)
+    this.displayDataOnMap(map, vectorLayer, options, this.vectorSource);
+    if (!this.states.readonly) {
       map.on('click', (evt) => {
         map.forEachFeatureAtPixel(evt.pixel, (feature) => {
           if (feature && feature.getGeometry()?.getType() === 'Point') {
@@ -51,8 +57,10 @@ export default class SingleSelect {
       const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
       map.getView().setCenter(coords);
     })
+  }
 
-    Render.displayCurrentElementSelectMode(vectorSource);
+  renderCurrentSelection(states: IStates) {
+    this.renderUtils.loadSelectMode(this.vectorSource, states);
   }
 
   setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {
@@ -80,8 +88,11 @@ export default class SingleSelect {
     map.addLayer(vectorLayer);
 
     this.control.disable();
-    map.addControl(this.control);
-    this.toogleDataSelection(vectorLayer);
+    if (!this.states.readonly) {
+      map.addControl(this.control);
+      this.toogleDataSelection(vectorLayer);
+    }
+      
 
     EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, clusterSource, options))
   }

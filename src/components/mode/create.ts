@@ -7,40 +7,47 @@ import SelectCreateInformationBoxController from '../notification/select-create-
 import { Map } from 'ol';
 import CustomStyleSelection from '../../utils/custom-style-selection';
 import { Render } from '../../utils/render';
+import VectorSource from "ol/source/Vector.js";
+import IStates from '../../utils/states';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
   private store;
+  vectorSource: VectorSource;
+  states: IStates;
+  renderUtils: Render;
 
-  constructor(mapElement: HTMLDivElement) {
+  constructor(mapElement: HTMLDivElement, renderUtils: Render, states: IStates) {
     this.store = useStore(); 
+    this.states = states;
+    this.renderUtils = renderUtils
     const map = this.store.getMap();
-    const vectorSource = new Vector();
+    this.vectorSource = new Vector();
   
+    this.setupMapForCreation(map, this.vectorSource);
 
-    this.setupMapForCreation(map, vectorSource);
+    if (!this.states.readonly) {
+      window.addEventListener('authorize-created', ((event: CustomEvent) => {
+        this.createElement(this.vectorSource, event)
+      }) as EventListener)
 
-    window.addEventListener('authorize-created', ((event: CustomEvent) => {
-      this.createElement(vectorSource, event)
-    }) as EventListener)
+      window.addEventListener('refused-created', () => {
+        this.store.removeLastSelectedFeature();
+      })
 
-    window.addEventListener('refused-created', () => {
-      this.store.removeLastSelectedFeature();
-    })
+      window.addEventListener('remove-created-icon', () => {
+        this.deleteElement(this.vectorSource)
+      })
 
-    window.addEventListener('remove-created-icon', () => {
-      this.deleteElement(vectorSource)
-    })
+      window.addEventListener('recenter-selected-element', () => {
+        const currentItemID = this.store.getCurrentItemId();
+        const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
+        map.getView().setCenter(coords);
+      })
 
-    window.addEventListener('recenter-selected-element', () => {
-      const currentItemID = this.store.getCurrentItemId();
-      const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
-      map.getView().setCenter(coords);
-    })
+      this.addLongClickEvent(mapElement, map);
 
-    this.addLongClickEvent(mapElement, map);
-
-    if (!useStore().getStates().readonly) {
+    
       map.on('click', (evt) =>  {
         map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
           if (feature && feature.getGeometry()?.getType() === 'Point') {
@@ -55,14 +62,18 @@ export default class SingleCreate {
         });
       });
     }
+  }
 
-    Render.displayCurrentElementCreateTargetMode(vectorSource);
+  renderCurrentSelection(states: IStates) {
+    this.renderUtils.displayCurrentElementCreateTargetMode(this.vectorSource, states);
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {
-    Render.setupAndLoadLayer(vectorSource)
-    this.control.disable();
-    map.addControl(this.control);
+    this.renderUtils.setupAndLoadLayer(vectorSource)
+    if (!this.states.readonly) {
+      this.control.disable();
+      map.addControl(this.control);
+    }
   }
 
   createElement( vectorSource:Vector, event: CustomEvent) {
@@ -145,7 +156,7 @@ export default class SingleCreate {
   }
 
   requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement) {
-    if (!useStore().getStates().readonly) {
+    if (!this.states.readonly) {
         // To have the coordinate, we use the pixel position and the map position to find the exact pixel in the window.
         // Then use map pixel converter
         const mapPosition = mapElement.getBoundingClientRect()

@@ -2,12 +2,10 @@ import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Control } from 'ol/control';
 import { EventTypes } from 'ol/Observable';
-import { Vector } from 'ol/source';
 import { useStore } from '../../composable/store';
 import EventManager from '../../utils/event-manager';
 
 import { GeocityEvent } from '../../utils/geocity-event';
-import { Render } from '../../utils/render';
 
 class TargetInformation {
     constructor() {
@@ -65,11 +63,5 @@ export default class TargetController extends Control {
         const target = document.createElement('target-element') as TargetElement;
         super({ element: target});
         new TargetInformation();
-    }
-
-    static renderExistingSelection() {
-        const vectorSource = new Vector();
-        Render.setupAndLoadLayer(vectorSource)
-        Render.displayCurrentElementCreateTargetMode(vectorSource);
     }
 }
