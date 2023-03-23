@@ -65,10 +65,6 @@ function getMap() {
   return map;
 }
 
-function isInSelectedeFeatues(id: number, type: string) {
-  return selectedFeatures.find((f) => f.id === id && f.type === type);
-}
-
 function addSelectedFeature(newVal: Feature, id: number, type: string) {
   selectedFeatures.push({
     id: id,
@@ -142,7 +138,6 @@ export function useStore() {
     getOptions,
     setMap,
     getMap,
-    isInSelectedeFeatues,
     addSelectedFeature,
     removeSelectedFeature,
     removeLastSelectedFeature,
