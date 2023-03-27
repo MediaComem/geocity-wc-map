@@ -129,7 +129,7 @@ export class OpenLayersElement extends LitElement {
       zoom: options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
-      enableRotation: options.enableRotation
+      enableRotation: options.interaction.enableRotation
     });
 
     useStore().setMap(new Map({
@@ -139,7 +139,7 @@ export class OpenLayersElement extends LitElement {
       view: this.view,
     }));
     ControlIconManager.setupIcon(states);
-    if (options.enableGeolocation && !readonly) {
+    if (options.interaction.enableGeolocation && !readonly) {
       useStore().setGeolocation(new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
@@ -160,7 +160,7 @@ export class OpenLayersElement extends LitElement {
       }
     }
     if (options.wmts.length > 0) new WMTSLoader();
-    if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
+    if (options.interaction.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.border.url !== '') new Border();
     if (options.inclusionArea.url !== '') new InclusionArea();
     if (options.mode.type === 'select' && options.wfs.url != '') {

@@ -43,7 +43,7 @@ export default class Border {
           zoom: options.zoom,
           minZoom: options.minZoom,
           maxZoom: options.maxZoom,
-          enableRotation: options.enableRotation,
+          enableRotation: options.interaction.enableRotation,
           constrainOnlyCenter: true,
         }));
       }

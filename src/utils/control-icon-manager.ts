@@ -40,7 +40,7 @@ export default class ControlIconManager {
     if (!readonly)
       map.addControl(new InformationControl(rightControlIconContainer.div));
       
-    if (options.fullscreen)
+    if (options.interaction.fullscreen)
       map.addControl(
         new FullScreen({
           label: SVGCreator.fullScreenLabel(),
@@ -52,7 +52,7 @@ export default class ControlIconManager {
     
     map.addControl(new GeoLayerControl(rightControlIconContainer.div));
 
-    if (options.displayZoom)
+    if (options.interaction.displayZoom)
       map.addControl(
         new Zoom({
           zoomInLabel: SVGCreator.zoomInLabel(),
@@ -62,10 +62,10 @@ export default class ControlIconManager {
         })
       );
 
-    if (options.enableCenterButton && !readonly)
+    if (options.interaction.enableCenterButton && !readonly)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
     
-    if (options.enableRotation)
+    if (options.interaction.enableRotation)
       EventManager.registerBorderConstaintMapEvent('change:rotation' as EventTypes, (event) => setRotationChange(map, event, leftControlIconContainer.div))      
   }
 }

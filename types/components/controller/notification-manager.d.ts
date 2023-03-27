@@ -31,8 +31,11 @@ export default class NotificationManager {
     checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
     checkMaxElementContraint(features: Array<Feature>): void;
     checkIsInBorder(features: Array<Feature>): void;
-    convertToMultiPoint(coordinate: number[]): MultiPoint | undefined;
-    generateGeometryCollection(geometries: Geometry[]): string;
-    generateTargetGeometry(coordinate: number[]): string;
+    convertToMultiPoint(coordinate: number[]): Feature<MultiPoint>;
+    formatGeometryCollection(geometries: Geometry[]): string;
+    generateGeometryCollection(features: Array<Feature>): string;
+    formatFeatureCollection(features: Feature[]): string;
+    generateFeatureCollection(features: Feature[]): string;
+    generateTargetGeometry(coordinate: number[]): string | undefined;
     generateExportData(features: Array<Feature>): string;
 }
