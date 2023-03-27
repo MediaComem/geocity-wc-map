@@ -228,9 +228,16 @@ export default class NotificationManager {
         }
         else {
             if (couldBypass) this.validAreaConstraint = true;
-            else { 
+            else {
                 this.validAreaConstraint = false;
-                GeocityEvent.sendEvent('position-selected', undefined);
+                if (useStore().getOptions().mode.type === 'target') {
+                    GeocityEvent.sendEvent('position-selected', undefined);
+                } else {
+                    setTimeout(() => {
+                        this.validAreaConstraint = true;
+                        this.displayRightNotification();
+                    }, 2000)
+                }
             };
         }
     }

@@ -9,6 +9,7 @@ import CustomStyleSelection from '../../utils/custom-style-selection';
 import { Render } from '../../utils/render';
 import VectorSource from "ol/source/Vector.js";
 import IStates from '../../utils/states';
+import InclusionArea from '../constraint/inclusion-area';
 
 export default class SingleCreate {
   control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
@@ -16,10 +17,12 @@ export default class SingleCreate {
   vectorSource: VectorSource;
   states: IStates;
   renderUtils: Render;
+  inclusionArea: InclusionArea | undefined;
 
-  constructor(mapElement: HTMLDivElement, renderUtils: Render, states: IStates) {
+  constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates) {
     this.store = useStore(); 
     this.states = states;
+    this.inclusionArea = inclusionArea;
     this.renderUtils = renderUtils
     const map = this.store.getMap();
     this.vectorSource = new Vector();
@@ -44,6 +47,16 @@ export default class SingleCreate {
         const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
         map.getView().setCenter(coords);
       })
+
+      if (this.store.getOptions().mode.type === 'mix') {
+        window.addEventListener('remove-created', ((event: CustomEvent) => {
+          this.vectorSource.getFeatures().forEach((feature) => {
+            if (feature.get('id') === event.detail) {
+              this.remove(this.vectorSource, feature)
+            }
+          })
+        }) as EventListener) 
+      }
 
       this.addLongClickEvent(mapElement, map);
 
@@ -102,12 +115,16 @@ export default class SingleCreate {
     this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
   }
 
+  remove(vectorSource:Vector, feature:Feature) {
+    vectorSource.removeFeature(feature)
+    this.control.hide()
+    this.store.removeSelectedFeature(this.store.getCurrentItemId());
+  }
+
   deleteElement(vectorSource:Vector) {
     const feature = this.store.getSelectedFeature(this.store.getCurrentItemId())
     if (feature) {
-      vectorSource.removeFeature(feature)
-      this.control.hide()
-      this.store.removeSelectedFeature(this.store.getCurrentItemId());
+      this.remove(vectorSource, feature)
       GeocityEvent.sendEvent('rule-validation', undefined);
       CustomStyleSelection.setCustomStyleWithouInfoBox();
     }
@@ -168,7 +185,22 @@ export default class SingleCreate {
           isSelected: true
         });
         feature.setGeometryName('geom');
+        if (this.inclusionArea && !this.inclusionArea.couldCreate(geomPoint.getCoordinates())) {
+          return
+        }
         if (this.store.getMaxElement() === 1) {
+          // This part is in mix mode to remove the current selection in the select vector source
+          // To replace by a create element
+          if (this.store.getOptions().mode.type === 'mix') {
+            const features = this.store.getSelectedFeatures();
+            if (features && features.length === 1) {
+              const currentType = this.store.getCurrentFeatureType(features[0].get('objectid'));
+              if (currentType === 'select') {
+                const id = features[0].get('objectid');
+                GeocityEvent.sendEvent('remove-clicked', id)
+              }
+            }
+          }
           this.store.removeSelectedFeature(this.store.getCurrentItemId());
         } 
         if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {

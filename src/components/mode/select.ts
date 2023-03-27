@@ -57,6 +57,19 @@ export default class SingleSelect {
       const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
       map.getView().setCenter(coords);
     })
+
+    if (options.mode.type === 'mix') {
+      window.addEventListener('remove-clicked', ((event: CustomEvent) => {
+        vectorLayer.getSource()?.getFeatures().forEach((feature) => {
+          feature.get('features').forEach((geometryFeature:Feature) => {
+            if (geometryFeature.get('objectid') === event.detail) {
+              this.removeItem(geometryFeature)
+              this.control.hide();
+            }
+          });
+        });
+      }) as EventListener)
+    }
   }
 
   renderCurrentSelection(states: IStates) {
@@ -152,6 +165,18 @@ export default class SingleSelect {
           // Remove old selection to keep only the new one.
           // Special case when only 1 element could be selected.
           if (this.store.getMaxElement() === 1) {
+            // This part is in mix mode to remove the current selection in the create vector source
+            // To replace by a select element
+            if (this.store.getOptions().mode.type === 'mix') {
+              const features = this.store.getSelectedFeatures();
+              if (features && features.length >= 1) {
+                const currentType = this.store.getCurrentFeatureType(features[0].get('id'));
+                if (currentType === 'create') {
+                  const id = features[0].get('id');
+                  GeocityEvent.sendEvent('remove-created', id)
+                }
+              }
+            }
             vectorLayer.getSource()?.getFeatures().forEach((feature) => {
               feature.get('features').forEach((geometryFeature:Feature) => {
                 if (geometryFeature.get('isClick')) {
