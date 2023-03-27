@@ -1,20 +1,24 @@
 /// <reference types="node" />
+import Feature from 'ol/Feature';
 import { Vector } from 'ol/source';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 import { Map } from 'ol';
 import { Render } from '../../utils/render';
 import VectorSource from "ol/source/Vector.js";
 import IStates from '../../utils/states';
+import InclusionArea from '../constraint/inclusion-area';
 export default class SingleCreate {
     control: SelectCreateInformationBoxController;
     private store;
     vectorSource: VectorSource;
     states: IStates;
     renderUtils: Render;
-    constructor(mapElement: HTMLDivElement, renderUtils: Render, states: IStates);
+    inclusionArea: InclusionArea | undefined;
+    constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates);
     renderCurrentSelection(states: IStates): void;
     setupMapForCreation(map: Map, vectorSource: Vector): void;
     createElement(vectorSource: Vector, event: CustomEvent): void;
+    remove(vectorSource: Vector, feature: Feature): void;
     deleteElement(vectorSource: Vector): void;
     addLongClickEvent(mapElement: HTMLDivElement, map: Map): void;
     requestElementCreation(x: number, y: number, map: Map, mapElement: HTMLDivElement): void;
