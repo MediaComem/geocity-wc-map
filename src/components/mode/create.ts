@@ -201,7 +201,10 @@ export default class SingleCreate {
               }
             }
           }
-          this.store.removeSelectedFeature(this.store.getCurrentItemId());
+          const currentFeature = this.store.getSelectedFeatures();
+          if (currentFeature.length > 0) {
+            this.store.removeSelectedFeature(currentFeature[0].get('id'));
+          }
         } 
         if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {
           this.store.addSelectedFeature(feature, feature.get('id'), 'create')
