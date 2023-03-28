@@ -8,13 +8,13 @@ import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
 import { GeocityEvent } from '../../utils/geocity-event';
 import layerStyle from '../../styles/layer-selection.css?inline';
-import { useStore } from '../../composable/store';
 import wmtsLayerConfiguration from '../mapView/wmts-loader';
 
 @customElement('layer-list')
 // @ts-ignore
 class LayerList extends LitElement {
   @state() _currentSelectedIndex = 0;
+  @state() wmts: Array<wmtsLayerConfiguration> = [];
 
   selectLayer(layer: wmtsLayerConfiguration, index: number) {
     GeocityEvent.sendEvent('layer-selected', layer)
@@ -26,7 +26,7 @@ class LayerList extends LitElement {
   render() {
     return html`
                 <ul>
-                  ${useStore().getOptions().wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
+                  ${this.wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
                     html`<li tabindex="0" @click=${() => this.selectLayer(wmts, index)}>
                           <div class="image-container">
                             <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${wmts.thumbnail}"/>
@@ -42,6 +42,7 @@ class LayerList extends LitElement {
 @customElement('layer-selection')
 class LayerSectionElement extends LitElement {
   static styles = [unsafeCSS(layerStyle)];
+  @state() wmts: Array<wmtsLayerConfiguration> = [];
 
   render() {
     return html`<div class="layer-container">
@@ -53,7 +54,7 @@ class LayerSectionElement extends LitElement {
                         </div>
                       </div>
                   </div>
-                  <layer-list />
+                  <layer-list wmts=${this.wmts}/>
               </div>`;
   }
 
@@ -64,8 +65,9 @@ class LayerSectionElement extends LitElement {
 
 export default class LayerSelectionControl extends Control {
 
-  constructor() {
+  constructor(wmts: Array<wmtsLayerConfiguration>) {
     const box = document.createElement('layer-selection') as LayerSectionElement;
+    box.wmts = wmts;
     super({ element: box });
     this.element.classList.add('layer-container-position')
   }

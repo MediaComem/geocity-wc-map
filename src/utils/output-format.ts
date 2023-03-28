@@ -1,7 +1,7 @@
 import { Feature } from "ol";
 import GeoJSON from "ol/format/GeoJSON";
 import { MultiPoint, Geometry, GeometryCollection, Point } from "ol/geom";
-import { useStore } from "../composable/store";
+import { Store } from "../composable/store";
 
 export default class OutputFormat {
   geojsonFormat: GeoJSON = new GeoJSON();
@@ -42,7 +42,7 @@ export default class OutputFormat {
     return this.formatGeometryCollection(geometries);
   }
 
-  generateFeatureCollection(features: Feature[]) {
+  generateFeatureCollection(features: Feature[], store: Store) {
     const outputFeatures: Feature[] = [];
     features.forEach((feature) => {
       const geometry = feature.getGeometry();
@@ -51,7 +51,7 @@ export default class OutputFormat {
         const multiPoint = this.convertToMultiPoint(point.getCoordinates());
         if (multiPoint) {
           const id = feature.get('objectid');
-          if (id && useStore().getCurrentFeatureType(id) === 'select')
+          if (id && store.getCurrentFeatureType(id) === 'select')
             multiPoint.set('objectid', id);
           outputFeatures.push(multiPoint);
         }
@@ -60,10 +60,10 @@ export default class OutputFormat {
     return this.formatFeatureCollection(outputFeatures);
   }
 
-  generateTargetGeometry(coordinate: number[]) {
+  generateTargetGeometry(coordinate: number[], store: Store) {
     const multiPoint = this.convertToMultiPoint(coordinate);
     if (multiPoint) {
-      if (useStore().getOptions().outputFormat === 'GeometryCollection') {
+      if (store.getOptions()?.outputFormat === 'GeometryCollection') {
         const geometry = multiPoint.getGeometry();
         if (geometry) return this.formatGeometryCollection([geometry]);
         return undefined;
@@ -73,9 +73,9 @@ export default class OutputFormat {
     return undefined;
   }
 
-  generateExportData(features: Array<Feature>) {
-    if (useStore().getOptions().outputFormat === 'GeometryCollection')
+  generateExportData(features: Array<Feature>, store: Store) {
+    if (store.getOptions()?.outputFormat === 'GeometryCollection')
       return this.generateGeometryCollection(features);
-    return this.generateFeatureCollection(features);
+    return this.generateFeatureCollection(features, store);
   }
 }

@@ -5,6 +5,7 @@ import { Vector as VectorLayer } from 'ol/layer';
 import { Geometry } from 'ol/geom';
 import VectorSource from "ol/source/Vector.js";
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
+import { Store } from '../../composable/store';
 import IOption from '../../utils/options';
 import { Render } from '../../utils/render';
 import IStates from '../../utils/states';
@@ -14,7 +15,9 @@ export default class SingleSelect {
     vectorSource: VectorSource;
     states: IStates;
     renderUtils: Render;
-    constructor(renderUtils: Render, states: IStates);
+    options: IOption;
+    map: Map;
+    constructor(renderUtils: Render, states: IStates, store: Store);
     renderCurrentSelection(states: IStates): void;
     setChangeResolution(map: Map, clusterSource: Cluster, options: IOption): void;
     displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource): void;

@@ -1,21 +1,22 @@
 import GeolocationMarker from '../mapView/geolocation-marker';
 import LoaderBoxControl from '../notification/loader';
-import { useStore } from '../../composable/store';
-import { Overlay } from 'ol';
+import { Store } from '../../composable/store';
+import { Overlay, Map } from 'ol';
 import {getTopLeft} from 'ol/extent';
 
 export default class GeolocationManager {
   marker: GeolocationMarker | undefined;
   loaderBox: LoaderBoxControl;
   overlay: Overlay;
+  map: Map;
 
   removeLoaderBox() {
     this.loaderBox.hide();
   }
 
   chromeBasePermissionAnalyzer() {
-    const geolocation = useStore().getGeolocation()
-    
+    const geolocation = Store.getGeolocation()
+
     navigator.permissions
       .query({ name: 'geolocation' })
       .then((permissionStatus) => {
@@ -46,13 +47,13 @@ export default class GeolocationManager {
 
   granted() {
     this.removeLoaderBox();
-    useStore().getMap().removeOverlay(this.overlay);
-    this.marker = new GeolocationMarker();
+    this.map.removeOverlay(this.overlay);
+    this.marker = new GeolocationMarker(this.map);
   }
 
   denied() {
     this.removeLoaderBox();
-    useStore().getMap().removeOverlay(this.overlay);
+    this.map.removeOverlay(this.overlay);
     this.marker?.removeMarker();
   }
 
@@ -73,14 +74,14 @@ export default class GeolocationManager {
   }
 
   openInfo() {
-    useStore().getMap().addOverlay(this.overlay);
+    this.map.addOverlay(this.overlay);
     this.loaderBox.show();
     // This test is used to detect mobile device location enabled or disabled
     this.getLocation();
   }
 
   checkGeolocation() {
-    const geolocation = useStore().getGeolocation()
+    const geolocation = Store.getGeolocation()
     if (navigator.userAgent.match(/Chrome\/\d+/) !== null) {
       this.chromeBasePermissionAnalyzer();
     } else {
@@ -95,22 +96,26 @@ export default class GeolocationManager {
       geolocation?.on('error', () => {
         this.denied();
       })
-  
+
       geolocation?.on('change:position', () => {
         this.granted();
       })
     }
   }
 
-  constructor() {
-    const geolocation = useStore().getGeolocation()
+  constructor(map: Map) {
+    if (!map) {
+      throw new Error("Missing map!");
+    }
+    this.map = map;
+    const geolocation = Store.getGeolocation()
     geolocation?.setTracking(true);
     const div = document.createElement('div');
     div.classList.add('map-overlay');
-    const extent = useStore().getMap().getView().calculateExtent(useStore().getMap().getSize())
+    const extent = this.map.getView().calculateExtent(this.map.getSize())
     this.overlay = new Overlay({ element: div, position: getTopLeft(extent), className: 'ol-overlay-container ol-selectable overlay-index'});
     this.loaderBox = new LoaderBoxControl('Chargement des données GPS');
-    useStore().getMap().addControl(this.loaderBox);
+    this.map.addControl(this.loaderBox);
     this.checkGeolocation();
   }
 }

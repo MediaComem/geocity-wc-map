@@ -1,7 +1,10 @@
+import { Store } from '../../composable/store';
 import NotificationElement from '../../types/notification-element';
 import NotificationBoxControl from '../notification/notification';
 import Feature from 'ol/Feature';
+import { Map } from 'ol';
 import OutputFormat from '../../utils/output-format';
+import IOption from '../../utils/options';
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
@@ -14,7 +17,10 @@ export default class NotificationManager {
     infosNotificationControl: NotificationBoxControl | undefined;
     borderContraintNotificationControl: NotificationBoxControl | undefined;
     outputFormat: OutputFormat;
-    constructor();
+    store: Store;
+    options: IOption;
+    map: Map;
+    constructor(store: Store);
     displayRightNotification(): void;
     setupTargetMode(): void;
     iconClickedListener(): void;

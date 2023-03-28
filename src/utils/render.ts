@@ -3,30 +3,33 @@ import VectorLayer from 'ol/layer/Vector';
 import { Vector } from 'ol/source';
 import { Geometry, Point } from 'ol/geom';
 import CreateStyle from '../components/styles/create-style';
-import { useStore } from '../composable/store';
 import { FeatureLike } from 'ol/Feature';
 import { EventTypes } from 'ol/Observable';
 import EventManager from './event-manager';
 import IStates from './states';
+import { Store } from '../composable/store';
 
 export class Render {
 
   vectorIsLoaded: Boolean = false;
+  store: Store;
 
-  constructor(){}
+  constructor(store: Store){
+    this.store = store;
+  }
 
   getDefaultZoomFactor() {
-    let zoom = useStore().getMap().getView().getZoom() || 1;
+    let zoom = this.store.getMap()?.getView().getZoom() || 1;
     if (zoom > 1) zoom = zoom / 2;
     return zoom;
   }
 
   setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>) {
-    const options = useStore().getOptions();
-    const minZoomAllowed = options.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options.zoom;
+    const options = this.store.getOptions();
+    const minZoomAllowed = options?.notifications.find((notification) => notification.rule.type === 'ZOOM_CONSTRAINT')?.rule.minZoom || options?.zoom;
     const zoom = map.getView().getZoom();
     const resolution = map.getView().getResolution();
-    if (zoom && resolution && zoom > minZoomAllowed) {
+    if (zoom && resolution && minZoomAllowed && zoom > minZoomAllowed) {
       vectorLayer.setStyle(function (feature: FeatureLike) {
         return CreateStyle.setupCircles(feature, zoom / resolution);
       });
@@ -38,12 +41,25 @@ export class Render {
       source: vectorSource,
       visible: true,
     });
-    vectorLayer.setStyle((feature) => {          
+    vectorLayer.setStyle((feature) => {
       return CreateStyle.setupCircles(feature, this.getDefaultZoomFactor());
     });
-    useStore().getMap().addLayer(vectorLayer);
-    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(useStore().getMap(), vectorLayer))
-  
+    const map = this.store.getMap();
+    if(!map) {
+      return;
+    }
+    map?.addLayer(vectorLayer);
+    const options = this.store.getOptions();
+    if (!options) {
+      return;
+    }
+    EventManager.registerBorderConstaintMapEvent(
+      'change:resolution' as EventTypes,
+      () => this.setChangeResolution(map, vectorLayer),
+      map,
+      options
+    );
+
   }
 
   generateFeaturePointFromCoordinate(coordinates: number[]) {
@@ -64,7 +80,7 @@ export class Render {
       states.currentSelections.forEach((coordinate) => {
         const feature = this.generateFeaturePointFromCoordinate(coordinate);
         if (!states.readonly) {
-          useStore().addSelectedFeature(feature, feature.get('id'), 'create');
+          this.store.addSelectedFeature(feature, feature.get('id'), 'create');
         }
         vectorSource.addFeature(feature);
       })
@@ -88,7 +104,7 @@ export class Render {
             usedCoordinates.push(coordinate)
             feature.set('isClick', true);
             if (!states.readonly)
-              useStore().addSelectedFeature(feature, feature.get('objectid'), 'select');
+              this.store.addSelectedFeature(feature, feature.get('objectid'), 'select');
           }
         });
       });
@@ -109,7 +125,7 @@ export class Render {
 
   loadMixMode(vectorSourceSelect: Vector<Geometry>, vectorSourceCreate: Vector<Geometry>, states: IStates) {
     const usedCoordinates = this.loadSelectMode(vectorSourceSelect, states);
-  
+
     const updateStates: IStates = {
       readonly: states.readonly,
       currentSelections: states.currentSelections.filter((coordiante) => !usedCoordinates.includes(coordiante))
@@ -127,6 +143,5 @@ export class Render {
     } else {
       this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
     }
-    
   }
 }

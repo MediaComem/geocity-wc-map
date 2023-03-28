@@ -1,7 +1,7 @@
 import Tile from 'ol/layer/Tile';
 import WMTS, { optionsFromCapabilities } from 'ol/source/WMTS';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import TileSource from 'ol/source/Tile';
 import * as olRender from 'ol/render';
 import { Fill, Style } from 'ol/style';
@@ -16,9 +16,12 @@ export default interface wmtsLayerConfiguration {
 }
 
 export default class WMTSLoader {
-  constructor() {
+  constructor(store: Store) {
     const parser = new WMTSCapabilities();
-    const options = useStore().getOptions();
+    const options = store.getOptions();
+    if(!options) {
+      throw new Error("Missing options");
+    }
     let isVisible = true;
     const layers: Tile<TileSource>[] = [];
     Promise.all(options.wmts.map((wmts) => {
@@ -35,17 +38,17 @@ export default class WMTSLoader {
           wmtsLayer.setSource(new WMTS(wmtsOptions))
           wmtsLayer.setVisible(isVisible);
           layers.push(wmtsLayer);
-          useStore().getMap().getLayers().insertAt(0, wmtsLayer);
+          store.getMap()?.getLayers().insertAt(0, wmtsLayer);
           isVisible = false;
-          if (useStore().getBorderConstraint()) {
-            wmtsLayer.setExtent(useStore().getBorderConstraint()?.getSource()?.getExtent());
+          if (store.getBorderConstraint()) {
+            wmtsLayer.setExtent(store.getBorderConstraint()?.getSource()?.getExtent());
           }
           wmtsLayer.on('postrender', function (e: RenderEvent) {
             const vectorContext = olRender.getVectorContext(e);
             const context: CanvasRenderingContext2D = e.context as CanvasRenderingContext2D
             if (context) {
               context.globalCompositeOperation = 'destination-in';
-              useStore().getBorderConstraint()?.getSource()?.forEachFeature(function (feature) {
+              store.getBorderConstraint()?.getSource()?.forEachFeature(function (feature) {
               const style = new Style({
                 fill: new Fill({
                   color: 'white',
@@ -63,7 +66,7 @@ export default class WMTSLoader {
     
     if (options.border.url !== '') {
       window.addEventListener('border-contraint-enabled', () => {
-        layers.forEach((wmtsLayer) => wmtsLayer.setExtent(useStore().getBorderConstraint()?.getSource()?.getExtent()))
+        layers.forEach((wmtsLayer) => wmtsLayer.setExtent(store.getBorderConstraint()?.getSource()?.getExtent()))
       })
     }
 
