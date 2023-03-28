@@ -56,6 +56,7 @@ export class OpenLayersElement extends LitElement {
   @state() view:View | undefined;
   @state() modeControllers: Array<SingleCreate | SingleSelect | TargetRenderer> = [];
   @state() renderUtils: Render = new Render()
+  @state() inclusionArea: InclusionArea | undefined = undefined;
 
   @property({type: Object, attribute: 'options'}) options = {}
 
@@ -129,7 +130,7 @@ export class OpenLayersElement extends LitElement {
       zoom: options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
-      enableRotation: options.enableRotation
+      enableRotation: options.interaction.enableRotation
     });
 
     useStore().setMap(new Map({
@@ -139,7 +140,7 @@ export class OpenLayersElement extends LitElement {
       view: this.view,
     }));
     ControlIconManager.setupIcon(states);
-    if (options.enableGeolocation && !readonly) {
+    if (options.interaction.enableGeolocation && !readonly) {
       useStore().setGeolocation(new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
@@ -160,18 +161,18 @@ export class OpenLayersElement extends LitElement {
       }
     }
     if (options.wmts.length > 0) new WMTSLoader();
-    if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
+    if (options.interaction.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
     if (options.border.url !== '') new Border();
-    if (options.inclusionArea.url !== '') new InclusionArea();
+    if (options.inclusionArea.url !== '') this.inclusionArea = new InclusionArea();
     if (options.mode.type === 'select' && options.wfs.url != '') {
       this.modeControllers.push(new SingleSelect(this.renderUtils, states));
     }
     if (options.mode.type === 'create') {
-      this.modeControllers.push(new SingleCreate(this.mapElement, this.renderUtils, states));
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.inclusionArea, this.renderUtils, states));
     }
     if (options.mode.type === 'mix' && options.wfs.url != '') {
       this.modeControllers.push( new SingleSelect(this.renderUtils, states));
-      this.modeControllers.push(new SingleCreate(this.mapElement, this.renderUtils, states));
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.inclusionArea, this.renderUtils, states));
     }
     if (!readonly) new NotificationManager();
     EventManager.setCursorEvent();    

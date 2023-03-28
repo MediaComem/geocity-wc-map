@@ -4,10 +4,10 @@ import { GeocityEvent } from '../../utils/geocity-event';
 import NotificationBoxControl from '../notification/notification';
 
 import Feature from 'ol/Feature';
-import { Geometry, GeometryCollection, MultiPoint, Point } from 'ol/geom';
+import { Point } from 'ol/geom';
 import EventManager from '../../utils/event-manager';
 import { EventTypes } from 'ol/Observable';
-import GeoJSON from 'ol/format/GeoJSON';
+import OutputFormat from '../../utils/output-format';
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
@@ -20,6 +20,7 @@ export default class NotificationManager {
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
     borderContraintNotificationControl: NotificationBoxControl | undefined;
+    outputFormat: OutputFormat = new OutputFormat();
 
     constructor() {
         const options = useStore().getOptions();
@@ -77,7 +78,7 @@ export default class NotificationManager {
     setupTargetMode() {
         window.addEventListener('current-center-position', ((event: CustomEvent) => {
             if (this.validZoomConstraint && this.validAreaConstraint) {
-                GeocityEvent.sendEvent('position-selected', this.generateTargetGeometry(event.detail));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateTargetGeometry(event.detail));
             }
         }) as EventListener)
     }
@@ -88,7 +89,7 @@ export default class NotificationManager {
             if (this.validZoomConstraint && features.length > 0) {
                 this.checkMaxElementContraint(features);
                 if (this.validMaxElementConstraint) {
-                    GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                    GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features));
                 }
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
@@ -107,7 +108,7 @@ export default class NotificationManager {
             this.checkMaxElementContraint(features);
             this.checkIsInBorder(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0 && this.validBorderContraint) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features));
                 GeocityEvent.sendEvent('authorize-created', event.detail);
             } else {
                 GeocityEvent.sendEvent('refused-created', event.detail);
@@ -134,7 +135,7 @@ export default class NotificationManager {
             const features = useStore().getSelectedFeatures();
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features));
             } else {
                 GeocityEvent.sendEvent('position-selected', undefined);
             }
@@ -227,9 +228,16 @@ export default class NotificationManager {
         }
         else {
             if (couldBypass) this.validAreaConstraint = true;
-            else { 
+            else {
                 this.validAreaConstraint = false;
-                GeocityEvent.sendEvent('position-selected', undefined);
+                if (useStore().getOptions().mode.type === 'target') {
+                    GeocityEvent.sendEvent('position-selected', undefined);
+                } else {
+                    setTimeout(() => {
+                        this.validAreaConstraint = true;
+                        this.displayRightNotification();
+                    }, 2000)
+                }
             };
         }
     }
@@ -270,42 +278,5 @@ export default class NotificationManager {
         } else {
             this.validBorderContraint = true;
         }   
-    }
-
-    convertToMultiPoint(coordinate: number[]) {
-        return new Feature({
-            geometry: new MultiPoint([[coordinate[0], coordinate[1]]]),
-        }).getGeometry();
-    }
-
-    generateGeometryCollection (geometries: Geometry[]) {
-        const geojsonFormat = new GeoJSON();
-        const geometry = new GeometryCollection(geometries);
-        const geojsongeom = geojsonFormat.writeGeometry(geometry, {
-            decimals: 2,
-        });
-        return geojsongeom;
-    }
-
-    generateTargetGeometry(coordinate: number[]) {
-        const geometries: Geometry[] = [];
-        const multiPoint = this.convertToMultiPoint(coordinate)
-        if (multiPoint)
-            geometries.push(multiPoint)
-        return this.generateGeometryCollection(geometries)
-    }
-
-    generateExportData(features: Array<Feature>) {
-        const geometries: Geometry[] = [];
-        features.forEach((feature) => {
-            const geometry = feature.getGeometry();
-            if (geometry) {
-                const point: Point = geometry as Point;
-                const multiPoint = this.convertToMultiPoint(point.getCoordinates())
-                if (multiPoint)
-                    geometries.push(multiPoint)
-            }    
-        })
-        return this.generateGeometryCollection(geometries)
     }
 }

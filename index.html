@@ -39,11 +39,16 @@
     <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
         <openlayers-element  options='{
         "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
-        "enableGeolocation": true,
-        "enableCenterButton": true,
-        "enableRotation": true,
+        "interaction": {
+            "displayZoom": true,
+            "displayScaleLine": false,
+            "fullscreen": true,
+            "enableGeolocation": true,
+            "enableCenterButton": true,
+            "enableRotation": true
+        },
         "mode": {
-            "type": "select"
+            "type": "mix"
         },
         "geolocationInformation": {
             "displayBox": true,
@@ -64,7 +69,7 @@
           "message": "Le maximum de sélections est limité à {x}.",
           "rule": {
               "type": "MAX_SELECTION",
-              "maxElement": 3
+              "maxElement": 4
           }
         },
         {
@@ -100,7 +105,8 @@
             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
             "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
         },
-        "selectionTargetBoxMessage": "Emplacement du banc"
+        "selectionTargetBoxMessage": "Emplacement du banc",
+        "outputFormat": "GeometryCollection"
     }' states='{
         "readonly": false,
         "currentSelections": [[2539063.19,1181419.5], [2539064.6,1181401.67]]
