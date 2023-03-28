@@ -8,7 +8,7 @@ import VectorSource from "ol/source/Vector.js";
 import { GeocityEvent } from '../../utils/geocity-event';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import SingleSelectStyle from '../styles/single-select-style';
 import IOption from '../../utils/options';
 import CustomStyleSelection from '../../utils/custom-style-selection';
@@ -20,20 +20,28 @@ import IStates from '../../utils/states';
 
 export default class SingleSelect {
 
-  control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+  control: SelectCreateInformationBoxController;
   private store;
   vectorSource: VectorSource;
   states: IStates;
   renderUtils: Render;
+  options: IOption;
+  map: Map;
 
-  constructor(renderUtils: Render, states: IStates) {
-    this.store = useStore();
+  constructor(renderUtils: Render, states: IStates, store: Store) {
+    this.store = store;
     this.states = states;
     this.renderUtils = renderUtils;
     const map = this.store.getMap();
     const options = this.store.getOptions();
+    if(!options || !map) {
+      throw new Error("Missing map or options");
+    }
+    this.options = options;
+    this.map = map;
+    this.control = new SelectCreateInformationBoxController(this.store)
     const vectorLayer = new VectorLayer();
-    this.vectorSource = WFSLoader.getSource(useStore().getOptions().wfs.url, '', false)
+    this.vectorSource = WFSLoader.getSource(options.wfs.url, '', false)
     this.displayDataOnMap(map, vectorLayer, options, this.vectorSource);
     if (!this.states.readonly) {
       map.on('click', (evt) => {
@@ -43,7 +51,7 @@ export default class SingleSelect {
               if (this.store.getSelectedFeature(feature.getProperties().features[0].get('objectid')) === undefined) {
                 this.store.addSelectedFeature(feature.getProperties().features[0], feature.getProperties().features[0].get('objectid'), 'select');
               }
-              GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));                
+              GeocityEvent.sendEvent('icon-clicked', feature.getProperties().features[0].get('objectid'));
             } else {
               this.control.hide();
             }
@@ -81,7 +89,7 @@ export default class SingleSelect {
     if (zoom && zoom >= options.maxZoom)
       clusterSource.setDistance(0)
     else
-      clusterSource.setDistance(options.cluster.distance) 
+      clusterSource.setDistance(options.cluster.distance)
   }
 
   displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource) {
@@ -92,9 +100,9 @@ export default class SingleSelect {
     });
 
     const style = new SingleSelectStyle();
-    
+
     vectorLayer.setSource(clusterSource)
-    vectorLayer.setStyle(function (feature) {          
+    vectorLayer.setStyle(function (feature) {
       return style.clusterWithIcon(feature);
     },)
 
@@ -105,9 +113,12 @@ export default class SingleSelect {
       map.addControl(this.control);
       this.toogleDataSelection(vectorLayer);
     }
-      
 
-    EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes, () => this.setChangeResolution(map, clusterSource, options))
+    EventManager.registerBorderConstaintMapEvent(
+      'change:resolution' as EventTypes,
+      () => this.setChangeResolution(map, clusterSource, options),
+      this.map,
+      this.options)
   }
 
   setCurrentElement(feature: Feature) {
@@ -125,7 +136,7 @@ export default class SingleSelect {
     this.control.hide();
     GeocityEvent.sendEvent('rule-validation', undefined);
     // Set parameter for icon position display
-    CustomStyleSelection.setCustomStyleWithouInfoBox();
+    CustomStyleSelection.setCustomStyleWithouInfoBox(this.store);
   }
 
   removeItem(feature: Feature) {
@@ -167,7 +178,7 @@ export default class SingleSelect {
           if (this.store.getMaxElement() === 1) {
             // This part is in mix mode to remove the current selection in the create vector source
             // To replace by a select element
-            if (this.store.getOptions().mode.type === 'mix') {
+            if (this.store.getOptions()?.mode.type === 'mix') {
               const features = this.store.getSelectedFeatures();
               if (features && features.length >= 1) {
                 const currentType = this.store.getCurrentFeatureType(features[0].get('id'));
@@ -200,7 +211,7 @@ export default class SingleSelect {
         }
       }
       // Set right class to the map
-      this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
+      this.map.get('target').className = `${this.store.getTargetBoxSize()} ${Store.getTheme()}`
     }) as EventListener)
   }
 }

@@ -1,5 +1,5 @@
 import { Vector as VectorLayer } from "ol/layer.js";
-import { useStore } from "../../composable/store";
+import { Store } from "../../composable/store";
 import { GeocityEvent } from "../../utils/geocity-event";
 import WFSLoader from "../../utils/wfs-loader";
 import InclusionAreaStyle from "../styles/inclusion-area-style";
@@ -7,15 +7,19 @@ import VectorSource from "ol/source/Vector.js";
 export default class InclusionArea {
   vectorSource: VectorSource;
 
-  constructor() {
-    this.vectorSource = WFSLoader.getSource(useStore().getOptions().inclusionArea.url, useStore().getOptions().inclusionArea.filter, true)
+  constructor(store: Store) {
+    const options = store.getOptions();
+    if (!options) {
+      throw new Error("Invalid store options");
+    }
+    this.vectorSource = WFSLoader.getSource(options.inclusionArea.url, options.inclusionArea.filter, true)
     const vector = new VectorLayer({
       source: this.vectorSource,
       style: InclusionAreaStyle.setupStyle(),
     });
-    useStore().getMap().addLayer(vector);
+    store.getMap()?.addLayer(vector);
 
-    if (useStore().getOptions().mode.type === 'target') {
+    if (options.mode.type === 'target') {
       window.addEventListener('current-center-position', ((
         event: CustomEvent
       ) => {

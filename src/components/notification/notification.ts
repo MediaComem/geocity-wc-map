@@ -7,8 +7,9 @@ import style from '../../styles/notification.css?inline';
 
 import SVGCreator from '../../utils/svg-creator';
 import NotificationElement from '../../types/notification-element';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import EventManager from '../../utils/event-manager';
+import { Map } from 'ol';
 
 @customElement('notification-box')
 class NotificationBox extends LitElement {
@@ -30,15 +31,15 @@ class NotificationBox extends LitElement {
     switch (this.type) {
       case 'info':
         this.icon = SVGCreator.info;
-        this.theme = `notification-element-info-${useStore().getTheme()}`;
+        this.theme = `notification-element-info-${Store.getTheme()}`;
         break;
       case 'warning':
         this.icon = SVGCreator.warning;
-        this.theme = `notification-element-warning-${useStore().getTheme()}`;
+        this.theme = `notification-element-warning-${Store.getTheme()}`;
         break;
       case 'error':
         this.icon = SVGCreator.error;
-        this.theme = `notification-element-error-${useStore().getTheme()}`;
+        this.theme = `notification-element-error-${Store.getTheme()}`;
         break;
     }
   }
@@ -61,17 +62,17 @@ export default class NotificationBoxControl extends Control {
   ruleType: string;
   div: HTMLElement;
 
-  constructor(notification: NotificationElement) {
+  constructor(notification: NotificationElement, map: Map) {
     const notificationBox = document.createElement(
       'notification-box'
     ) as NotificationBox;
     notificationBox.type = notification.type;
     notificationBox.message = notification.message;
-    
+
     super({ element: notificationBox });
     this.ruleType = notification.rule.type;
     this.div = notificationBox;
-    EventManager.setResizeEvent(this.div, '--notification-width');
+    EventManager.setResizeEvent(this.div, '--notification-width', map);
   }
 
   public disable() {

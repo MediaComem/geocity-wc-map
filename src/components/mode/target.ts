@@ -2,20 +2,25 @@ import { html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Control } from 'ol/control';
 import { EventTypes } from 'ol/Observable';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import EventManager from '../../utils/event-manager';
 
 import { GeocityEvent } from '../../utils/geocity-event';
 
 class TargetInformation {
-    constructor() {
-      useStore().getMap().getView().on('change:center', (event:any) => {
+    constructor(store: Store) {
+    const map = store.getMap();
+    if (!map) {
+        throw new Error("Invalid map!");
+    }
+    map.on('change:target', (event:any) => {
           GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
       });
-      if (useStore().getOptions().border.url !== '') {
+      if (store.getOptions()?.border.url !== '') {
         EventManager.registerWindowListener('border-contraint-enabled', 'change:center' as EventTypes, (event:any) => {
             GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
-        }); 
+        },
+        map);
       }
     }
   }
@@ -51,7 +56,7 @@ class TargetElement extends LitElement {
                         <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_244_6943" result="shape"/>
                     </filter>
                 </defs>
-            </svg>        
+            </svg>
         </div>
         `
       }
@@ -59,9 +64,9 @@ class TargetElement extends LitElement {
 
 
 export default class TargetController extends Control {
-    constructor() {
+    constructor(store: Store) {
         const target = document.createElement('target-element') as TargetElement;
         super({ element: target});
-        new TargetInformation();
+        new TargetInformation(store);
     }
 }

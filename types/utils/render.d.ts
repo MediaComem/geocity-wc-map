@@ -3,9 +3,11 @@ import VectorLayer from 'ol/layer/Vector';
 import { Vector } from 'ol/source';
 import { Geometry } from 'ol/geom';
 import IStates from './states';
+import { Store } from '../composable/store';
 export declare class Render {
     vectorIsLoaded: Boolean;
-    constructor();
+    store: Store;
+    constructor(store: Store);
     getDefaultZoomFactor(): number;
     setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>): void;
     setupAndLoadLayer(vectorSource: Vector<Geometry>): void;

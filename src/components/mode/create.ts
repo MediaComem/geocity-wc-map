@@ -1,7 +1,7 @@
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import { Vector } from 'ol/source';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import { GeocityEvent } from '../../utils/geocity-event';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 import { Map } from 'ol';
@@ -12,21 +12,27 @@ import IStates from '../../utils/states';
 import InclusionArea from '../constraint/inclusion-area';
 
 export default class SingleCreate {
-  control: SelectCreateInformationBoxController = new SelectCreateInformationBoxController();
+  control: SelectCreateInformationBoxController;
   private store;
   vectorSource: VectorSource;
   states: IStates;
   renderUtils: Render;
   inclusionArea: InclusionArea | undefined;
+  map: Map;
 
-  constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates) {
-    this.store = useStore(); 
+  constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates, store: Store) {
+    this.store = store;
     this.states = states;
     this.inclusionArea = inclusionArea;
     this.renderUtils = renderUtils
     const map = this.store.getMap();
+    if (!map) {
+      throw new Error("Missing map");
+    }
+    this.map = map;
+    this.control = new SelectCreateInformationBoxController(this.store);
     this.vectorSource = new Vector();
-  
+
     this.setupMapForCreation(map, this.vectorSource);
 
     if (!this.states.readonly) {
@@ -48,19 +54,18 @@ export default class SingleCreate {
         map.getView().setCenter(coords);
       })
 
-      if (this.store.getOptions().mode.type === 'mix') {
+      if (this.store.getOptions()?.mode.type === 'mix') {
         window.addEventListener('remove-created', ((event: CustomEvent) => {
           this.vectorSource.getFeatures().forEach((feature) => {
             if (feature.get('id') === event.detail) {
               this.remove(this.vectorSource, feature)
             }
           })
-        }) as EventListener) 
+        }) as EventListener)
       }
 
       this.addLongClickEvent(mapElement, map);
 
-    
       map.on('click', (evt) =>  {
         map.forEachFeatureAtPixel(evt.pixel, (feature) =>  {
           if (feature && feature.getGeometry()?.getType() === 'Point') {
@@ -112,7 +117,7 @@ export default class SingleCreate {
       this.store.setCustomDisplay(true);
       this.store.setTargetBoxSize('select');
     }
-    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
+    this.map.get('target').className = `${this.store.getTargetBoxSize()} ${Store.getTheme()}`
   }
 
   remove(vectorSource:Vector, feature:Feature) {
@@ -126,9 +131,9 @@ export default class SingleCreate {
     if (feature) {
       this.remove(vectorSource, feature)
       GeocityEvent.sendEvent('rule-validation', undefined);
-      CustomStyleSelection.setCustomStyleWithouInfoBox();
+      CustomStyleSelection.setCustomStyleWithouInfoBox(this.store);
     }
-    this.store.getMap().get('target').className = `${this.store.getTargetBoxSize()} ${this.store.getTheme()}`
+    this.map.get('target').className = `${this.store.getTargetBoxSize()} ${Store.getTheme()}`
   }
 
   addLongClickEvent(mapElement: HTMLDivElement, map: Map) {
@@ -153,7 +158,7 @@ export default class SingleCreate {
       this.clearCreationTimeout(timeout);
     });
 
-    // Mobile device. 
+    // Mobile device.
     // Using the map div because openlayers object doesn't support the touch event. But the div yes.
     mapElement.addEventListener('touchstart', (e) => {
       startPosition = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
@@ -191,7 +196,7 @@ export default class SingleCreate {
         if (this.store.getMaxElement() === 1) {
           // This part is in mix mode to remove the current selection in the select vector source
           // To replace by a create element
-          if (this.store.getOptions().mode.type === 'mix') {
+          if (this.store.getOptions()?.mode.type === 'mix') {
             const features = this.store.getSelectedFeatures();
             if (features && features.length === 1) {
               const currentType = this.store.getCurrentFeatureType(features[0].get('objectid'));

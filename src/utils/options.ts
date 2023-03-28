@@ -8,7 +8,6 @@ import BorderConfig from '../types/border-config';
 import NotificationElement from '../types/notification-element';
 import InteractionConfig from '../types/interaction-config';
 import GeolocationInformation from '../types/geolocation-information';
-import { useStore } from '../composable/store';
 import InclusionAreaConfig from '../types/inclusion-area-config';
 
 export default interface IOption {
@@ -33,7 +32,7 @@ export default interface IOption {
 
 export default class Options {
 
-  constructor(options: IOption) {
+  static webComponentOptions(options: IOption) {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
@@ -108,6 +107,6 @@ export default class Options {
     if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
     if (options.border !== undefined) result.border = options.border;
     if (options.outputFormat !== undefined) result.outputFormat = options.outputFormat;
-    useStore().setOptions(result);
+    return result;
   }
 }

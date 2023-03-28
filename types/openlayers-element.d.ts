@@ -3,6 +3,7 @@ import View from 'ol/View.js';
 import SingleSelect from './components/mode/select';
 import IOption from './utils/options';
 import GeolocationInformation from './types/geolocation-information';
+import { Store } from './composable/store';
 import InclusionArea from './components/constraint/inclusion-area';
 import SingleCreate from './components/mode/create';
 import TargetRenderer from './components/mapView/target.renderer';
@@ -21,6 +22,7 @@ export declare class OpenLayersElement extends LitElement {
     inclusionArea: InclusionArea | undefined;
     options: {};
     states: {};
+    store: Store;
     constructor();
     connectedCallback(): void;
     setupTheme(options: any): void;
