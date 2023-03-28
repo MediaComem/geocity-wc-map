@@ -5,14 +5,14 @@
   }
 }
 
-@media only screen and (min-width: 315px) and (max-width: 512px) {
+@media only screen and (min-width: 350px) and (max-width: 512px) {
   .layer-container-position {
-    left: calc(50% - 151px);
+    left: calc(50% - 166px);
     width: 100%;
   }
 }
 
-@media only screen and (max-width: 314px) {
+@media only screen and (max-width: 350px) {
   .layer-container-position {
     left: 10px;
     width: calc(100% - 20px);
@@ -21,7 +21,7 @@
 
 .layer-container-position {
   z-index: 1;
-  max-width: 302px;
+  max-width: 332px;
   
   top: var(--top-distance);
   position: absolute;
@@ -34,14 +34,14 @@
     }
   }
   
-  @media only screen and (min-width: 315px) and (max-width: 512px) {
+  @media only screen and (min-width: 350px) and (max-width: 512px) {
     .custom-popup-element-position {
-      left: calc(50% - 151px);
+      left: calc(50% - 166px);
       width: 100%;
     }
   }
   
-  @media only screen and (max-width: 314px) {
+  @media only screen and (max-width: 350px) {
     .custom-popup-element-position {
       left: 10px;
       width: calc(100% - 20px);
@@ -53,5 +53,5 @@
   position: absolute;
   top: 10px;
   z-index: 2;
-  max-width: 302px;
+  max-width: 332px;
 }
