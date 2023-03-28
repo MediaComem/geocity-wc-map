@@ -118,7 +118,7 @@ export default class SingleCreate {
   remove(vectorSource:Vector, feature:Feature) {
     vectorSource.removeFeature(feature)
     this.control.hide()
-    this.store.removeSelectedFeature(this.store.getCurrentItemId());
+    this.store.removeSelectedFeature(feature.get('id'));
   }
 
   deleteElement(vectorSource:Vector) {
