@@ -19,6 +19,7 @@ export default class SingleCreate {
   renderUtils: Render;
   inclusionArea: InclusionArea | undefined;
   map: Map;
+  previousElement: Feature | undefined;
 
   constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates, store: Store) {
     this.store = store;
@@ -42,6 +43,10 @@ export default class SingleCreate {
 
       window.addEventListener('refused-created', () => {
         this.store.removeLastSelectedFeature();
+        // In case of max value = 1, the problem is that the element is already removed so we need to keep it
+        // and reinsert it after test validation
+        if (this.store.getMaxElement() === 1 && this.previousElement)
+          this.store.addSelectedFeature(this.previousElement, this.previousElement.get('id'), 'create');
         GeocityEvent.sendEvent('rule-validation', undefined);
       })
 
@@ -214,6 +219,7 @@ export default class SingleCreate {
           const currentFeature = this.store.getSelectedFeatures();
           if (currentFeature.length > 0) {
             this.store.removeSelectedFeature(currentFeature[0].get('id'));
+            this.previousElement = currentFeature[0];
           }
         } 
         if (this.store.getMaxElement() === -1 || this.store.getSelectedFeatures().length <= this.store.getMaxElement()) {

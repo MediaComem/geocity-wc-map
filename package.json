@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "dev-expose": "vite --host",
+    "dev-expose": "vite --host  -m expose",
     "build": "tsc && vite build",
     "demo": "npm run build && shx cp dist/geocity-wc-map.js demo/lib && vite",
     "deploy": "gh-pages -d dist",
