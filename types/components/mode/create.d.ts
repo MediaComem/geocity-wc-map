@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import Feature from 'ol/Feature';
 import { Vector } from 'ol/source';
+import { Store } from '../../composable/store';
 import SelectCreateInformationBoxController from '../notification/select-create-information-box';
 import { Map } from 'ol';
 import { Render } from '../../utils/render';
@@ -14,8 +15,10 @@ export default class SingleCreate {
     states: IStates;
     renderUtils: Render;
     inclusionArea: InclusionArea | undefined;
-    constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates);
+    map: Map;
+    constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates, store: Store);
     renderCurrentSelection(states: IStates): void;
+    removeCurrentSelection(): void;
     setupMapForCreation(map: Map, vectorSource: Vector): void;
     createElement(vectorSource: Vector, event: CustomEvent): void;
     remove(vectorSource: Vector, feature: Feature): void;

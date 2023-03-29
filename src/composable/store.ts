@@ -6,150 +6,128 @@ import { Vector } from 'ol/source';
 import StoreFeature from '../types/store-feature';
 import IOption from '../utils/options';
 
-let theme: string = '';
-let customDisplay: boolean = false;
-let targetBoxSize: string = '';
-let geolocation: Geolocation | undefined;
-let options: IOption;
-let map: Map;
-let selectedFeatures: Array<StoreFeature> = [];
-let borderConstraint: VectorLayer<Vector<Geometry>> | undefined;
-let currentItemId: number = -1;
-let maxElement: number = -1;
+export class Store {
 
-function setTheme(newVal: string) {
-  theme = newVal;
-}
+  static geolocation: Geolocation | undefined;
+  static theme: string = '';
 
-function getTheme() {
-  return theme;
-}
+  customDisplay: boolean = false;
+  targetBoxSize: string = '';
+  options: IOption | undefined;
+  map: Map | undefined;
+  selectedFeatures: Array<StoreFeature> = [];
+  borderConstraint: VectorLayer<Vector<Geometry>> | undefined;
+  currentItemId: number = -1;
+  maxElement: number = -1;
 
-function setCustomDisplay(newVal: boolean) {
-  customDisplay = newVal;
-}
+  static setTheme(newVal: string) {
+    this.theme = newVal;
+  }
 
-function isCustomDisplay() {
-  return customDisplay;
-}
+  static getTheme() {
+    return this.theme;
+  }
 
-function setTargetBoxSize(newVal: string) {
-  targetBoxSize = newVal;
-}
+  static setGeolocation(newVal: Geolocation) {
+    this.geolocation = newVal;
+  }
 
-function getTargetBoxSize() {
-  return targetBoxSize;
-}
+  static getGeolocation() {
+    return this.geolocation;
+  }
 
-function setGeolocation(newVal: Geolocation) {
-  geolocation = newVal;
-}
+  setCustomDisplay(newVal: boolean) {
+    this.customDisplay = newVal;
+  }
 
-function getGeolocation() {
-  return geolocation;
-}
+  isCustomDisplay() {
+    return this.customDisplay;
+  }
 
-function setOptions(newVal: IOption) {
-  options = newVal;
-}
+  setTargetBoxSize(newVal: string) {
+    this.targetBoxSize = newVal;
+  }
 
-function getOptions() {
-  return options;
-}
+  getTargetBoxSize() {
+    return this.targetBoxSize;
+  }
 
-function setMap(newVal: Map) {
-  map = newVal;
-}
+  setOptions(newVal: IOption) {
+    this.options = newVal;
+  }
 
-function getMap() {
-  return map;
-}
+  getOptions() {
+    return this.options;
+  }
 
-function addSelectedFeature(newVal: Feature, id: number, type: string) {
-  selectedFeatures.push({
-    id: id,
-    type: type,
-    feature: newVal
-  });
-}
+  setMap(newVal: Map) {
+    this.map = newVal;
+  }
 
-function removeSelectedFeature(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  if (index !== -1) selectedFeatures.splice(index, 1);
-}
+  getMap() {
+    return this.map;
+  }
 
-function removeLastSelectedFeature() {
-  selectedFeatures.splice(-1);
-}
+  addSelectedFeature(newVal: Feature, id: number, type: string) {
+    this.selectedFeatures.push({
+      id: id,
+      type: type,
+      feature: newVal
+    });
+  }
 
-function getSelectedFeature(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  return index !== -1 ? selectedFeatures[index].feature : undefined;
-}
+  removeSelectedFeature(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    if (index !== -1) this.selectedFeatures.splice(index, 1);
+  }
 
-function getCurrentFeatureType(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  return index !== -1 ? selectedFeatures[index].type : '';
-}
+  removeLastSelectedFeature() {
+    this.selectedFeatures.splice(-1);
+  }
 
-function unselectFeatures() {
-  selectedFeatures.find((f) => f.feature.get('isSelected'))?.feature.set('isSelected', undefined);
-}
+  removeAllSelectedFeatures() {
+    this.selectedFeatures = [];
+  }
 
-function getSelectedFeatures() {
-  return selectedFeatures.map((f) => f.feature);
-}
+  getSelectedFeature(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    return index !== -1 ? this.selectedFeatures[index].feature : undefined;
+  }
 
-function setBorderConstraint(newVal: VectorLayer<Vector<Geometry>> | undefined) {
-  borderConstraint = newVal;
-}
+  getCurrentFeatureType(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    return index !== -1 ? this.selectedFeatures[index].type : '';
+  }
 
-function getBorderConstraint() {
-  return borderConstraint;
-}
+  unselectFeatures() {
+    this.selectedFeatures.find((f) => f.feature.get('isSelected'))?.feature.set('isSelected', undefined);
+  }
 
-function setCurrentItemId(newVal: number) {
-  currentItemId = newVal;
-}
+  getSelectedFeatures() {
+    return this.selectedFeatures.map((f) => f.feature);
+  }
 
-function getCurrentItemId() {
-  return currentItemId;
-}
+  setBorderConstraint(newVal: VectorLayer<Vector<Geometry>> | undefined) {
+    this.borderConstraint = newVal;
+  }
 
-function setMaxElement(newVal: number) {
-  maxElement = newVal;
-}
+  getBorderConstraint() {
+    return this.borderConstraint;
+  }
 
-function getMaxElement() {
-  return maxElement;
-}
+  setCurrentItemId(newVal: number) {
+    this.currentItemId = newVal;
+  }
 
-export function useStore() {
-  return {
-    setTheme,
-    getTheme,
-    setCustomDisplay,
-    isCustomDisplay,
-    setTargetBoxSize,
-    getTargetBoxSize,
-    setGeolocation,
-    getGeolocation,
-    setOptions,
-    getOptions,
-    setMap,
-    getMap,
-    addSelectedFeature,
-    removeSelectedFeature,
-    removeLastSelectedFeature,
-    getSelectedFeature,
-    getCurrentFeatureType,
-    getSelectedFeatures,
-    unselectFeatures,
-    setBorderConstraint,
-    getBorderConstraint,
-    setCurrentItemId,
-    getCurrentItemId,
-    setMaxElement,
-    getMaxElement,
-  };
+  getCurrentItemId() {
+    return this.currentItemId;
+  }
+
+  setMaxElement(newVal: number) {
+    this.maxElement = newVal;
+  }
+
+  getMaxElement() {
+    return this.maxElement;
+  }
 }

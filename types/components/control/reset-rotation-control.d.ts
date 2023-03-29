@@ -1,5 +1,7 @@
 import Control from "ol/control/Control";
+import { Map } from "ol";
 export default class ResetRotationControl extends Control {
-    constructor(target: HTMLElement);
+    map: Map;
+    constructor(target: HTMLElement, map: Map);
     resetRotation(): void;
 }

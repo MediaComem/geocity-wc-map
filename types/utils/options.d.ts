@@ -29,5 +29,5 @@ export default interface IOption {
     outputFormat: string;
 }
 export default class Options {
-    constructor(options: IOption);
+    static webComponentOptions(options: IOption): IOption;
 }
