@@ -4,7 +4,9 @@ import { Control } from 'ol/control';
 import { GeocityEvent } from '../../utils/geocity-event';
 
 import popupStyle from '../../styles/popup-information.css?inline';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
+import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
+import SVGCreator from '../../utils/svg-creator';
 
 @customElement('information-box')
 class InformationBox extends LitElement {
@@ -14,13 +16,19 @@ class InformationBox extends LitElement {
   interval: any;
 
   static styles = [unsafeCSS(popupStyle)];
+  store: Store;
 
-  constructor() {
+  constructor(store: Store) {
     super();
+    this.store = store;
+    const options = store.getOptions();
+    if (!options) {
+      throw new Error("Missing options");
+    }
     window.addEventListener('clear-information-box-interval', this.clear.bind(this), true);
     window.addEventListener('open-information-box', () => {
       this._width = 100;
-      const intervalDuration = useStore().getOptions().information.duration / 100;
+      const intervalDuration = options.information.duration / 100;
 
       this.interval = setInterval(() => {
         if (this._width > 0) {
@@ -28,7 +36,6 @@ class InformationBox extends LitElement {
             this._borderRadiusRight = 0;
           }
           this._width--;
-          
         } else {
           this.closeBox();
         }
@@ -38,15 +45,16 @@ class InformationBox extends LitElement {
 
   render() {
     return html`
-      <div class="information-box-${useStore().getTheme()} custom-popup-element" style="--progress-width: ${this._width}%; --border-radius-right: ${this._borderRadiusRight}px">
+      <div class="information-box-${Store.getTheme()} custom-popup-element" style="--progress-width: ${this._width}%; --border-radius-right: ${this._borderRadiusRight}px">
         <div class="custom-popup-title">
-          <div class="custom-popup-title-text">${useStore().getOptions().information.title}</div>
-          <svg _width="20" height="20" viewBox="0 0 20 20" class="custom-popup-title-svg" @click="${this.closeBox}">
-            <path d="M15.4 4.59998L4.60004 15.4"></path>
-            <path d="M15.4 15.4L4.60004 4.59998"></path>
-          </svg>
+          <div class="custom-popup-title-text">${this.store.getOptions()?.information.title}</div>
+          <div class="custom-popup-title-svg-container">
+            <div class="cross-div" @click="${this.closeBox}">
+              ${unsafeSVG(SVGCreator.cross)}
+            </div>
+          </div>
         </div>
-        <div class="custom-popup-content">${useStore().getOptions().information.content}</div>
+        <div class="custom-popup-content">${this.store.getOptions()?.information.content}</div>
         <div class="custom-progress-element"></div>
       </div>`
   }
@@ -66,10 +74,11 @@ export default class InformationBoxControl extends Control {
 
   public div: HTMLElement;
 
-  constructor() {
-    const infoBox = document.createElement('information-box') as InformationBox;
+  constructor(store: Store) {
+    const infoBox = new InformationBox(store);
     super({ element: infoBox});
     this.div = infoBox;
+    this.div.classList.add('custom-popup-element-position')
   }
 
   public show() {

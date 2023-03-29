@@ -1,16 +1,26 @@
+import { Store } from '../../composable/store';
 import NotificationElement from '../../types/notification-element';
 import NotificationBoxControl from '../notification/notification';
 import Feature from 'ol/Feature';
+import { Map } from 'ol';
+import OutputFormat from '../../utils/output-format';
+import IOption from '../../utils/options';
 export default class NotificationManager {
     validZoomConstraint: boolean;
     validAreaConstraint: boolean;
+    validBorderContraint: boolean;
     validMaxElementConstraint: boolean;
     displayMaxElementConstraint: boolean;
     zoomNotificationControl: NotificationBoxControl | undefined;
     inclusionNotificationControl: NotificationBoxControl | undefined;
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
-    constructor();
+    borderContraintNotificationControl: NotificationBoxControl | undefined;
+    outputFormat: OutputFormat;
+    store: Store;
+    options: IOption;
+    map: Map;
+    constructor(store: Store);
     displayRightNotification(): void;
     setupTargetMode(): void;
     iconClickedListener(): void;
@@ -27,5 +37,5 @@ export default class NotificationManager {
     checkZoomConstraint(rule: NotificationElement): void;
     checkInclusionAreaConstraint(isInInclusionArea: boolean, couldBypass: boolean | undefined): void;
     checkMaxElementContraint(features: Array<Feature>): void;
-    generateExportData(features: Array<Feature>): Object[];
+    checkIsInBorder(features: Array<Feature>): void;
 }

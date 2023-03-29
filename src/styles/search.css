@@ -1,10 +1,30 @@
+@media only screen and (min-width: 351px) and (max-width: 995px) {
+    .search-container {
+      left: calc((100% - 334px) / 2);
+      width: 100%;
+      max-width: 332px;
+    }
+}
+  
+@media only screen and (max-width: 350px) {
+    .search-container {
+      left: 10px;
+      width: calc(100% - 20px);
+      max-width: 332px;
+    }
+}
+
+@media only screen and (min-width: 996px) {
+    .search-container {
+      left: calc((100% - (var(--search-width) + 30px)) / 2);
+      width: calc(var(--search-width) + 30px);
+    }
+}
+
 .search-container {
-    left: calc(50% - 151px);
     position: absolute;
-    max-width: 302px;
-    width: 100%;
     top: var(--top-distance);
-    z-index: -1;
+    z-index: 0;
 }
 
 .search-input-container {
@@ -12,6 +32,7 @@
     border: 1px solid var(--icon-border-color);
     display: flex;
     background-color: var(--information-box-background-color);
+    margin-bottom: 1px;
 }
 
 .search-input {
@@ -23,7 +44,8 @@
     padding-left: 11px;
     font-size: 14px;
     background-color: var(--information-box-background-color);
-    color: var(--information-box-text-color)
+    color: var(--suggestion-box-text-color);
+    font-family: sans-serif;
 }
 
 .search-svg-container {
@@ -55,7 +77,9 @@ li {
     display: flex;
     align-items: center;
     justify-content: start;
-    color: var(--information-box-text-color)
+    color: var(--suggestion-box-text-color);
+    font-family: sans-serif;
+    cursor: pointer;
 }
 
 ul > :last-child {

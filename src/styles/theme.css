@@ -31,6 +31,7 @@
     --information-box-title-color: #1E293B;
     --information-cross-hover-color: rgb(30 41 59 / 75%);
     --information-box-text-color: #334155;
+    --suggestion-box-text-color: #334155;
     --select-icon-background: #1E293B;
     --icon-border-color: #CBD5E1;
 }
@@ -43,6 +44,7 @@
     --information-box-title-color: #F3F4F6;
     --information-cross-hover-color: rgb(255 255 255 / 75%);
     --information-box-text-color: #9CA3AF;
+    --suggestion-box-text-color: #F1F5F9;
     --select-icon-background: rgb(255,255,255, 0.75);
     --icon-border-color: #334155;
 }
@@ -55,4 +57,5 @@
     --box-border-radius: 4px;
     --svg-icon-size: 26px;
     --icon-stroke-width: 2px;
+    font-family: sans-serif;
 }

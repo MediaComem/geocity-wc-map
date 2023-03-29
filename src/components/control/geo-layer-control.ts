@@ -7,18 +7,21 @@ import style from '../../styles/svg-control.css?inline';
 import control from '../../styles/controls.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
+import { Map } from 'ol';
 
-import { useStore } from '../../composable/store';
+
 import LayerSelectionControl from './layer-selection';
+import { Store } from '../../composable/store';
+import wmtsLayerConfiguration from '../mapView/wmts-loader';
 
 @customElement('geo-layer-control-button')
 class GeoLayerControlButton extends LitElement {
   static styles = [unsafeCSS(style), unsafeCSS(control)];
 
   render() {
-    return html`<div class="ol-unselectable ol-control center-control">
+    return html`<div class="ol-unselectable ol-control center-control" tabindex="0">
                   <div>
-                    <div class="control-${useStore().getTheme()}">
+                    <div class="control-${Store.getTheme()}">
                       ${unsafeSVG(SVGCreator.stack)}
                     </div>
                   </div>
@@ -31,7 +34,7 @@ export default class GeoLayerControl extends Control {
   isOpen: Boolean = false;
   layerSelection: LayerSelectionControl;
 
-  constructor(target: HTMLElement) {
+  constructor(target: HTMLElement, map: Map, wmts: Array<wmtsLayerConfiguration>) {
     const element = document.createElement(
       'geo-layer-control-button'
     ) as GeoLayerControlButton;
@@ -40,9 +43,9 @@ export default class GeoLayerControl extends Control {
       element: element,
     });
 
-    this.layerSelection = new LayerSelectionControl();
+    this.layerSelection = new LayerSelectionControl(wmts);
     this.layerSelection.disable();
-    useStore().getMap().addControl(this.layerSelection)
+    map.addControl(this.layerSelection)
 
     element.addEventListener('click', () => {
         this.toogleSelection();

@@ -1,14 +1,16 @@
 import { LitElement, html, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { Control } from "ol/control";
-import { useStore } from "../../composable/store";
 import style from '../../styles/search.css?inline';
 
+import { Map as olMap } from 'ol';
 import * as olProj from 'ol/proj';
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import SVGCreator from "../../utils/svg-creator";
 import { cache } from "lit/directives/cache.js";
 import { GeocityEvent } from "../../utils/geocity-event";
+import EventManager from "../../utils/event-manager";
+import { Store } from "../../composable/store";
 
 interface SearchLocationElement {
   address: string;
@@ -18,16 +20,15 @@ interface SearchLocationElement {
 @customElement('location-list')
 // @ts-ignore
 class LocationList extends LitElement {
-  
   @property({type: Object}) locations: { results: string | any[]; } | undefined;
+  @property({type: Object}) map: olMap | undefined;
 
   @state() _results: Array<SearchLocationElement> = [];
 
   static styles = [unsafeCSS(style)];
 
-  constructor() {
-    super();
-    useStore().getMap().addEventListener('click', () => {
+  firstUpdated() {
+    this.map?.addEventListener('click', () => {
       this._results = [];
     })
   }
@@ -56,7 +57,7 @@ class LocationList extends LitElement {
   }
 
   selectAddress(coordinate: number[], address: string) {
-    useStore().getMap().getView().setCenter(olProj.fromLonLat([coordinate[0], coordinate[1]], 'EPSG:2056'))
+    this.map?.getView().setCenter(olProj.fromLonLat([coordinate[0], coordinate[1]], 'EPSG:2056'))
     this._results = [];
     GeocityEvent.sendEvent('address_selected', address)
   }
@@ -77,25 +78,43 @@ class LocationList extends LitElement {
 class SearchLocation extends LitElement {
   @query('#search')
   public inputElement!: HTMLInputElement;
+  @query('#location-result')
+  public locationElements!: LocationList;
+
   @state() results: Object = {};
 
   @state() _hasSearch: boolean = false;
+  @state() _hasSelected: boolean = false;
 
   static styles = [unsafeCSS(style)];
+  store: Store;
+  map: olMap;
 
-  constructor() {
+  constructor(store: Store) {
     super();
+    this.store = store;
+    const map = store.getMap();
+    if (!map) {
+      throw new Error("Missing map!");
+    }
+    this.map = map;
     window.addEventListener('address_selected', ((e: CustomEvent) => {
       this.inputElement.value = e.detail;
       this._hasSearch = false;
+      this._hasSelected = true;
     }) as EventListener)
+    
   }
 
   firstUpdated() {
+    this.locationElements.map = this.map;
     this.inputElement.oninput = () => {
         if (this.inputElement.value.length > 1) {
             this._hasSearch = true;
-            const options = useStore().getOptions();
+            const options = this.store.getOptions();
+            if (!options) {
+              return;
+            }
             let url = `${options.search.requestWithoutCustomValue}&searchText=${this.inputElement.value}`
             if (options.search.bboxRestiction !== '') url += `&bbox=${options.search.bboxRestiction}`;
             fetch(url).then((result) => result.json()).then((json) => {
@@ -110,16 +129,17 @@ class SearchLocation extends LitElement {
 
   clear() {
     this.inputElement.value = '';
-    this.results = {}; 
+    this.results = {};
     this._hasSearch = false;
+    this._hasSelected = false;
   }
- 
+
   render() {
     return html`<div class="search-container">
                     <div class="search-input-container">
                         <input id="search" type="text" class="search-input">
                         <div class="search-svg-container">
-                        ${cache(this._hasSearch
+                        ${cache(this._hasSearch || this._hasSelected
                             ? html`<div class="cross-div" @click="${this.clear}">
                                         ${unsafeSVG(SVGCreator.cross)}
                                     </div>`
@@ -127,7 +147,7 @@ class SearchLocation extends LitElement {
                           )}
                         </div>
                     </div>
-                    <location-list locations='${JSON.stringify(this.results)}'/>
+                    <location-list id="location-result" locations='${JSON.stringify(this.results)}'/>
                 </div>`;
   }
 }
@@ -135,10 +155,11 @@ class SearchLocation extends LitElement {
 export default class SearchLocationControl extends Control {
 
     public div: HTMLElement;
-  
-    constructor() {
-      const box = document.createElement('search-location') as SearchLocation;
+
+    constructor(store: Store, map: olMap) {
+      const box = new SearchLocation(store);
       super({ element: box });
       this.div = box;
+      EventManager.setResizeEvent(this.div, '--search-width', map);
     }
   }

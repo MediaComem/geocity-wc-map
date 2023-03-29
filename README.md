@@ -26,13 +26,9 @@
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- |
 | zoom               | Zoom level applied when opening the map                                                                                    | number           | 15                                                                                                          |
 | minZoom            | Minimum zoom value available for the openlayers instance. You cannot zoom below this value                                 | number           | 1                                                                                                           |
-| maxZoom            | Maximum zoom value available for the openlayers instance. You can't zoom more than this value                              | number           | 18                                                                                                          |
-| displayZoom        | Display and activate the zoom buttons on the map                                                                           | boolean          | true                                                                                                        |
-| displayScaleLine   |                                                                                                                            | boolean          | false                                                                                                       |
+| maxZoom            | Maximum zoom value available for the openlayers instance. You can't zoom more than this value                              | number           | 18                                                                                                          |                                                                                                |
 | defaultCenter      | The center position of the map when it is open. Requires the parameter in the correct projection                           | Array of number  | [739867.251358, 5905800.079386]                                                                             |
-| enableGeolocation  | Activates geolocation and displays a position marker.                                                                      | boolean          | true                                                                                                        |
-| enableCenterButton | Displays and activates a button to refocus the map on your current position. The parameter enableGeolocation must be true. | boolean          | true                                                                                                        |
-| enableRotation     | If this parameter is true, rotation of the map is possible; otherwise, the map is always in the north position.            | boolean          | true                                                                                                        |
+| interaction               | Information needed for map interaction                                                                              | Array of Object  | Look at Information parameters table for more details [Interaction parameters](#interaction-parameters)                   |                                                                                                  |
 | information        | Description of what needs to be done and how                                                                               | Object           | Look at Information parameters table for more details [Information parameters](#information-parameters)     |
 | mode               | Information related to the interaciton with the map                                                                        | Object           | Look at Information parameters table for more details [Mode parameters](#mode-parameters)                   |
 | cluster            | Data clustering information                                                                                                | Object           | Look at Information parameters table for more details [Cluster parameters](#cluster-parameters)             |
@@ -43,9 +39,20 @@
 | search    | Display options for the search address or parcel search   | Object                  |    Look at Information parameters table for more details [search parameters](#search-parameters)                                                                                                         |
 | inclusionArea    | URL to a WFS server containing the inclusion area information   | Object                  | Look at Inclusion parameters table for more details [Inclusion parameters](#inclusion-parameters)     |
 | selectionTargetBoxMessage    |  Title of the target or selection box  | string                  |   '' |
-| borderUrl    |  URL where a geojson containing the border information is located.  | string                  |   '' |
+| outputFormat    |  Possible output format: GeometryCollection or FeatureCollection  | string                  |   'GeometryCollection' |
+| border            | Data border information                                                                                                     | Object           | Look at Information parameters table for more details [Border parameters](#border-parameters)     
 |                    |                                                                                                                            |                  |                                                                                                             |
 
+### Interaction parameters
+| Parameter | Description                              | Type   | Default           |
+| --------- | ---------------------------------------- | ------ | ----------------- |
+| displayZoom  | Display and activate the zoom buttons on the map | boolean | true |
+| displayScaleLine     |                  | boolean | false   |
+| enableGeolocation   | Activates geolocation and displays a position marker. | boolean | true |
+| enableCenterButton   | Displays and activates a button to refocus the map on your current position. The parameter enableGeolocation must be true. | boolean | true |
+| enableRotation   | If this parameter is true, rotation of the map is possible; otherwise, the map is always in the north position.  | boolean | true |
+| fullscreen   | Display and activate the fullscreen buttons on the map | boolean | true |
+|           |                                          |        |                   |
 ### Information parameters
 
 | Parameter | Description                              | Type   | Default           |
@@ -69,6 +76,14 @@
 | distance    | Distance in pixels within which features will be clustered together | number | 40      |
 | minDistance | Minimum distance in pixels between clusters.                        | number | 30      |
 |             |                                                                     |        |         |
+
+### Border parameters
+
+| Parameter    | Description                                                         | Type   | Default |
+| ------------ | ------------------------------------------------------------------- | ------ | ------- |
+| url          | Url where the Geojson is located with border information            | string | ''      |
+| notification | Message displayed if you try to add element outside of border       | string | ''      |
+|              |                                                                     |        |         |
 
 ### WFS parameters
 
@@ -159,17 +174,23 @@ otherwise, only the url is requested:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
-<openlayers-element  options='{
+<openlayers-element
+        options='{
                                         "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
+                                        "interaction": {
+                                          "displayZoom": true,
+                                          "displayScaleLine": false,
+                                          "fullscreen": true,
+                                          "enableGeolocation": true,
+                                          "enableCenterButton": true,
+                                          "enableRotation": true
+                                      },
                                         "mode": {
                                             "type": "select"
                                         },
                                         "geolocationInformation": {
                                             "displayBox": true,
-                                            "reverseLocation": false,
+                                            "reverseLocation": true,
                                             "currentLocation": false
                                         },
                                         "notifications": [
@@ -182,8 +203,16 @@ To activate this mode, add in your HTML code the web component with the followin
                                             }
                                         },
                                         {
+                                            "type": "warning",
+                                            "message": "Le maximum de sélection est limité à {x}.",
+                                            "rule": {
+                                                "type": "MAX_SELECTION",
+                                                "maxElement": 1
+                                            }
+                                          },
+                                        {
                                             "type": "info",
-                                            "message": "Sélectionnez un icon sur la carte",
+                                            "message": "Sélectionnez un marqueur sur la carte.",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -197,18 +226,18 @@ To activate this mode, add in your HTML code the web component with the followin
                                             "layer": "asitvd.fond_cadastral",
                                             "projection": "EPSG:2056",
                                             "name": "Carte de base",
-                                            "thumbnail": "http://localhost:8080/public/base.svg"
+                                            "thumbnail": "https://localhost:5173/base.svg"
                                         },
                                         {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:2056",
                                             "name": "Photo aérienne",
-                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                            "thumbnail": "https://localhost:5173/aerial.svg"
                                         }],
                                         "selectionTargetBoxMessage": "Éclairage signalé"
                                     }'
-    />
+      />
 ```
 
 ### Validation events
@@ -216,8 +245,7 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains the geometry in WTK format and the element id.
-    - [{ id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
+  - When all the rules are met and the position is available. The information is sent with the configured output format (GeometryCollection or FeatureCollection).
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
 
@@ -227,17 +255,22 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
-<openlayers-element  options='{
-                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
+<openlayers-element  options='{ 
+                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public." },
+                                        "interaction": {
+                                            "displayZoom": true,
+                                            "displayScaleLine": false,
+                                            "fullscreen": true,
+                                            "enableGeolocation": true,
+                                            "enableCenterButton": true,
+                                            "enableRotation": true
+                                        },
                                         "mode": {
                                             "type": "target"
                                         },
                                         "geolocationInformation": {
                                             "displayBox": true,
-                                            "reverseLocation": false,
+                                            "reverseLocation": true,
                                             "currentLocation": false
                                         },
                                         "notifications": [
@@ -253,12 +286,13 @@ To activate this mode, add in your HTML code the web component with the followin
                                           "type": "warning",
                                           "message": "L’emplacement sélectionné se situe en dehors des zones autorisées.",
                                           "rule": {
-                                              "type": "AREA_CONSTRAINT"
+                                              "type": "AREA_CONSTRAINT",
+                                              "couldBypass": false
                                           }
                                         },
                                         {
                                             "type": "info",
-                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible.",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -269,14 +303,14 @@ To activate this mode, add in your HTML code the web component with the followin
                                             "layer": "asitvd.fond_cadastral",
                                             "projection": "EPSG:2056",
                                             "name": "Carte de base",
-                                            "thumbnail": "http://localhost:8080/public/base.svg"
+                                            "thumbnail": "https://localhost:5173/base.svg"
                                         },
                                         {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:2056",
                                             "name": "Photo aérienne",
-                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                            "thumbnail": "https://localhost:5173/aerial.svg"
                                         }],
                                         "inclusionArea": {
                                             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
@@ -292,8 +326,7 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
-    - [{ geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
+  - When all the rules are met and the position is available. The information is sent with the configured output format (GeometryCollection or FeatureCollection).
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined
 
@@ -302,13 +335,24 @@ For this scenario, there is one events to listen:
 To activate this mode, add in your HTML code the web component with the following parameters:
 
 ```
- <openlayers-element  options='{ 
-                                        "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un lampadaire défectueux présent dans l’espace public de la ville." },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
+ <openlayers-element
+        options='{ "
+                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionnez le centre de la cible à l’emplacement où le harcèlement a eu lieu." },
+                                        "interaction": {
+                                          "displayZoom": true,
+                                          "displayScaleLine": false,
+                                          "fullscreen": true,
+                                          "enableGeolocation": true,
+                                          "enableCenterButton": true,
+                                          "enableRotation": true
+                                        },
                                         "mode": {
-                                            "type": "select"
+                                            "type": "target"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": true,
+                                            "currentLocation": false
                                         },
                                         "notifications": [
                                         {
@@ -321,7 +365,152 @@ To activate this mode, add in your HTML code the web component with the followin
                                         },
                                         {
                                             "type": "info",
-                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible.",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "https://localhost:5173/base.svg"
+                                        },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "https://localhost:5173/aerial.svg"
+                                        }],
+                                        "selectionTargetBoxMessage": "Harcèlement signalé"
+                                    }'
+      />
+```
+
+## Create Mode
+
+To activate this mode, add in your HTML code the web component with the following parameters:
+
+```
+<openlayers-element
+        options='{
+                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionnez le centre de la cible à l’emplacement où le harcèlement a eu lieu." },
+                                        "interaction": {
+                                          "displayZoom": true,
+                                          "displayScaleLine": false,
+                                          "fullscreen": true,
+                                          "enableGeolocation": true,
+                                          "enableCenterButton": true,
+                                          "enableRotation": true
+                                        },
+                                        "mode": {
+                                            "type": "create"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": true,
+                                            "currentLocation": false
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                            "type": "warning",
+                                            "message": "Le maximum de sélection est limité à {x}.",
+                                            "rule": {
+                                                "type": "MAX_SELECTION",
+                                                "maxElement": 1
+                                            }
+                                          },
+                                        {
+                                            "type": "info",
+                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé.",
+                                                "rule": {
+                                                "type": "MOVE_TARGET"
+                                            }
+                                        }
+                                        ],
+                                        "wmts": [{
+                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
+                                            "layer": "asitvd.fond_cadastral",
+                                            "projection": "EPSG:2056",
+                                            "name": "Carte de base",
+                                            "thumbnail": "https://localhost:5173/base.svg"
+                                        },
+                                        {
+                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+                                            "layer": "ch.swisstopo.swissimage",
+                                            "projection": "EPSG:2056",
+                                            "name": "Photo aérienne",
+                                            "thumbnail": "https://localhost:5173/aerial.svg"
+                                        }],
+                                        "selectionTargetBoxMessage": "Harcèlement signalé"
+                                    }'
+      />
+```
+
+### Validation events
+
+For this scenario, there is one events to listen:
+
+- `position-selected`: This event is sent in two cases:
+  - When all the rules are met and the position is available. The information is sent with the configured output format (GeometryCollection or FeatureCollection).
+  - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
+    - event.detail example: undefined
+
+## Create and Select Mode
+
+To activate this mode, add in your HTML code the web component with the following parameters:
+
+```
+<openlayers-element
+        options='{
+                                        "information": { "duration": 5000, "title": "Signaler un éclairage public", "content": "Sélectionnez un ou plusieurs lampadaire(s) défectueux présent(s) dans l’espace public de la ville." },
+                                        "interaction": {
+                                          "displayZoom": true,
+                                          "displayScaleLine": false,
+                                          "fullscreen": true,
+                                          "enableGeolocation": true,
+                                          "enableCenterButton": true,
+                                          "enableRotation": true
+                                        },
+                                        "mode": {
+                                            "type": "mix"
+                                        },
+                                        "geolocationInformation": {
+                                            "displayBox": true,
+                                            "reverseLocation": true,
+                                            "currentLocation": false
+                                        },
+                                        "notifications": [
+                                        {
+                                            "type": "warning",
+                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
+                                            "rule": {
+                                                "type": "ZOOM_CONSTRAINT",
+                                                "minZoom": 16
+                                            }
+                                        },
+                                        {
+                                            "type": "warning",
+                                            "message": "Le maximum de sélection est limité à {x}.",
+                                            "rule": {
+                                                "type": "MAX_SELECTION",
+                                                "maxElement": 3
+                                            }
+                                          },
+                                        {
+                                            "type": "info",
+                                            "message": "Sélectionnez un marqueur ou cliquez longuement sur la carte pour qu’un élément soit créé.",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -335,73 +524,18 @@ To activate this mode, add in your HTML code the web component with the followin
                                             "layer": "asitvd.fond_cadastral",
                                             "projection": "EPSG:2056",
                                             "name": "Carte de base",
-                                            "thumbnail": "http://localhost:8080/public/base.svg"
+                                            "thumbnail": "https://localhost:5173/public/base.svg"
                                         },
                                         {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:2056",
                                             "name": "Photo aérienne",
-                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
+                                            "thumbnail": "https://localhost:5173/aerial.svg"
                                         }],
-                                        "inclusionArea": false,
-                                        "selectionTargetBoxMessage": "Emplacement du banc"
+                                        "selectionTargetBoxMessage": "Éclairage signalé"
                                     }'
-    />
-```
-
-## Create Mode
-
-To activate this mode, add in your HTML code the web component with the following parameters:
-
-```
- <openlayers-element  options='{
-                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
-                                        "mode": {
-                                            "type": "create"
-                                        },
-                                        "geolocationInformation": {
-                                            "displayBox": true,
-                                            "reverseLocation": false,
-                                            "currentLocation": true
-                                        },
-                                        "notifications": [
-                                        {
-                                            "type": "warning",
-                                            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
-                                            "rule": {
-                                                "type": "ZOOM_CONSTRAINT",
-                                                "minZoom": 16
-                                            }
-                                        },
-                                        {
-                                            "type": "info",
-                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé",
-                                                "rule": {
-                                                "type": "MOVE_TARGET"
-                                            }
-                                        }
-                                        ],
-                                        "wmts": [{
-                                            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
-                                            "layer": "asitvd.fond_cadastral",
-                                            "projection": "EPSG:2056",
-                                            "name": "Carte de base",
-                                            "thumbnail": "http://localhost:8080/public/base.svg"
-                                        },
-                                        {
-                                            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
-                                            "layer": "ch.swisstopo.swissimage",
-                                            "projection": "EPSG:2056",
-                                            "name": "Photo aérienne",
-                                            "thumbnail": "http://localhost:8080/public/aerial.svg"
-                                        }],
-                                        "selectionTargetBoxMessage": "Harcèlement signalé"
-                                    }'
-    />
+      />
 ```
 
 ### Validation events
@@ -409,82 +543,6 @@ To activate this mode, add in your HTML code the web component with the followin
 For this scenario, there is one events to listen:
 
 - `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains only the geometry in WTK format.
-    - [{ geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
-  - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
-    - event.detail example: undefined
-
-## Create and Select Mode
-
-To activate this mode, add in your HTML code the web component with the following parameters:
-
-```
- <openlayers-element  options='{
-        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
-        "enableGeolocation": true,
-        "enableCenterButton": true,
-        "enableRotation": true,
-        "mode": {
-            "type": "mix"
-        },
-        "geolocationInformation": {
-            "displayBox": true,
-            "reverseLocation": true,
-            "currentLocation": false
-        },
-        "notifications": [
-        {
-            "type": "warning",
-            "message": "Veuillez zoomer davantage avant de pouvoir sélectionner un emplacement.",
-            "rule": {
-                "type": "ZOOM_CONSTRAINT",
-                "minZoom": 16
-            }
-        },
-        {
-          "type": "warning",
-          "message": "Le maximum de sélection est limité à {x}.",
-          "rule": {
-              "type": "MAX_SELECTION",
-              "maxElement": 3
-          }
-        },
-        {
-            "type": "info",
-            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
-                "rule": {
-                "type": "MOVE_TARGET"
-            }
-        }
-        ],
-        "wfs": {
-            "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
-        },
-        "wmts": [{
-            "capability": "https://wmts.asit-asso.ch/wmts?&Service=WMTS&Version=1.0.0&Request=GetCapabilities",
-            "layer": "asitvd.fond_cadastral",
-            "projection": "EPSG:2056",
-            "name": "Carte de base",
-            "thumbnail": "http://localhost:5173/base.svg"
-        },
-        {
-            "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
-            "layer": "ch.swisstopo.swissimage",
-            "projection": "EPSG:2056",
-            "name": "Photo aérienne",
-            "thumbnail": "http://localhost:5173/aerial.svg"
-        }],
-        "selectionTargetBoxMessage": "Emplacement du banc"
-    }'
-/>
-```
-
-### Validation events
-
-For this scenario, there is one events to listen:
-
-- `position-selected`: This event is sent in two cases:
-  - When all the rules are met and the position is available. The information is stored in an array of object in event.detail and this object contains the geometry in WTK format and could contain the element id.
-    - [{ geometry: POINT (2538545.7462747833 1180732.9753953428)) }, { id: 54, geometry: POINT (2538545.7462747833 1180732.9753953428)) }];
+  - When all the rules are met and the position is available. The information is sent with the configured output format (GeometryCollection or FeatureCollection).
   - When all the rules have been respected and the position is available but after an action, a rule is violated. In this case, the payload of the event is undefined
     - event.detail example: undefined

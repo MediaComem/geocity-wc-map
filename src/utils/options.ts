@@ -4,22 +4,18 @@ import InformationElement from '../types/information-element';
 import ModeConfig from '../types/mode';
 import ClusterConfig from '../types/cluster-config';
 import SearchConfig from '../types/search-config';
+import BorderConfig from '../types/border-config';
 import NotificationElement from '../types/notification-element';
+import InteractionConfig from '../types/interaction-config';
 import GeolocationInformation from '../types/geolocation-information';
-import { useStore } from '../composable/store';
 import InclusionAreaConfig from '../types/inclusion-area-config';
 
 export default interface IOption {
   zoom: number;
   minZoom: number;
   maxZoom: number;
-  displayZoom: boolean;
-  displayScaleLine: boolean;
-  fullscreen: boolean;
+  interaction: InteractionConfig;
   defaultCenter: Array<number>;
-  enableGeolocation: boolean;
-  enableCenterButton: boolean;
-  enableRotation: boolean;
   information: InformationElement;
   mode: ModeConfig;
   cluster: ClusterConfig;
@@ -30,22 +26,26 @@ export default interface IOption {
   inclusionArea: InclusionAreaConfig;
   selectionTargetBoxMessage: string;
   search: SearchConfig;
-  borderUrl: string;
+  border: BorderConfig;
+  outputFormat: string;
 }
 
 export default class Options {
-  static getOptions(options: IOption) {
+
+  static webComponentOptions(options: IOption) {
     const result: IOption = {
       zoom: 15,
       minZoom: 1,
       maxZoom: 20,
-      displayZoom: true,
-      displayScaleLine: false,
-      fullscreen: true,
+      interaction: {
+        displayZoom: true,
+        displayScaleLine: false,
+        fullscreen: true,
+        enableGeolocation: false,
+        enableCenterButton: true,
+        enableRotation: true,
+      },
       defaultCenter: [2539057, 1181111],
-      enableGeolocation: false,
-      enableCenterButton: true,
-      enableRotation: true,
       information: {
         duration: 5000,
         title: 'This is a title',
@@ -84,22 +84,18 @@ export default class Options {
         requestWithoutCustomValue: 'https://api3.geo.admin.ch/rest/services/api/SearchServer?limit=5&&type=locations&sr=2056&lang=fr&origins=address%2Cparcel',
         bboxRestiction: '2523099.818000,1167985.282000,2549752.141000,1192697.773000'
       },
-      borderUrl: ''
+      border: {
+        url: '',
+        notification: '' 
+      },
+      outputFormat: 'GeometryCollection'
     };
     if (options.zoom !== undefined) result.zoom = options.zoom;
     if (options.minZoom !== undefined) result.minZoom = options.minZoom;
     if (options.maxZoom !== undefined) result.maxZoom = options.maxZoom;
-    if (options.displayZoom !== undefined) result.displayZoom = options.displayZoom;
+    if (options.interaction !== undefined) result.interaction = options.interaction;
     if (options.search !== undefined) result.search = options.search;
-    if (options.displayScaleLine !== undefined)
-      result.displayScaleLine = options.displayScaleLine;
-    if (options.fullscreen !== undefined) result.fullscreen = options.fullscreen;
-    if (options.defaultCenter !== undefined) result.defaultCenter = options.defaultCenter;
-    if (options.enableGeolocation !== undefined)
-      result.enableGeolocation = options.enableGeolocation;
-    if (options.enableCenterButton !== undefined)
-      result.enableCenterButton = options.enableCenterButton;
-    if (options.enableRotation !== undefined) result.enableRotation = options.enableRotation;
+    if (options.defaultCenter !== undefined && options.defaultCenter[0] !== null) result.defaultCenter = options.defaultCenter;
     if (options.information !== undefined) result.information = options.information;
     if (options.notifications !== undefined && options.notifications.length > 0) result.notifications = options.notifications;
     if (options.mode !== undefined) result.mode = options.mode;
@@ -109,7 +105,8 @@ export default class Options {
     if (options.wmts !== undefined) result.wmts = options.wmts;
     if (options.inclusionArea !== undefined) result.inclusionArea = options.inclusionArea;
     if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
-    if (options.borderUrl !== undefined) result.borderUrl = options.borderUrl;
-    useStore().setOptions(result);
+    if (options.border !== undefined) result.border = options.border;
+    if (options.outputFormat !== undefined) result.outputFormat = options.outputFormat;
+    return result;
   }
 }

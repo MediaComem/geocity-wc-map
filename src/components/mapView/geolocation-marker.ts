@@ -6,18 +6,21 @@ import Stroke from 'ol/style/Stroke';
 import Point from 'ol/geom/Point';
 import VectorLayer from 'ol/layer/Vector';
 import Vector from 'ol/source/Vector';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
+import { Map } from 'ol';
 
 export default class GeolocationMarker {
   vectorLayer = new VectorLayer();
   vectorSource = new Vector();
+  map: Map;
 
   removeMarker() {
-    useStore().getMap().removeLayer(this.vectorLayer);
+    this.map?.removeLayer(this.vectorLayer);
   }
 
-  constructor() {
-    const geolocation = useStore().getGeolocation();
+  constructor(map: Map) {
+    this.map = map;
+    const geolocation = Store.getGeolocation();
     if (geolocation) {
       const positionFeature = new Feature();
       positionFeature.setStyle(
@@ -44,7 +47,7 @@ export default class GeolocationMarker {
 
       this.vectorSource?.addFeature(positionFeature);
       this.vectorLayer.setSource(this.vectorSource);
-      useStore().getMap().addLayer(this.vectorLayer);
+      this.map?.addLayer(this.vectorLayer);
     }
   }
 }

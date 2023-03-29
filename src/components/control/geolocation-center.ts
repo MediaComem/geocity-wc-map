@@ -8,7 +8,7 @@ import control from '../../styles/controls.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
 
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 
 @customElement('geolocation-control-button')
 class GeolocationControlButton extends LitElement {
@@ -20,9 +20,9 @@ class GeolocationControlButton extends LitElement {
   }
 
   render() {
-    return html`<div class="ol-unselectable ol-control center-control">
+    return html`<div class="ol-unselectable ol-control center-control" tabindex="0">
                   <div>
-                    <div class="control-${useStore().getTheme()}">
+                    <div class="control-${Store.getTheme()}">
                       ${unsafeSVG(SVGCreator.geolocation)}
                     </div>
                   </div>
@@ -35,7 +35,7 @@ export default class GeolocationCenter extends Control {
     constructor(target: HTMLElement) {
 
       const element = document.createElement('geolocation-control-button') as GeolocationControlButton;
-  
+
       super({
         element: element,
       });
@@ -43,9 +43,9 @@ export default class GeolocationCenter extends Control {
       element.addEventListener('click', this.centerMap.bind(this), false);
       this.setTarget(target);
     }
-  
+
     centerMap() {
-      const geolocation = useStore().getGeolocation();
+      const geolocation = Store.getGeolocation();
       if (geolocation) {
         const coordinate = geolocation.getPosition();
         const map = this.getMap();
@@ -53,7 +53,6 @@ export default class GeolocationCenter extends Control {
           const view = map.getView();
           if (coordinate) view.setCenter(coordinate);
         }
-        
       }
     }
   }

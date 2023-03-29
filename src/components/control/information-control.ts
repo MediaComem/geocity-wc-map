@@ -10,7 +10,8 @@ import style from '../../styles/svg-control.css?inline';
 import control from '../../styles/controls.css?inline';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
+import { Map } from 'ol';
 
 @customElement('information-control-button')
 class InformationControlButton extends LitElement {
@@ -22,9 +23,9 @@ class InformationControlButton extends LitElement {
   }
 
   render() {
-    return html`<div class="information-control">
+    return html`<div class="information-control" tabindex="0">
                   <div>
-                    <div class="control-${useStore().getTheme()}">
+                    <div class="control-${Store.getTheme()}">
                       ${unsafeSVG(SVGCreator.information)}
                     </div>
                   </div>
@@ -38,7 +39,7 @@ export default class InformationControl extends Control {
     informationIsOpen: Boolean = true;
     control: InformationBoxControl;
 
-    constructor(target: HTMLElement) {
+    constructor(target: HTMLElement, store: Store,  map: Map) {
 
         const element = document.createElement('information-control-button') as InformationControlButton;
 
@@ -47,8 +48,8 @@ export default class InformationControl extends Control {
         });
         element.addEventListener('click', this.toogleInformationBox.bind(this), false);
         window.addEventListener('close-information-box', this.closeInformationBox.bind(this), false);
-        this.control = new InformationBoxControl()
-        useStore().getMap().addControl(this.control);
+        this.control = new InformationBoxControl(store)
+        map.addControl(this.control);
         this.openInformationBox();
         this.setTarget(target)
       }
@@ -66,7 +67,7 @@ export default class InformationControl extends Control {
         GeocityEvent.sendEvent('open-information-box', {});
         this.informationIsOpen = true;
       }
-    
+
       toogleInformationBox() {
         this.informationIsOpen ? this.closeInformationBox() : this.openInformationBox();
       }

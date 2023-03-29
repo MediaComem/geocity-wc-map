@@ -3,9 +3,11 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { Control } from 'ol/control';
-import { useStore } from '../../composable/store';
+import { EventTypes } from 'ol/Observable';
+import { Store } from '../../composable/store';
 
 import boxStyle from '../../styles/select-box-information.css?inline';
+import EventManager from '../../utils/event-manager';
 import { GeocityEvent } from '../../utils/geocity-event';
 import SearchApi from '../../utils/search-api';
 import SVGCreator from '../../utils/svg-creator';
@@ -18,23 +20,35 @@ class SelectCreateInformationBoxElement extends LitElement {
   @state() _isRecenterButton: boolean = true;
   @state() _currentPosition = '';
 
+  store: Store;
+
+  setCenterChange() {
+    const feature = this.store.getSelectedFeature(this.store.getCurrentItemId());
+      if (feature) {
+        const geometry = feature.get('geom');
+        this._isRecenterButton = geometry.intersectsExtent(this.store.getMap()?.getView().calculateExtent(this.store.getMap()?.getSize()));
+      }
+  }
+
   connectedCallback() {
     super.connectedCallback();
   }
 
-  constructor() {
+  constructor(store: Store) {
     super();
-    useStore().getMap().getView().on('change:center', () => {
-      const feature = useStore().getSelectedFeature(useStore().getCurrentItemId());
-      if (feature) {
-        const geometry = feature.get('geom');
-        this._isRecenterButton = geometry.intersectsExtent(useStore().getMap().getView().calculateExtent(useStore().getMap().getSize()));
-      }
-    });
+    this.store = store;
+    const map = this.store.getMap();
+    const options = this.store.getOptions();
+    if (!map || !options) {
+      throw new Error("invalid map or options");
+    }
+
+    EventManager.registerBorderConstaintMapEvent('change:center' as EventTypes, () => this.setCenterChange(), map, options)
     window.addEventListener('open-select-create-box', ((event: CustomEvent) => {
       SearchApi.getAddressFromCoordinate(event.detail).then((data) => {
-        this._currentPosition = data.results.length > 0 ? `proche de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
+        this._currentPosition = data.results.length > 0 ? `À proximité de ${data.results[0].attributes.strname_deinr}` : 'Aucune adresse proche reconnue';
       });
+      this.setCenterChange();
     }) as EventListener)
   }
 
@@ -42,10 +56,10 @@ class SelectCreateInformationBoxElement extends LitElement {
 
   render() {
     return html`
-      <div class="information-box-${useStore().getTheme()} box-element">
+      <div class="information-box-${Store.getTheme()} box-element">
         <div class="box-text-container">
             <div class="box-element-title">
-            <div class="box-element-title-text">${useStore().getOptions().selectionTargetBoxMessage}</div>
+            <div class="box-element-title-text">${this.store.getOptions()?.selectionTargetBoxMessage}</div>
             </div>
             <div class="box-element-content">${this._currentPosition}</div>
         </div>
@@ -73,15 +87,15 @@ class SelectCreateInformationBoxElement extends LitElement {
   }
 
   unselect() {
-    const options = useStore().getOptions();
+    const options = this.store.getOptions();
     let type = '';
-    if (options.mode.type === 'mix') type = useStore().getCurrentFeatureType(useStore().getCurrentItemId());
-    else type = options.mode.type
-    
+    if (options?.mode.type === 'mix') type = this.store.getCurrentFeatureType(this.store.getCurrentItemId());
+    else type = options?.mode.type ?? ''
+
     switch(type) {
-      case 'select': GeocityEvent.sendEvent('icon-clicked', useStore().getCurrentItemId()); break;
+      case 'select': GeocityEvent.sendEvent('icon-clicked', this.store.getCurrentItemId()); break;
       case 'create': GeocityEvent.sendEvent('icon-removed', undefined); break;
-    } 
+    }
   }
 }
 
@@ -89,10 +103,15 @@ export default class SelectCreateInformationBoxController extends Control {
 
   div: HTMLElement;
 
-  constructor() {
-    const box = document.createElement('select-information-box-element') as SelectCreateInformationBoxElement;
+  constructor(store: Store) {
+    const box = new SelectCreateInformationBoxElement(store);
     super({ element: box });
     this.div = box;
+    const map = store.getMap();
+    if (!map) {
+      throw new Error("missing map");
+    }
+    EventManager.setResizeEvent(this.div, '--select-box-width', map);
   }
 
   public disable() {

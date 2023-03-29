@@ -14,6 +14,9 @@
             <a href="demo/harassment-alert-create.html">harassment-alert-create</a>
         </li>
         <li>
+            <a href="demo/harassment-alert-create-with-border.html">harassment-alert-create-with-border</a>
+        </li>
+        <li>
             <a href="demo/harassment-alert-multiple-create.html">harassment-alert-multiple-create</a>
         </li>
         <li>
@@ -23,6 +26,9 @@
             <a href="demo/inclusion-area-target.html">inclusion-area-target</a>
         </li>
         <li>
+            <a href="demo/inclusion-area-target-with-strong-constraint.html">inclusion-area-target-with-strong-constraint</a>
+        </li>
+        <li>
             <a href="demo/street-lamp-multiple-select.html">street-lamp-multiple-select</a>
         </li>
         <li>
@@ -30,14 +36,19 @@
         </li>
     </ul>
     <h1>Exemple</h1>
-    <div style="width: 80%; height: 80vh;margin-left: auto;margin-right: auto">
+    <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
         <openlayers-element  options='{
         "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
-        "enableGeolocation": true,
-        "enableCenterButton": true,
-        "enableRotation": true,
+        "interaction": {
+            "displayZoom": true,
+            "displayScaleLine": false,
+            "fullscreen": true,
+            "enableGeolocation": true,
+            "enableCenterButton": true,
+            "enableRotation": true
+        },
         "mode": {
-            "type": "create"
+            "type": "mix"
         },
         "geolocationInformation": {
             "displayBox": true,
@@ -55,10 +66,10 @@
         },
         {
           "type": "warning",
-          "message": "Le maximum de sélection est limité à {x}.",
+          "message": "Le maximum de sélections est limité à {x}.",
           "rule": {
               "type": "MAX_SELECTION",
-              "maxElement": 1
+              "maxElement": 4
           }
         },
         {
@@ -69,6 +80,10 @@
             }
         }
         ],
+        "border": {
+            "url": "http://localhost:5173/border.json",
+            "notification": "Veuillez placer votre élément dans les limites autorisées"
+        },
         "wfs": {
             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ELE_tragwerk_gesco"
         },
@@ -77,20 +92,24 @@
             "layer": "asitvd.fond_cadastral",
             "projection": "EPSG:2056",
             "name": "Carte de base",
-            "thumbnail": "https://localhost:5173/base.svg"
+            "thumbnail": "http://localhost:5173/base.svg"
         },
         {
             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
             "layer": "ch.swisstopo.swissimage",
             "projection": "EPSG:2056",
             "name": "Photo aérienne",
-            "thumbnail": "https://localhost:5173/aerial.svg"
+            "thumbnail": "http://localhost:5173/aerial.svg"
         }],
         "inclusionArea": {
             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
             "filter": "GeometryOperands=urn:ogc:def:crs:EPSG::2056&FILTER=<Filter><And><PropertyIsEqualTo><ValueReference>commune</ValueReference><Literal>Yverdon-les-Bains</Literal></PropertyIsEqualTo><PropertyIsNotEqualTo><ValueReference>genre</ValueReference><Literal>Parcelle privée</Literal></PropertyIsNotEqualTo><BBOX></And></Filter>"
         },
-        "selectionTargetBoxMessage": "Emplacement du banc"
+        "selectionTargetBoxMessage": "Emplacement du banc",
+        "outputFormat": "GeometryCollection"
+    }' states='{
+        "readonly": false,
+        "currentSelections": [[2539063.19,1181419.5], [2539064.6,1181401.67]]
     }'
 />
     </div>

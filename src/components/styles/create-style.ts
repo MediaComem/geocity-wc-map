@@ -26,7 +26,7 @@ export default class CreateStyle {
         new Style({
           zIndex: 2,
           image: new CircleStyle({
-            radius: 0.2 * zoomFactor,
+            radius: zoomFactor > 8 ? 4 : 0.2 * zoomFactor,
             stroke: new Stroke({
               color: '#FFFFFF',
               width: 3,
@@ -55,7 +55,7 @@ export default class CreateStyle {
         new Style({
           zIndex: 2,
           image: new CircleStyle({
-            radius: 0.2 * zoomFactor,
+            radius: zoomFactor > 8 ? 4 : 0.2 * zoomFactor,
             stroke: new Stroke({
               color: '#FFFFFF',
               width: 1,

@@ -1,148 +1,133 @@
 import { Feature, Map } from 'ol';
-import { Extent } from 'ol/extent';
 import Geolocation from 'ol/Geolocation';
+import { Geometry } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import { Vector } from 'ol/source';
 import StoreFeature from '../types/store-feature';
 import IOption from '../utils/options';
 
-let theme: string = '';
-let customDisplay: boolean = false;
-let targetBoxSize: string = '';
-let geolocation: Geolocation | undefined;
-let options: IOption;
-let map: Map;
-let selectedFeatures: Array<StoreFeature> = [];
-let borderConstraint: Extent | undefined;
-let currentItemId: number = -1;
-let maxElement: number = -1;
+export class Store {
 
-function setTheme(newVal: string) {
-  theme = newVal;
-}
+  static geolocation: Geolocation | undefined;
+  static theme: string = '';
 
-function getTheme() {
-  return theme;
-}
+  customDisplay: boolean = false;
+  targetBoxSize: string = '';
+  options: IOption | undefined;
+  map: Map | undefined;
+  selectedFeatures: Array<StoreFeature> = [];
+  borderConstraint: VectorLayer<Vector<Geometry>> | undefined;
+  currentItemId: number = -1;
+  maxElement: number = -1;
 
-function setCustomDisplay(newVal: boolean) {
-  customDisplay = newVal;
-}
+  static setTheme(newVal: string) {
+    this.theme = newVal;
+  }
 
-function isCustomDisplay() {
-  return customDisplay;
-}
+  static getTheme() {
+    return this.theme;
+  }
 
-function setTargetBoxSize(newVal: string) {
-  targetBoxSize = newVal;
-}
+  static setGeolocation(newVal: Geolocation) {
+    this.geolocation = newVal;
+  }
 
-function getTargetBoxSize() {
-  return targetBoxSize;
-}
+  static getGeolocation() {
+    return this.geolocation;
+  }
 
-function setGeolocation(newVal: Geolocation) {
-  geolocation = newVal;
-}
+  setCustomDisplay(newVal: boolean) {
+    this.customDisplay = newVal;
+  }
 
-function getGeolocation() {
-  return geolocation;
-}
+  isCustomDisplay() {
+    return this.customDisplay;
+  }
 
-function setOptions(newVal: IOption) {
-  options = newVal;
-}
+  setTargetBoxSize(newVal: string) {
+    this.targetBoxSize = newVal;
+  }
 
-function getOptions() {
-  return options;
-}
+  getTargetBoxSize() {
+    return this.targetBoxSize;
+  }
 
-function setMap(newVal: Map) {
-  map = newVal;
-}
+  setOptions(newVal: IOption) {
+    this.options = newVal;
+  }
 
-function getMap() {
-  return map;
-}
+  getOptions() {
+    return this.options;
+  }
 
-function addSelectedFeature(newVal: Feature, id: number, type: string) {
-  selectedFeatures.push({
-    id: id,
-    type: type,
-    feature: newVal
-  });
-}
+  setMap(newVal: Map) {
+    this.map = newVal;
+  }
 
-function removeSelectedFeature(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  if (index !== -1) selectedFeatures.splice(index, 1);
-}
+  getMap() {
+    return this.map;
+  }
 
-function getSelectedFeature(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  return index !== -1 ? selectedFeatures[index].feature : undefined;
-}
+  addSelectedFeature(newVal: Feature, id: number, type: string) {
+    this.selectedFeatures.push({
+      id: id,
+      type: type,
+      feature: newVal
+    });
+  }
 
-function getCurrentFeatureType(id: number) {
-  const index = selectedFeatures.findIndex((f) => f.id === id)
-  return index !== -1 ? selectedFeatures[index].type : '';
-}
+  removeSelectedFeature(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    if (index !== -1) this.selectedFeatures.splice(index, 1);
+  }
 
-function unselectFeatures() {
-  selectedFeatures.find((f) => f.feature.get('isSelected'))?.feature.set('isSelected', undefined);
-}
+  removeLastSelectedFeature() {
+    this.selectedFeatures.splice(-1);
+  }
 
-function getSelectedFeatures() {
-  return selectedFeatures.map((f) => f.feature);
-}
+  removeAllSelectedFeatures() {
+    this.selectedFeatures = [];
+  }
 
-function setBorderConstraint(newVal: Extent | undefined) {
-  borderConstraint = newVal;
-}
+  getSelectedFeature(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    return index !== -1 ? this.selectedFeatures[index].feature : undefined;
+  }
 
-function getBorderConstraint() {
-  return borderConstraint;
-}
+  getCurrentFeatureType(id: number) {
+    const index = this.selectedFeatures.findIndex((f) => f.id === id)
+    return index !== -1 ? this.selectedFeatures[index].type : '';
+  }
 
-function setCurrentItemId(newVal: number) {
-  currentItemId = newVal;
-}
+  unselectFeatures() {
+    this.selectedFeatures.find((f) => f.feature.get('isSelected'))?.feature.set('isSelected', undefined);
+  }
 
-function getCurrentItemId() {
-  return currentItemId;
-}
+  getSelectedFeatures() {
+    return this.selectedFeatures.map((f) => f.feature);
+  }
 
-function setMaxElement(newVal: number) {
-  maxElement = newVal;
-}
+  setBorderConstraint(newVal: VectorLayer<Vector<Geometry>> | undefined) {
+    this.borderConstraint = newVal;
+  }
 
-function getMaxElement() {
-  return maxElement;
-}
+  getBorderConstraint() {
+    return this.borderConstraint;
+  }
 
-export function useStore() {
-  return {
-    setTheme,
-    getTheme,
-    setCustomDisplay,
-    isCustomDisplay,
-    setTargetBoxSize,
-    getTargetBoxSize,
-    setGeolocation,
-    getGeolocation,
-    setOptions,
-    getOptions,
-    setMap,
-    getMap,
-    addSelectedFeature,
-    removeSelectedFeature,
-    getSelectedFeature,
-    getCurrentFeatureType,
-    getSelectedFeatures,
-    unselectFeatures,
-    setBorderConstraint,
-    getBorderConstraint,
-    setCurrentItemId,
-    getCurrentItemId,
-    setMaxElement,
-    getMaxElement,
-  };
+  setCurrentItemId(newVal: number) {
+    this.currentItemId = newVal;
+  }
+
+  getCurrentItemId() {
+    return this.currentItemId;
+  }
+
+  setMaxElement(newVal: number) {
+    this.maxElement = newVal;
+  }
+
+  getMaxElement() {
+    return this.maxElement;
+  }
 }
