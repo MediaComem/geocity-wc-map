@@ -31,6 +31,7 @@ export declare class Store {
     addSelectedFeature(newVal: Feature, id: number, type: string): void;
     removeSelectedFeature(id: number): void;
     removeLastSelectedFeature(): void;
+    removeAllSelectedFeatures(): void;
     getSelectedFeature(id: number): Feature<Geometry> | undefined;
     getCurrentFeatureType(id: number): string;
     unselectFeatures(): void;

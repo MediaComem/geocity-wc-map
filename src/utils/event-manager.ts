@@ -67,7 +67,7 @@ export default class EventManager {
       div.style.setProperty(variable, size[0] *  0.33 + 'px') 
     }
 
-    window.addEventListener('resize', () => {
+    map.on('change:size', () => {
       const size = map.getSize();
       if (size) {
         div.style.setProperty(variable, size[0] *  0.33 + 'px') 

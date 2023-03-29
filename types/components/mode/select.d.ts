@@ -17,8 +17,10 @@ export default class SingleSelect {
     renderUtils: Render;
     options: IOption;
     map: Map;
+    vectorLayer: VectorLayer<Vector<Geometry>>;
     constructor(renderUtils: Render, states: IStates, store: Store);
     renderCurrentSelection(states: IStates): void;
+    removeCurrentSelection(): void;
     setChangeResolution(map: Map, clusterSource: Cluster, options: IOption): void;
     displayDataOnMap(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>, options: IOption, vectorSource: VectorSource): void;
     setCurrentElement(feature: Feature): void;

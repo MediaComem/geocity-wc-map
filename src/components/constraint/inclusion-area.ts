@@ -32,7 +32,7 @@ export default class InclusionArea {
     const nearestPoint = this.vectorSource.getClosestFeatureToCoordinate(
       coordiante
     );
-    if (nearestPoint.getGeometry()?.getType() === 'Polygon') {
+    if (nearestPoint && nearestPoint.getGeometry()?.getType() === 'Polygon') {
       const polygon = nearestPoint.getGeometry();
       const isIncluded = polygon?.intersectsCoordinate(coordiante);
       GeocityEvent.sendEvent('inclusion-area-included', isIncluded);

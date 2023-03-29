@@ -1,5 +1,5 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 
 import Control from 'ol/control/Control';
@@ -14,7 +14,8 @@ import wmtsLayerConfiguration from '../mapView/wmts-loader';
 // @ts-ignore
 class LayerList extends LitElement {
   @state() _currentSelectedIndex = 0;
-  @state() wmts: Array<wmtsLayerConfiguration> = [];
+  @state() _wmts: Array<wmtsLayerConfiguration> = [];
+  @property() wmts: string = '';
 
   selectLayer(layer: wmtsLayerConfiguration, index: number) {
     GeocityEvent.sendEvent('layer-selected', layer)
@@ -23,10 +24,16 @@ class LayerList extends LitElement {
 
   static styles = [unsafeCSS(layerStyle)];
 
+  updated(changedProperties: any) {
+    if (changedProperties.has('wmts')){
+      this._wmts = JSON.parse(this.wmts)
+    }
+  }
+
   render() {
     return html`
                 <ul>
-                  ${this.wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
+                  ${this._wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
                     html`<li tabindex="0" @click=${() => this.selectLayer(wmts, index)}>
                           <div class="image-container">
                             <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${wmts.thumbnail}"/>
@@ -42,7 +49,7 @@ class LayerList extends LitElement {
 @customElement('layer-selection')
 class LayerSectionElement extends LitElement {
   static styles = [unsafeCSS(layerStyle)];
-  @state() wmts: Array<wmtsLayerConfiguration> = [];
+  @property() wmts: Array<wmtsLayerConfiguration> = [];
 
   render() {
     return html`<div class="layer-container">
@@ -54,7 +61,7 @@ class LayerSectionElement extends LitElement {
                         </div>
                       </div>
                   </div>
-                  <layer-list wmts=${this.wmts}/>
+                  <layer-list wmts=${JSON.stringify(this.wmts)}/>
               </div>`;
   }
 

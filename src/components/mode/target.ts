@@ -9,19 +9,19 @@ import { GeocityEvent } from '../../utils/geocity-event';
 
 class TargetInformation {
     constructor(store: Store) {
-    const map = store.getMap();
-    if (!map) {
-        throw new Error("Invalid map!");
-    }
-    map.on('change:target', (event:any) => {
-          GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
-      });
-      if (store.getOptions()?.border.url !== '') {
-        EventManager.registerWindowListener('border-contraint-enabled', 'change:center' as EventTypes, (event:any) => {
-            GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
-        },
-        map);
-      }
+        const map = store.getMap();
+        if (!map) {
+            throw new Error("Invalid map!");
+        }
+        map.getView().on('change:center', (event:any) => {
+            GeocityEvent.sendEvent('current-center-position', event.target.getCenter())  
+        });
+        if (store.getOptions()?.border.url !== '') {
+            EventManager.registerWindowListener('border-contraint-enabled', 'change:center' as EventTypes, (event:any) => {
+                GeocityEvent.sendEvent('current-center-position', event.target.getCenter())
+            },
+            map);
+        }
     }
   }
 
@@ -66,7 +66,7 @@ class TargetElement extends LitElement {
 export default class TargetController extends Control {
     constructor(store: Store) {
         const target = document.createElement('target-element') as TargetElement;
-        super({ element: target});
+        super({ element: target });
         new TargetInformation(store);
     }
 }

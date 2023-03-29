@@ -26,7 +26,8 @@ class LocationList extends LitElement {
   @state() _results: Array<SearchLocationElement> = [];
 
   static styles = [unsafeCSS(style)];
-  connectedCallback(): void {
+
+  firstUpdated() {
     this.map?.addEventListener('click', () => {
       this._results = [];
     })
@@ -77,6 +78,9 @@ class LocationList extends LitElement {
 class SearchLocation extends LitElement {
   @query('#search')
   public inputElement!: HTMLInputElement;
+  @query('#location-result')
+  public locationElements!: LocationList;
+
   @state() results: Object = {};
 
   @state() _hasSearch: boolean = false;
@@ -99,9 +103,11 @@ class SearchLocation extends LitElement {
       this._hasSearch = false;
       this._hasSelected = true;
     }) as EventListener)
+    
   }
 
   firstUpdated() {
+    this.locationElements.map = this.map;
     this.inputElement.oninput = () => {
         if (this.inputElement.value.length > 1) {
             this._hasSearch = true;
@@ -141,7 +147,7 @@ class SearchLocation extends LitElement {
                           )}
                         </div>
                     </div>
-                    <location-list locations='${JSON.stringify(this.results)}' map='${this.map}'/>
+                    <location-list id="location-result" locations='${JSON.stringify(this.results)}'/>
                 </div>`;
   }
 }

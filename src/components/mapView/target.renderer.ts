@@ -16,4 +16,8 @@ export default class TargetRenderer {
   renderCurrentSelection(states: IStates) {
     this.renderUtils.displayCurrentElementCreateTargetMode(this.vectorSource, states);
   }
+
+  removeCurrentSelection() {
+    this.vectorSource.getFeatures().forEach((feature) => this.vectorSource.removeFeature(feature));
+  }
 }

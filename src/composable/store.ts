@@ -85,6 +85,10 @@ export class Store {
     this.selectedFeatures.splice(-1);
   }
 
+  removeAllSelectedFeatures() {
+    this.selectedFeatures = [];
+  }
+
   getSelectedFeature(id: number) {
     const index = this.selectedFeatures.findIndex((f) => f.id === id)
     return index !== -1 ? this.selectedFeatures[index].feature : undefined;

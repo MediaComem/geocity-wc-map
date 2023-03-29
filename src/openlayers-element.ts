@@ -41,6 +41,7 @@ import States from './utils/states';
 import IStates from './utils/states';
 import TargetRenderer from './components/mapView/target.renderer';
 import { Render } from './utils/render';
+import SelectCreateInformationBoxController from './components/notification/select-create-information-box';
 
 /**
  * An example element.
@@ -192,12 +193,23 @@ export class OpenLayersElement extends LitElement {
     if (changedProperties.has('states'))
       if (this.states) {
         const states = States.getStates(this.states as IStates);
-        switch(this.store.getOptions()?.mode.type) {
-          case 'target': this.modeControllers[0].renderCurrentSelection(states); break;
-          case 'select': this.modeControllers[0].renderCurrentSelection(states); break;
-          case 'create': this.modeControllers[0].renderCurrentSelection(states); break;
-          case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0].vectorSource, this.modeControllers[1].vectorSource, states);; 
-                      break;
+        if (states.currentSelections.length > 0) {
+          switch(this.store.getOptions()?.mode.type) {
+            case 'target': this.modeControllers[0].renderCurrentSelection(states); break;
+            case 'select': this.modeControllers[0].renderCurrentSelection(states); break;
+            case 'create': this.modeControllers[0].renderCurrentSelection(states); break;
+            case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0].vectorSource, this.modeControllers[1].vectorSource, states);; 
+                        break;
+          }
+          this.store.getMap()?.updateSize();
+        } else {
+          this.modeControllers.forEach((controller) => controller.removeCurrentSelection())
+          this.store.removeAllSelectedFeatures();
+          this.store.getMap()?.getControls().forEach(control => {
+            if (control instanceof SelectCreateInformationBoxController) {
+              control.disable();
+            }
+          })
         }
       }
   }

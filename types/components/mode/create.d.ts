@@ -18,6 +18,7 @@ export default class SingleCreate {
     map: Map;
     constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates, store: Store);
     renderCurrentSelection(states: IStates): void;
+    removeCurrentSelection(): void;
     setupMapForCreation(map: Map, vectorSource: Vector): void;
     createElement(vectorSource: Vector, event: CustomEvent): void;
     remove(vectorSource: Vector, feature: Feature): void;

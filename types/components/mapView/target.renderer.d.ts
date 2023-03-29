@@ -6,4 +6,5 @@ export default class TargetRenderer {
     renderUtils: Render;
     constructor(renderUtils: Render);
     renderCurrentSelection(states: IStates): void;
+    removeCurrentSelection(): void;
 }

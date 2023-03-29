@@ -18,6 +18,10 @@ export class Render {
     this.store = store;
   }
 
+  setIsLoaded(state: boolean) {
+    this.vectorIsLoaded = state;
+  }
+
   getDefaultZoomFactor() {
     let zoom = this.store.getMap()?.getView().getZoom() || 1;
     if (zoom > 1) zoom = zoom / 2;

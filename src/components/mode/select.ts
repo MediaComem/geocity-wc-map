@@ -27,6 +27,7 @@ export default class SingleSelect {
   renderUtils: Render;
   options: IOption;
   map: Map;
+  vectorLayer = new VectorLayer();
 
   constructor(renderUtils: Render, states: IStates, store: Store) {
     this.store = store;
@@ -40,9 +41,13 @@ export default class SingleSelect {
     this.options = options;
     this.map = map;
     this.control = new SelectCreateInformationBoxController(this.store)
-    const vectorLayer = new VectorLayer();
+    this.vectorLayer = new VectorLayer();
     this.vectorSource = WFSLoader.getSource(options.wfs.url, '', false)
-    this.displayDataOnMap(map, vectorLayer, options, this.vectorSource);
+    // In case of it is a fresh configuration, inform the render than the WFS data is loaded
+    this.vectorSource.on('featuresloadend', () => {
+      this.renderUtils.setIsLoaded(true);
+    })
+    this.displayDataOnMap(map, this.vectorLayer, options, this.vectorSource);
     if (!this.states.readonly) {
       map.on('click', (evt) => {
         map.forEachFeatureAtPixel(evt.pixel, (feature) => {
@@ -68,7 +73,7 @@ export default class SingleSelect {
 
     if (options.mode.type === 'mix') {
       window.addEventListener('remove-clicked', ((event: CustomEvent) => {
-        vectorLayer.getSource()?.getFeatures().forEach((feature) => {
+        this.vectorLayer.getSource()?.getFeatures().forEach((feature) => {
           feature.get('features').forEach((geometryFeature:Feature) => {
             if (geometryFeature.get('objectid') === event.detail) {
               this.removeItem(geometryFeature)
@@ -82,6 +87,16 @@ export default class SingleSelect {
 
   renderCurrentSelection(states: IStates) {
     this.renderUtils.displayCurrentElementSelectMode(this.vectorSource, states);
+  }
+
+  removeCurrentSelection() {
+    this.vectorLayer.getSource()?.getFeatures().forEach((feature) => {
+      feature.get('features').forEach((geometryFeature:Feature) => {
+        if (geometryFeature.get('isClick')) {
+          this.setIconToDisplay(geometryFeature, undefined);
+        }
+      });
+    });
   }
 
   setChangeResolution(map: Map, clusterSource: Cluster, options: IOption) {

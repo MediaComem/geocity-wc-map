@@ -268,6 +268,13 @@ export default class NotificationManager {
                 if (this.store.getMaxElement() === 1 && features.length === this.store.getMaxElement()) {
                     this.validMaxElementConstraint = true;
                     this.displayMaxElementConstraint = false;
+                } 
+                // To allowed the validation and also display the message, we need to check the lastest validation state.
+                // By the rule-validation event, we recheck when the not allowed element is not anymore in the feature collection
+                // Therefor, if the last state was not valid, we must revalidated to allowed the configuration but continu to display the message.
+                else if (features.length === this.store.getMaxElement() && !this.validMaxElementConstraint) {
+                    this.validMaxElementConstraint = true;
+                    this.displayMaxElementConstraint = true;
                 }
                 else if (features.length > this.store.getMaxElement()) {
                     this.validMaxElementConstraint = false;

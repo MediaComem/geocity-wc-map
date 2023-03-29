@@ -42,6 +42,7 @@ export default class SingleCreate {
 
       window.addEventListener('refused-created', () => {
         this.store.removeLastSelectedFeature();
+        GeocityEvent.sendEvent('rule-validation', undefined);
       })
 
       window.addEventListener('remove-created-icon', () => {
@@ -84,6 +85,10 @@ export default class SingleCreate {
 
   renderCurrentSelection(states: IStates) {
     this.renderUtils.displayCurrentElementCreateTargetMode(this.vectorSource, states);
+  }
+
+  removeCurrentSelection() {
+    this.vectorSource.getFeatures().forEach((feature) => this.vectorSource.removeFeature(feature));
   }
 
   setupMapForCreation(map: Map, vectorSource: Vector) {

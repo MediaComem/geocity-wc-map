@@ -8,6 +8,7 @@ export declare class Render {
     vectorIsLoaded: Boolean;
     store: Store;
     constructor(store: Store);
+    setIsLoaded(state: boolean): void;
     getDefaultZoomFactor(): number;
     setChangeResolution(map: Map, vectorLayer: VectorLayer<Vector<Geometry>>): void;
     setupAndLoadLayer(vectorSource: Vector<Geometry>): void;

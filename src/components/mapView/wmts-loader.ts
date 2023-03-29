@@ -22,7 +22,6 @@ export default class WMTSLoader {
     if(!options) {
       throw new Error("Missing options");
     }
-    let isVisible = true;
     const layers: Tile<TileSource>[] = [];
     Promise.all(options.wmts.map((wmts) => {
       fetch(wmts.capability).then((response) => response.text()).then(function (text) {
@@ -36,10 +35,9 @@ export default class WMTSLoader {
         });
         if (wmtsOptions) {
           wmtsLayer.setSource(new WMTS(wmtsOptions))
-          wmtsLayer.setVisible(isVisible);
+          wmtsLayer.setVisible(wmts.layer == options.wmts[0].layer);
           layers.push(wmtsLayer);
           store.getMap()?.getLayers().insertAt(0, wmtsLayer);
-          isVisible = false;
           if (store.getBorderConstraint()) {
             wmtsLayer.setExtent(store.getBorderConstraint()?.getSource()?.getExtent());
           }
