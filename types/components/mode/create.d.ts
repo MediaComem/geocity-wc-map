@@ -16,6 +16,7 @@ export default class SingleCreate {
     renderUtils: Render;
     inclusionArea: InclusionArea | undefined;
     map: Map;
+    previousElement: Feature | undefined;
     constructor(mapElement: HTMLDivElement, inclusionArea: InclusionArea | undefined, renderUtils: Render, states: IStates, store: Store);
     renderCurrentSelection(states: IStates): void;
     removeCurrentSelection(): void;

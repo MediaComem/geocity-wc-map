@@ -63,13 +63,13 @@ export default class SingleSelect {
           }
         });
       });
-    }
 
-    window.addEventListener('recenter-selected-element', () => {
-      const currentItemID = this.store.getCurrentItemId();
-      const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
-      map.getView().setCenter(coords);
-    })
+      window.addEventListener('recenter-selected-element', () => {
+        const currentItemID = this.store.getCurrentItemId();
+        const coords = this.store.getSelectedFeature(currentItemID)?.get('geom').getCoordinates();
+        map.getView().setCenter(coords);
+      })
+    }
 
     if (options.mode.type === 'mix') {
       window.addEventListener('remove-clicked', ((event: CustomEvent) => {
