@@ -84,6 +84,11 @@ export default class GeolocationManager {
     const geolocation = Store.getGeolocation()
     if (navigator.userAgent.match(/Chrome\/\d+/) !== null) {
       this.chromeBasePermissionAnalyzer();
+    } else if (navigator.userAgent.match(/(iPad)/) && navigator.userAgent.match(/AppleWebKit/)) {
+      navigator.geolocation.getCurrentPosition(
+        () => this.granted(),
+        () => this.denied()
+       );
     } else {
       navigator.permissions
       .query({ name: 'geolocation' })

@@ -6,9 +6,11 @@ import Control from 'ol/control/Control';
 
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
+import PNGAssets from '../../assets/png-assets';
 import { GeocityEvent } from '../../utils/geocity-event';
 import layerStyle from '../../styles/layer-selection.css?inline';
 import wmtsLayerConfiguration from '../mapView/wmts-loader';
+import { cache } from 'lit/directives/cache.js';
 
 @customElement('layer-list')
 // @ts-ignore
@@ -36,7 +38,14 @@ class LayerList extends LitElement {
                   ${this._wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
                     html`<li tabindex="0" @click=${() => this.selectLayer(wmts, index)}>
                           <div class="image-container">
+                          ${cache(wmts.thumbnail && wmts.thumbnail.length > 0
+                            ? html`
                             <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${wmts.thumbnail}"/>
+                            `: 
+                            html`
+                            <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${PNGAssets.baseMapIcon}"/>
+                            `
+                          )}
                           </div>
                           <p>${wmts.name}</p>
                         </li>`
