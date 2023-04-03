@@ -107,6 +107,8 @@ export default class Options {
     if (options.selectionTargetBoxMessage !== undefined) result.selectionTargetBoxMessage = options.selectionTargetBoxMessage;
     if (options.border !== undefined) result.border = options.border;
     if (options.outputFormat !== undefined) result.outputFormat = options.outputFormat;
+    if ((result.mode.type == 'select' || result.mode.type == 'mix') && result.wfs.url == '')
+      console.error("Configuration error: There is no WFS url defined")
     return result;
   }
 }

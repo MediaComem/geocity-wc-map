@@ -139,13 +139,15 @@ export class Render {
   }
 
   displayMixMode(vectorSourceSelect: Vector<Geometry>, vectorSourceCreate: Vector<Geometry>, states: IStates) {
-    if (!this.vectorIsLoaded){
-      vectorSourceSelect.on('featuresloadend', () => {
+    if (vectorSourceSelect && vectorSourceCreate) {
+      if (!this.vectorIsLoaded){
+        vectorSourceSelect.on('featuresloadend', () => {
+          this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
+          this.vectorIsLoaded = true;
+        })
+      } else {
         this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
-        this.vectorIsLoaded = true;
-      })
-    } else {
-      this.loadMixMode(vectorSourceSelect, vectorSourceCreate, states);
+      }
     }
   }
 }

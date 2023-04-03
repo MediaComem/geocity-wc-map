@@ -195,10 +195,10 @@ export class OpenLayersElement extends LitElement {
         const states = States.getStates(this.states as IStates);
         if (states.currentSelections.length > 0) {
           switch(this.store.getOptions()?.mode.type) {
-            case 'target': this.modeControllers[0].renderCurrentSelection(states); break;
-            case 'select': this.modeControllers[0].renderCurrentSelection(states); break;
-            case 'create': this.modeControllers[0].renderCurrentSelection(states); break;
-            case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0].vectorSource, this.modeControllers[1].vectorSource, states);; 
+            case 'target': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'select': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'create': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0]?.vectorSource, this.modeControllers[1]?.vectorSource, states);; 
                         break;
           }
           this.store.getMap()?.updateSize();
