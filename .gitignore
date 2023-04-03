@@ -1,6 +1,5 @@
 node_modules
 .DS_Store
-dist
 # Lib build for demos
 demo/lib
 public/data
