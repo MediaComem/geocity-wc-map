@@ -1,3 +1,4 @@
+import { Store } from '../../composable/store';
 export default interface wmtsLayerConfiguration {
     capability: string;
     layer: string;
@@ -6,5 +7,5 @@ export default interface wmtsLayerConfiguration {
     thumbnail: string;
 }
 export default class WMTSLoader {
-    constructor();
+    constructor(store: Store);
 }

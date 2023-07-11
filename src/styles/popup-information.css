@@ -1,9 +1,8 @@
 .custom-popup-element {
   background-color: var(--information-box-background-color);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  padding: 15px;
+  padding: 0px 11px 11px 11px;
   border-radius: var(--box-border-radius);
-  border: 1px solid var(--information-box-background-color);
 }
 
 .custom-popup-element:after {
@@ -20,16 +19,25 @@
 
 .custom-popup-title {
   display: flex;
+  height: 36px;
 }
 
 .custom-popup-title-text {
-  width: 90%;
+  width: calc(100% - var(--svg-icon-size));
   font-weight: 600;
   font-size: 14px;
   line-height: 17px;
   color: var(--information-box-title-color);
   align-items: center;
   display: flex;
+}
+
+.custom-popup-title-svg-container {
+  width: 29px;
+  height: 36px;
+  justify-content: flex-end;
+  display: flex;
+  align-items: center;
 }
 
 .custom-popup-title-svg {
@@ -49,6 +57,7 @@
 }
 
 .custom-popup-content {
+  width: calc(100% - var(--svg-icon-size));
   font-weight: 400;
   font-size: 12px;
   line-height: 15px;

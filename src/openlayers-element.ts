@@ -24,7 +24,7 @@ import Options from './utils/options';
 import IOption from './utils/options';
 import GeolocationInformation from './types/geolocation-information';
 
-import { useStore } from './composable/store';
+import { Store } from './composable/store';
 import InclusionArea from './components/constraint/inclusion-area';
 import ControlIconManager from './utils/control-icon-manager';
 
@@ -39,6 +39,9 @@ import GeolocationManager from './components/controller/geolocation-manager';
 import EventManager from './utils/event-manager';
 import States from './utils/states';
 import IStates from './utils/states';
+import TargetRenderer from './components/mapView/target.renderer';
+import { Render } from './utils/render';
+import SelectCreateInformationBoxController from './components/notification/select-create-information-box';
 
 /**
  * An example element.
@@ -52,14 +55,21 @@ export class OpenLayersElement extends LitElement {
   public mapElement!: HTMLDivElement;
 
   @state() view:View | undefined;
+  @state() modeControllers: Array<SingleCreate | SingleSelect | TargetRenderer> = [];
+  @state() renderUtils: Render;
+  @state() inclusionArea: InclusionArea | undefined = undefined;
 
   @property({type: Object, attribute: 'options'}) options = {}
 
   @property({type: Object, attribute: 'states'}) states = {}
 
+  store: Store;
+
   constructor() {
     super();
-  }
+    this.store = new Store();
+    this.renderUtils = new Render(this.store)
+;  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -67,33 +77,33 @@ export class OpenLayersElement extends LitElement {
 
   setupTheme(options:any) {
     if (options.darkMode) {
-      useStore().setTheme('dark');
+      Store.setTheme('dark');
     }
     else if (options.lightMode) {
-      useStore().setTheme('light');
+      Store.setTheme('light');
     }
     else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-      useStore().setTheme('light');
+      Store.setTheme('light');
     }
     else if (window.matchMedia('(prefers-color-scheme: dark)').matches) { 
-      useStore().setTheme('dark');
+      Store.setTheme('dark');
     }
     else {
-      useStore().setTheme('light');
+      Store.setTheme('light');
     }
   }
 
   setupCustomDisplay(options: IOption) {
     if (options.mode.type === 'target') {
-      useStore().setCustomDisplay(options.geolocationInformation.displayBox);
+      this.store.setCustomDisplay(options.geolocationInformation.displayBox);
       this.setupTargetBoxSize(options.geolocationInformation);
     } else if (options.search.displaySearch) {
-      useStore().setTargetBoxSize('small');
-      useStore().setCustomDisplay(true);
+      this.store.setTargetBoxSize('small');
+      this.store.setCustomDisplay(true);
     } else {
-      useStore().setTargetBoxSize('no-box');
-      useStore().setCustomDisplay(false);
-    }  
+      this.store.setTargetBoxSize('no-box');
+      this.store.setCustomDisplay(false);
+    }
   }
 
   /*
@@ -104,16 +114,19 @@ export class OpenLayersElement extends LitElement {
       - geolocationInformation.reverseLocation and geolocationInformation.currentLocation have the value false. This means that there is no line under the title (small size).
   */
   setupTargetBoxSize(geolocationInformation: GeolocationInformation) {
-    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) useStore().setTargetBoxSize('large');
-    else if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) useStore().setTargetBoxSize('medium');
-    else useStore().setTargetBoxSize('small');
+    if (geolocationInformation.currentLocation && geolocationInformation.reverseLocation) this.store.setTargetBoxSize('large');
+    else if (geolocationInformation.currentLocation || geolocationInformation.reverseLocation) this.store.setTargetBoxSize('medium');
+    else this.store.setTargetBoxSize('small');
   }
 
   firstUpdated() {
-    Options.getOptions(this.options as IOption);
-    States.getStates(this.states as IStates);
-    const options = useStore().getOptions()
-    const readonly = useStore().getStates().readonly;
+    const options = Options.webComponentOptions(this.options as IOption);
+    this.store.setOptions(options)
+    const states = States.getStates(this.states as IStates);
+    if(!options) {
+      return;
+    }
+    const readonly = states.readonly;
     this.setupTheme(options);
     this.setupCustomDisplay(options);
     proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
@@ -127,53 +140,85 @@ export class OpenLayersElement extends LitElement {
       zoom: currentSelections && currentSelections.length == 1 ? options.maxZoom : options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
-      enableRotation: options.enableRotation
+      enableRotation: options.interaction.enableRotation
     });
 
-    useStore().setMap(new Map({
+    const map = new Map({
       target: this.mapElement,
       controls: [],
       layers: [],
       view: this.view,
-    }));
-    ControlIconManager.setupIcon();
-    if (options.enableGeolocation && !readonly) {
-      useStore().setGeolocation(new Geolocation({
+    });
+    this.store.setMap(map);
+    ControlIconManager.setupIcon(states, this.store);
+    if (options.interaction.enableGeolocation && !readonly) {
+      Store.setGeolocation(new Geolocation({
         trackingOptions: {
           enableHighAccuracy: true,
         },
         projection: this.view.getProjection(),
       }));
-      new GeolocationManager();
-    } 
-    if (options.search.displaySearch && options.mode.type !== 'target' && !readonly) useStore().getMap().addControl(new SearchLocationControl());
+      new GeolocationManager(map);
+    }
+    if (options.search.displaySearch && options.mode.type !== 'target' && !readonly) { 
+      map.addControl(new SearchLocationControl(this.store, map));
+    }
     if (options.mode.type === 'target') {
-      TargetController.renderExistingSelection();
+      this.modeControllers.push(new TargetRenderer(this.renderUtils))
       if (!readonly) {
-        useStore().getMap().addControl(new TargetController());
+        map.addControl(new TargetController(this.store));
         if (options.geolocationInformation.displayBox)
-          useStore().getMap().addControl(
-            new TargetInformationBoxElement()
+          map.addControl(
+            new TargetInformationBoxElement(this.store)
           );
       }
     }
-    if (options.wmts.length > 0) new WMTSLoader();
-    if (options.displayScaleLine) useStore().getMap().addControl(new ScaleLine({units: 'metric'}));
-    if (options.border.url !== '') new Border();
-    if (options.inclusionArea.url !== '') new InclusionArea();
-    if (options.mode.type === 'select' && options.wfs.url != '') new SingleSelect();
-    if (options.mode.type === 'create') new SingleCreate(this.mapElement);
+    if (options.wmts.length > 0) new WMTSLoader(this.store);
+    if (options.interaction.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
+    if (options.border.url !== '') new Border(this.store);
+    if (options.inclusionArea.url !== '') this.inclusionArea = new InclusionArea(this.store);
+    if (options.mode.type === 'select' && options.wfs.url != '') {
+      this.modeControllers.push(new SingleSelect(this.renderUtils, states, this.store));
+    }
+    if (options.mode.type === 'create') {
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.inclusionArea, this.renderUtils, states, this.store));
+    }
     if (options.mode.type === 'mix' && options.wfs.url != '') {
-      new SingleCreate(this.mapElement);
-      new SingleSelect();
-    } else if (options.mode.type === 'mix') new SingleCreate(this.mapElement);
-    if (!readonly) new NotificationManager();
-    EventManager.setCursorEvent();    
+      this.modeControllers.push( new SingleSelect(this.renderUtils, states, this.store));
+      this.modeControllers.push(new SingleCreate(this.mapElement, this.inclusionArea, this.renderUtils, states, this.store));
+    }
+    if (!readonly) new NotificationManager(this.store);
+    EventManager.setCursorEvent(map);
+  }
+
+  updated(changedProperties: any) {
+    if (changedProperties.has('states'))
+      if (this.states) {
+        const states = States.getStates(this.states as IStates);
+        if (states.currentSelections.length > 0) {
+          switch(this.store.getOptions()?.mode.type) {
+            case 'target': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'select': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'create': this.modeControllers[0]?.renderCurrentSelection(states); break;
+            case 'mix': this.renderUtils.displayMixMode(this.modeControllers[0]?.vectorSource, this.modeControllers[1]?.vectorSource, states);; 
+                        break;
+          }
+          this.store.getMap()?.updateSize();
+        } else {
+          this.modeControllers.forEach((controller) => controller.removeCurrentSelection())
+          this.store.removeAllSelectedFeatures();
+          this.store.getMap()?.getControls().forEach(control => {
+            if (control instanceof SelectCreateInformationBoxController) {
+              control.disable();
+            }
+          })
+        }
+      }
   }
 
   render() {
     return html`
-    <div id="map" class="${useStore().getTargetBoxSize()} ${useStore().getTheme()}">
+    <div id="map" class="${this.store.getTargetBoxSize()} ${Store.getTheme()}">
     </div>
     `
   }

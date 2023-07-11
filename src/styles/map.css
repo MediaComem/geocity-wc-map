@@ -1,6 +1,7 @@
 #map {
   width: 100%;
   height: 100%;
+  background-color: white;
 }
 
 .ol-layer {
@@ -12,5 +13,8 @@
   height: 100vh;
   background-color: gray;
   opacity: 0.3;
-  z-index: 6;
+}
+
+.overlay-index {
+  z-index: 10;
 }

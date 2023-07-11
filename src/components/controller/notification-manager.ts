@@ -1,13 +1,15 @@
-import { useStore } from '../../composable/store';
+import { Store } from '../../composable/store';
 import NotificationElement from '../../types/notification-element';
 import { GeocityEvent } from '../../utils/geocity-event';
 import NotificationBoxControl from '../notification/notification';
 
 import Feature from 'ol/Feature';
-import { Geometry, GeometryCollection, MultiPoint, Point } from 'ol/geom';
+import { Point } from 'ol/geom';
+import { Map } from 'ol';
 import EventManager from '../../utils/event-manager';
 import { EventTypes } from 'ol/Observable';
-import GeoJSON from 'ol/format/GeoJSON';
+import OutputFormat from '../../utils/output-format';
+import IOption from '../../utils/options';
 
 export default class NotificationManager {
     validZoomConstraint: boolean = true;
@@ -20,22 +22,39 @@ export default class NotificationManager {
     maxElementNotificationControl: NotificationBoxControl | undefined;
     infosNotificationControl: NotificationBoxControl | undefined;
     borderContraintNotificationControl: NotificationBoxControl | undefined;
+    outputFormat: OutputFormat = new OutputFormat();
+    store: Store;
+    options: IOption;
+    map: Map;
 
-    constructor() {
-        const options = useStore().getOptions();
+    constructor(store: Store) {
+        if(!store) {
+          throw new Error ("Missing store!");
+        }
+        this.store = store;
+        const options = this.store.getOptions();
+        if(!options) {
+          throw new Error ("Missing options!");
+        }
+        this.options = options;
+        const map = this.store.getMap();
+        if(!map) {
+          throw new Error ("Missing map!");
+        }
+        this.map = map;
         switch (options.mode.type) {
             case 'target': this.setupTargetMode(); break;
             case 'select': this.setupSelectMode(); break;
             case 'create': this.setupCreateMode(); break;
             case 'mix': this.setupMixMode(); break;
-            default: useStore().getMap().addControl(new NotificationBoxControl({
+            default: this.map?.addControl(new NotificationBoxControl({
                 type: "error",
                 message: "Veuillez sélectionner un mode de fonctionnement valide.",
                 rule: {
                     type: "NOT_VALID_MODE"
                 }
-            } as NotificationElement))
-        }    
+            } as NotificationElement, this.map))
+        }
         this.setup(options.notifications)
         this.displayRightNotification();
     }
@@ -77,18 +96,18 @@ export default class NotificationManager {
     setupTargetMode() {
         window.addEventListener('current-center-position', ((event: CustomEvent) => {
             if (this.validZoomConstraint && this.validAreaConstraint) {
-                GeocityEvent.sendEvent('position-selected', this.generateTargetGeometry(event.detail));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateTargetGeometry(event.detail, this.store));
             }
         }) as EventListener)
     }
 
     iconClickedListener() {
         window.addEventListener('icon-clicked', ((event: CustomEvent) => {
-            const features = useStore().getSelectedFeatures();
+            const features = this.store.getSelectedFeatures();
             if (this.validZoomConstraint && features.length > 0) {
                 this.checkMaxElementContraint(features);
                 if (this.validMaxElementConstraint) {
-                    GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                    GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features, this.store));
                 }
                 GeocityEvent.sendEvent('authorize-clicked', event.detail);
             }
@@ -98,22 +117,20 @@ export default class NotificationManager {
 
     setupSelectMode() {
         this.iconClickedListener();
-        this.ruleValidationListener();    
+        this.ruleValidationListener();
     }
 
     iconCreatedListener() {
         window.addEventListener('icon-created', ((event: CustomEvent) => {
-            const features = useStore().getSelectedFeatures();
+            const features = this.store.getSelectedFeatures();
             this.checkMaxElementContraint(features);
             this.checkIsInBorder(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0 && this.validBorderContraint) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features, this.store));
                 GeocityEvent.sendEvent('authorize-created', event.detail);
             } else {
                 GeocityEvent.sendEvent('refused-created', event.detail);
             }
-
-            
             this.displayRightNotification();
         }) as EventListener)
 
@@ -126,15 +143,15 @@ export default class NotificationManager {
 
     setupCreateMode() {
         this.iconCreatedListener();
-        this.ruleValidationListener();       
+        this.ruleValidationListener();
     }
 
     ruleValidationListener() {
         window.addEventListener('rule-validation', () => {
-            const features = useStore().getSelectedFeatures();
+            const features = this.store.getSelectedFeatures();
             this.checkMaxElementContraint(features);
             if (this.validZoomConstraint && this.validMaxElementConstraint && features.length > 0) {
-                GeocityEvent.sendEvent('position-selected', this.generateExportData(features));
+                GeocityEvent.sendEvent('position-selected', this.outputFormat.generateExportData(features, this.store));
             } else {
                 GeocityEvent.sendEvent('position-selected', undefined);
             }
@@ -145,7 +162,7 @@ export default class NotificationManager {
     setupMixMode() {
         this.iconClickedListener();
         this.iconCreatedListener();
-        this.ruleValidationListener();    
+        this.ruleValidationListener();
     }
 
     setup(notifications: Array<NotificationElement>) {
@@ -154,42 +171,46 @@ export default class NotificationManager {
             if (notification.rule.type === 'AREA_CONSTRAINT') this.setupInclusionAreaConstraint(notification)
             if (notification.rule.type === 'MAX_SELECTION') this.setupMaxSelectionConstraint(notification)
             if (notification.type === 'info') {
-                this.infosNotificationControl = new NotificationBoxControl(notification)
-                useStore().getMap().addControl(this.infosNotificationControl);
+                this.infosNotificationControl = new NotificationBoxControl(notification, this.map)
+                this.map.addControl(this.infosNotificationControl);
             }
         })
-        if (useStore().getOptions().border.url !== '') {
+        if (this.options.border.url !== '') {
             this.borderContraintNotificationControl = new NotificationBoxControl({
                 type: "warning",
-                message:useStore().getOptions().border.notification,
+                message:this.options.border.notification,
                 rule: {
                     type: "BORDER_CONSTRAINT"
                 }
-            } as NotificationElement)
+            } as NotificationElement, this.map)
             this.borderContraintNotificationControl.hide();
-            useStore().getMap().addControl(this.borderContraintNotificationControl)
+            this.map.addControl(this.borderContraintNotificationControl)
         }
     }
 
     setupZoomContraint(rule: NotificationElement) {
-        this.zoomNotificationControl = new NotificationBoxControl(rule);
+        this.zoomNotificationControl = new NotificationBoxControl(rule, this.map);
         this.zoomNotificationControl.disable();
-        useStore().getMap().addControl(this.zoomNotificationControl)
+        this.map.addControl(this.zoomNotificationControl)
 
         if (this.hasValidZoom(rule)) {
-            this.validZoomConstraint = false; 
+            this.validZoomConstraint = false;
         }
 
-        EventManager.registerBorderConstaintMapEvent('change:resolution' as EventTypes,  () => {
-            this.checkZoomConstraint(rule);
-            this.displayRightNotification();
-        })
+        EventManager.registerBorderConstaintMapEvent(
+            'change:resolution' as EventTypes,  () => {
+                this.checkZoomConstraint(rule);
+                this.displayRightNotification();
+            },
+            this.map,
+            this.options
+        )
     }
 
     setupInclusionAreaConstraint(rule: NotificationElement) {
-        this.inclusionNotificationControl = new NotificationBoxControl(rule);
+        this.inclusionNotificationControl = new NotificationBoxControl(rule, this.map);
         this.inclusionNotificationControl.disable();
-        useStore().getMap().addControl(this.inclusionNotificationControl)
+        this.map.addControl(this.inclusionNotificationControl)
         window.addEventListener('inclusion-area-included', ((event: CustomEvent) => {
             this.checkInclusionAreaConstraint(event.detail, rule.rule.couldBypass);
             this.displayRightNotification();
@@ -198,22 +219,22 @@ export default class NotificationManager {
 
     setupMaxSelectionConstraint(rule: NotificationElement) {
         const maxElement = rule.rule.maxElement;
-        if (maxElement !== undefined) useStore().setMaxElement(maxElement);
+        if (maxElement !== undefined) this.store.setMaxElement(maxElement);
         rule.message = rule.message.replace('{x}', `${maxElement}`);
-        this.maxElementNotificationControl = new NotificationBoxControl(rule);
+        this.maxElementNotificationControl = new NotificationBoxControl(rule, this.map);
         this.maxElementNotificationControl.disable();
-        useStore().getMap().addControl(this.maxElementNotificationControl)
+        this.map.addControl(this.maxElementNotificationControl)
     }
 
     hasValidZoom(rule: NotificationElement) {
-        const currentZoom = useStore().getMap().getView().getZoom()
+        const currentZoom = this.map.getView().getZoom()
         return currentZoom && rule.rule.minZoom && currentZoom < rule.rule.minZoom
     }
 
     checkZoomConstraint(rule: NotificationElement) {
         if (!this.hasValidZoom(rule)) {
-            this.validZoomConstraint = true;        
-            GeocityEvent.sendEvent('rule-validation', undefined);        
+            this.validZoomConstraint = true;
+            GeocityEvent.sendEvent('rule-validation', undefined);
         }
         else {
             this.validZoomConstraint = false;
@@ -227,21 +248,35 @@ export default class NotificationManager {
         }
         else {
             if (couldBypass) this.validAreaConstraint = true;
-            else { 
+            else {
                 this.validAreaConstraint = false;
-                GeocityEvent.sendEvent('position-selected', undefined);
+                if (this.options.mode.type === 'target') {
+                    GeocityEvent.sendEvent('position-selected', undefined);
+                } else {
+                    setTimeout(() => {
+                        this.validAreaConstraint = true;
+                        this.displayRightNotification();
+                    }, 2000)
+                }
             };
         }
     }
 
     checkMaxElementContraint(features: Array<Feature>) {
-        if (useStore().getMaxElement() >= 0) {
-            if (features.length >= useStore().getMaxElement()) {
-                if (useStore().getMaxElement() === 1 && features.length === useStore().getMaxElement()) {
+        if (this.store.getMaxElement() >= 0) {
+            if (features.length >= this.store.getMaxElement()) {
+                if (this.store.getMaxElement() === 1 && features.length === this.store.getMaxElement()) {
                     this.validMaxElementConstraint = true;
                     this.displayMaxElementConstraint = false;
+                } 
+                // To allowed the validation and also display the message, we need to check the lastest validation state.
+                // By the rule-validation event, we recheck when the not allowed element is not anymore in the feature collection
+                // Therefor, if the last state was not valid, we must revalidated to allowed the configuration but continu to display the message.
+                else if (features.length === this.store.getMaxElement() && !this.validMaxElementConstraint) {
+                    this.validMaxElementConstraint = true;
+                    this.displayMaxElementConstraint = true;
                 }
-                else if (features.length > useStore().getMaxElement()) {
+                else if (features.length > this.store.getMaxElement()) {
                     this.validMaxElementConstraint = false;
                     this.displayMaxElementConstraint = true;
                 }
@@ -253,10 +288,10 @@ export default class NotificationManager {
     }
 
     checkIsInBorder(features: Array<Feature>) {
-        if (useStore().getOptions().border.url !== '') {
+        if (this.options.border.url !== '') {
             const feature: Feature = features[features.length - 1]
             const geom: Point | undefined = feature.getGeometry() as Point;
-            const isInBorder = useStore().getBorderConstraint()?.getSource()?.getFeatures()[0].getGeometry()?.intersectsCoordinate(geom.getCoordinates())
+            const isInBorder = this.store.getBorderConstraint()?.getSource()?.getFeatures()[0].getGeometry()?.intersectsCoordinate(geom.getCoordinates())
             if (isInBorder) {
                 this.validBorderContraint = true;
             } else {
@@ -269,43 +304,6 @@ export default class NotificationManager {
             }
         } else {
             this.validBorderContraint = true;
-        }   
-    }
-
-    convertToMultiPoint(coordinate: number[]) {
-        return new Feature({
-            geometry: new MultiPoint([[coordinate[0], coordinate[1]]]),
-        }).getGeometry();
-    }
-
-    generateGeometryCollection (geometries: Geometry[]) {
-        const geojsonFormat = new GeoJSON();
-        const geometry = new GeometryCollection(geometries);
-        const geojsongeom = geojsonFormat.writeGeometry(geometry, {
-            decimals: 2,
-        });
-        return geojsongeom;
-    }
-
-    generateTargetGeometry(coordinate: number[]) {
-        const geometries: Geometry[] = [];
-        const multiPoint = this.convertToMultiPoint(coordinate)
-        if (multiPoint)
-            geometries.push(multiPoint)
-        return this.generateGeometryCollection(geometries)
-    }
-
-    generateExportData(features: Array<Feature>) {
-        const geometries: Geometry[] = [];
-        features.forEach((feature) => {
-            const geometry = feature.getGeometry();
-            if (geometry) {
-                const point: Point = geometry as Point;
-                const multiPoint = this.convertToMultiPoint(point.getCoordinates())
-                if (multiPoint)
-                    geometries.push(multiPoint)
-            }    
-        })
-        return this.generateGeometryCollection(geometries)
+        }
     }
 }

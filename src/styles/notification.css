@@ -34,7 +34,7 @@
   --notification-text-color: #FFFFFF;
 }
 
-@media only screen and (max-width: 425px) {
+@media only screen and (max-width: 350px) {
   .notification-element {
     left: 10px;
     width: calc(100% - 50px);
@@ -42,7 +42,7 @@
   }
 }
 
-@media only screen and (min-width: 426px) and (max-width: 995px) {
+@media only screen and (min-width: 351px) and (max-width: 995px) {
   .notification-element {
     left: calc((100% - 334px) / 2);
     width: 100%;

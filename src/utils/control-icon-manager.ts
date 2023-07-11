@@ -1,5 +1,5 @@
 import { Control, FullScreen, Zoom } from 'ol/control';
-import { useStore } from '../composable/store';
+import { Store } from '../composable/store';
 import SVGCreator from './svg-creator';
 import GeolocationCenter from '../components/control/geolocation-center';
 import ResetRotationControl from '../components/control/reset-rotation-control';
@@ -9,10 +9,11 @@ import { Map } from 'ol';
 import EventManager from './event-manager';
 import { EventTypes } from 'ol/Observable';
 import BaseEvent from 'ol/events/Event';
+import IStates from './states';
 
 class ControlIconContainer extends Control {
   public div: HTMLElement;
-  
+
   constructor(className: string) {
     const element = document.createElement('div');
     element.className = className;
@@ -26,10 +27,14 @@ class ControlIconContainer extends Control {
 }
 
 export default class ControlIconManager {
-  static setupIcon() {
-    const options = useStore().getOptions();
-    const readonly = useStore().getStates().readonly;
-    const map = useStore().getMap()
+  static setupIcon(states: IStates, store: Store) {
+    const options = store.getOptions();
+    const readonly = states.readonly;
+    const map = store.getMap();
+
+    if(!map) {
+      throw new Error ("Missing map!");
+    }
 
     const leftControlIconContainer = new ControlIconContainer('left-buttons-control-container');
     map.addControl(leftControlIconContainer);
@@ -37,9 +42,9 @@ export default class ControlIconManager {
     map.addControl(rightControlIconContainer);
 
     if (!readonly)
-      map.addControl(new InformationControl(rightControlIconContainer.div));
-      
-    if (options.fullscreen)
+      map.addControl(new InformationControl(rightControlIconContainer.div, store, map));
+
+    if (options?.interaction.fullscreen)
       map.addControl(
         new FullScreen({
           label: SVGCreator.fullScreenLabel(),
@@ -48,10 +53,10 @@ export default class ControlIconManager {
           target: rightControlIconContainer.div,
         })
       );
-    
-    map.addControl(new GeoLayerControl(rightControlIconContainer.div));
 
-    if (options.displayZoom)
+    map.addControl(new GeoLayerControl(rightControlIconContainer.div, map, options?.wmts ?? []));
+
+    if (options?.interaction.displayZoom)
       map.addControl(
         new Zoom({
           zoomInLabel: SVGCreator.zoomInLabel(),
@@ -61,11 +66,16 @@ export default class ControlIconManager {
         })
       );
 
-    if (options.enableCenterButton)
+    if (options?.interaction.enableCenterButton && !readonly)
       map.addControl(new GeolocationCenter(leftControlIconContainer.div));
-    
-    if (options.enableRotation)
-      EventManager.registerBorderConstaintMapEvent('change:rotation' as EventTypes, (event) => setRotationChange(map, event, leftControlIconContainer.div))      
+
+    if (options?.interaction.enableRotation)
+      EventManager.registerBorderConstaintMapEvent(
+        'change:rotation' as EventTypes,
+        (event) => setRotationChange(map, event, leftControlIconContainer.div),
+        map,
+        options
+      );
   }
 }
 function setRotationChange(map: Map, event: BaseEvent, div: HTMLElement) {
@@ -75,7 +85,7 @@ function setRotationChange(map: Map, event: BaseEvent, div: HTMLElement) {
     }
   });
   if (event.target.getRotation() !== 0) {
-    map.addControl(new ResetRotationControl(div));
+    map.addControl(new ResetRotationControl(div, map));
   }
 }
 

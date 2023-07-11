@@ -1,20 +1,23 @@
 import { html, LitElement, unsafeCSS } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 
 import Control from 'ol/control/Control';
 
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import SVGCreator from '../../utils/svg-creator';
+import PNGAssets from '../../assets/png-assets';
 import { GeocityEvent } from '../../utils/geocity-event';
 import layerStyle from '../../styles/layer-selection.css?inline';
-import { useStore } from '../../composable/store';
 import wmtsLayerConfiguration from '../mapView/wmts-loader';
+import { cache } from 'lit/directives/cache.js';
 
 @customElement('layer-list')
 // @ts-ignore
 class LayerList extends LitElement {
   @state() _currentSelectedIndex = 0;
+  @state() _wmts: Array<wmtsLayerConfiguration> = [];
+  @property() wmts: string = '';
 
   selectLayer(layer: wmtsLayerConfiguration, index: number) {
     GeocityEvent.sendEvent('layer-selected', layer)
@@ -23,13 +26,26 @@ class LayerList extends LitElement {
 
   static styles = [unsafeCSS(layerStyle)];
 
+  updated(changedProperties: any) {
+    if (changedProperties.has('wmts')){
+      this._wmts = JSON.parse(this.wmts)
+    }
+  }
+
   render() {
     return html`
                 <ul>
-                  ${useStore().getOptions().wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
+                  ${this._wmts.map((wmts: wmtsLayerConfiguration, index: number) =>
                     html`<li tabindex="0" @click=${() => this.selectLayer(wmts, index)}>
                           <div class="image-container">
+                          ${cache(wmts.thumbnail && wmts.thumbnail.length > 0
+                            ? html`
                             <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${wmts.thumbnail}"/>
+                            `: 
+                            html`
+                            <img class=${classMap({"selected-layer": this._currentSelectedIndex === index})} src="${PNGAssets.baseMapIcon}"/>
+                            `
+                          )}
                           </div>
                           <p>${wmts.name}</p>
                         </li>`
@@ -42,6 +58,7 @@ class LayerList extends LitElement {
 @customElement('layer-selection')
 class LayerSectionElement extends LitElement {
   static styles = [unsafeCSS(layerStyle)];
+  @property() wmts: Array<wmtsLayerConfiguration> = [];
 
   render() {
     return html`<div class="layer-container">
@@ -53,7 +70,7 @@ class LayerSectionElement extends LitElement {
                         </div>
                       </div>
                   </div>
-                  <layer-list />
+                  <layer-list wmts=${JSON.stringify(this.wmts)}/>
               </div>`;
   }
 
@@ -64,8 +81,9 @@ class LayerSectionElement extends LitElement {
 
 export default class LayerSelectionControl extends Control {
 
-  constructor() {
+  constructor(wmts: Array<wmtsLayerConfiguration>) {
     const box = document.createElement('layer-selection') as LayerSectionElement;
+    box.wmts = wmts;
     super({ element: box });
     this.element.classList.add('layer-container-position')
   }

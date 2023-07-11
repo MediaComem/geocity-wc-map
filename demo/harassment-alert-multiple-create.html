@@ -7,12 +7,20 @@
     <script type="module" src="./lib/geocity-wc-map.js"></script>
   </head>
   <body>
-    <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
-        <openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionner le centre de la cible à l’emplacement où le harcèlement a lieux" },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
+    <div
+      style="width: 100%; height: 80vh; margin-left: auto; margin-right: auto"
+    >
+      <openlayers-element
+        options='{
+                                        "information": { "duration": 5000, "title": "Signaler un harcèlement", "content": "Positionnez le centre de la cible à l’emplacement où le harcèlement a eu lieu." },
+                                        "interaction": {
+                                          "displayZoom": true,
+                                          "displayScaleLine": false,
+                                          "fullscreen": true,
+                                          "enableGeolocation": true,
+                                          "enableCenterButton": true,
+                                          "enableRotation": true
+                                        },
                                         "mode": {
                                             "type": "create"
                                         },
@@ -40,7 +48,7 @@
                                           },
                                         {
                                             "type": "info",
-                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé",
+                                            "message": "Cliquez longuement sur la carte à l’endroit désiré pour qu’un élément soit créé.",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -51,47 +59,68 @@
                                             "layer": "asitvd.fond_cadastral",
                                             "projection": "EPSG:2056",
                                             "name": "Carte de base",
-                                            "thumbnail": "https://localhost:5173/base.svg"
+                                            "thumbnail": "http://localhost:5173/base.svg"
                                         },
                                         {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:2056",
                                             "name": "Photo aérienne",
-                                            "thumbnail": "https://localhost:5173/aerial.svg"
+                                            "thumbnail": "http://localhost:5173/aerial.svg"
                                         }],
                                         "selectionTargetBoxMessage": "Harcèlement signalé"
                                     }'
-    />
+      />
     </div>
     <div style="width: 100%; display: flex; margin-top: 1vh">
-        <button id="validate" style="margin-left: auto;margin-right: auto; width: 229px; height: 36px; background-color: #008C6F; border: 10px solid #008C6F ;color: white">Valider</button>
+      <button
+        id="validate"
+        style="
+          margin-left: auto;
+          margin-right: auto;
+          width: 229px;
+          height: 36px;
+          background-color: #008c6f;
+          border: 10px solid #008c6f;
+          color: white;
+        "
+      >
+        Valider
+      </button>
     </div>
-    <div style="width: 100%; display: flex; margin-top: 1vh; justify-content: center;">
-        <span id="coordinate"></span>
+    <div
+      style="
+        width: 100%;
+        display: flex;
+        margin-top: 1vh;
+        justify-content: center;
+      "
+    >
+      <span id="coordinate"></span>
     </div>
   </body>
   <script>
-    const toSendEvent = '';
-    const button = document.getElementById('validate');
+    const toSendEvent = "";
+    const button = document.getElementById("validate");
     button.disabled = true;
     button.style.opacity = 0.5;
 
-    button.addEventListener('click', () => {
-        document.getElementById('coordinate').innerHTML = JSON.stringify(this.toSendEvent);
-    })
+    button.addEventListener("click", () => {
+      document.getElementById("coordinate").innerHTML = JSON.stringify(
+        this.toSendEvent
+      );
+    });
 
-    window.addEventListener('position-selected', (event) => {
-        const button = document.getElementById('validate');
-        if (event.detail) {
-            button.disabled = false;
-            button.style.opacity = 1;
-            this.toSendEvent = event.detail;
-        } else {
-            
-            button.disabled = true;
-            button.style.opacity = 0.5;
-        }
-    })
+    window.addEventListener("position-selected", (event) => {
+      const button = document.getElementById("validate");
+      if (event.detail) {
+        button.disabled = false;
+        button.style.opacity = 1;
+        this.toSendEvent = event.detail;
+      } else {
+        button.disabled = true;
+        button.style.opacity = 0.5;
+      }
+    });
   </script>
 </html>

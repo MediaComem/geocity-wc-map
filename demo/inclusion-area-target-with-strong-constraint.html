@@ -8,11 +8,16 @@
   </head>
   <body>
     <div style="width: 100%; height: 80vh;margin-left: auto;margin-right: auto">
-        <openlayers-element  options='{ "enableDraw": false, 
-                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public" },
-                                        "enableGeolocation": true,
-                                        "enableCenterButton": true,
-                                        "enableRotation": true,
+        <openlayers-element  options='{ 
+                                        "information": { "duration": 5000, "title": "Signaler un banc cassé", "content": "Positionner le centre de la cible à l’emplacement du banc cassé dans l’espace public." },
+                                        "interaction": {
+                                            "displayZoom": true,
+                                            "displayScaleLine": false,
+                                            "fullscreen": true,
+                                            "enableGeolocation": true,
+                                            "enableCenterButton": true,
+                                            "enableRotation": true
+                                        },
                                         "mode": {
                                             "type": "target"
                                         },
@@ -40,7 +45,7 @@
                                         },
                                         {
                                             "type": "info",
-                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible",
+                                            "message": "Déplacez la carte pour que l’endroit désiré soit au centre de la cible.",
                                                 "rule": {
                                                 "type": "MOVE_TARGET"
                                             }
@@ -51,14 +56,14 @@
                                             "layer": "asitvd.fond_cadastral",
                                             "projection": "EPSG:2056",
                                             "name": "Carte de base",
-                                            "thumbnail": "https://localhost:5173/base.svg"
+                                            "thumbnail": "http://localhost:5173/base.svg"
                                         },
                                         {
                                             "capability": "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
                                             "layer": "ch.swisstopo.swissimage",
                                             "projection": "EPSG:2056",
                                             "name": "Photo aérienne",
-                                            "thumbnail": "https://localhost:5173/aerial.svg"
+                                            "thumbnail": "http://localhost:5173/aerial.svg"
                                         }],
                                         "inclusionArea": {
                                             "url": "https://mapnv.ch/mapserv_proxy?ogcserver=source+for+image%2Fpng&SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeName=MO_bf_bien_fonds",
