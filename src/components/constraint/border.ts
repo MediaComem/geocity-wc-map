@@ -5,9 +5,10 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Style, Fill, Stroke } from 'ol/style';
 import { GeocityEvent } from '../../utils/geocity-event';
 import { View } from 'ol';
+import IStates from '../../utils/states';
 
 export default class Border {
-  constructor(store: Store) {
+  constructor(store: Store, states: IStates) {
     const restrictionStyle = new Style({
       fill: new Fill({
         color: '#ffffff00',
@@ -46,8 +47,8 @@ export default class Border {
         store.getMap()?.setView(new View({
           extent: extent,
           projection: 'EPSG:2056',
-          center: options.defaultCenter,
-          zoom: options.zoom,
+          center: states.readonly && states.currentSelections && states.currentSelections.length == 1 ? states.currentSelections[0] : options.defaultCenter,
+          zoom: states.readonly && states.currentSelections && states.currentSelections.length == 1 ? options.maxZoom : options.zoom,
           minZoom: options.minZoom,
           maxZoom: options.maxZoom,
           enableRotation: options.interaction.enableRotation,

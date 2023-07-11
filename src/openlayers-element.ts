@@ -134,8 +134,8 @@ export class OpenLayersElement extends LitElement {
 
     this.view = new View({
       projection: 'EPSG:2056',
-      center: options.defaultCenter,
-      zoom: options.zoom,
+      center: states.readonly && states.currentSelections && states.currentSelections.length == 1 ? states.currentSelections[0] : options.defaultCenter,
+      zoom: states.readonly && states.currentSelections && states.currentSelections.length == 1 ? options.maxZoom : options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
       enableRotation: options.interaction.enableRotation
@@ -173,7 +173,7 @@ export class OpenLayersElement extends LitElement {
     }
     if (options.wmts.length > 0) new WMTSLoader(this.store);
     if (options.interaction.displayScaleLine) map.addControl(new ScaleLine({units: 'metric'}));
-    if (options.border.url !== '') new Border(this.store);
+    if (options.border.url !== '') new Border(this.store, states);
     if (options.inclusionArea.url !== '') this.inclusionArea = new InclusionArea(this.store);
     if (options.mode.type === 'select' && options.wfs.url != '') {
       this.modeControllers.push(new SingleSelect(this.renderUtils, states, this.store));
