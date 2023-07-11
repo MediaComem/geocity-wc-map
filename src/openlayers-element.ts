@@ -118,11 +118,13 @@ export class OpenLayersElement extends LitElement {
     this.setupCustomDisplay(options);
     proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
     register(proj4);
+
+    const currentSelections = useStore().getStates().currentSelections;
     
     this.view = new View({
       projection: 'EPSG:2056',
-      center: options.defaultCenter,
-      zoom: options.zoom,
+      center: currentSelections && currentSelections.length == 1 ? currentSelections[0] : options.defaultCenter,
+      zoom: currentSelections && currentSelections.length == 1 ? options.maxZoom : options.zoom,
       minZoom: options.minZoom,
       maxZoom: options.maxZoom,
       enableRotation: options.enableRotation
