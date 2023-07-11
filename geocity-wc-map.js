@@ -21941,9 +21941,9 @@ class zM extends Dt {
   }
 }
 class FM {
-  constructor(t) {
-    var r;
-    const e = new Bt({
+  constructor(t, e) {
+    var o;
+    const n = new Bt({
       fill: new Ut({
         color: "#ffffff00"
       }),
@@ -21951,38 +21951,38 @@ class FM {
         color: "#dddddd",
         width: 5
       })
-    }), n = t.getOptions();
-    if (!n)
+    }), s = t.getOptions();
+    if (!s)
       throw new Error("Missing options");
-    const s = new Bn({
+    const r = new Bn({
       source: new $n({
-        url: () => n.border.url,
+        url: () => s.border.url,
         format: new Wd()
       }),
       zIndex: 9999,
-      style: e,
+      style: n,
       opacity: 0.9
     });
-    s.on("change", () => {
-      var a, l;
-      const o = (a = s.getSource()) == null ? void 0 : a.getExtent();
-      if (o) {
-        const h = t.getOptions();
-        if (!h)
+    r.on("change", () => {
+      var l, h;
+      const a = (l = r.getSource()) == null ? void 0 : l.getExtent();
+      if (a) {
+        const c = t.getOptions();
+        if (!c)
           throw new Error("Missing options");
-        (l = t.getMap()) == null || l.setView(new ii({
-          extent: o,
+        (h = t.getMap()) == null || h.setView(new ii({
+          extent: a,
           projection: "EPSG:2056",
-          center: h.defaultCenter,
-          zoom: h.zoom,
-          minZoom: h.minZoom,
-          maxZoom: h.maxZoom,
-          enableRotation: h.interaction.enableRotation,
+          center: e.readonly && e.currentSelections && e.currentSelections.length == 1 ? e.currentSelections[0] : c.defaultCenter,
+          zoom: e.readonly && e.currentSelections && e.currentSelections.length == 1 ? c.maxZoom : c.zoom,
+          minZoom: c.minZoom,
+          maxZoom: c.maxZoom,
+          enableRotation: c.interaction.enableRotation,
           constrainOnlyCenter: !0
         }));
       }
-      t.setBorderConstraint(s), tt.sendEvent("border-contraint-enabled", void 0);
-    }), (r = t.getMap()) == null || r.addLayer(s);
+      t.setBorderConstraint(r), tt.sendEvent("border-contraint-enabled", void 0);
+    }), (o = t.getMap()) == null || o.addLayer(r);
   }
 }
 class DM {
@@ -22311,8 +22311,8 @@ let Xe = class extends At {
     const e = t.readonly;
     this.setupTheme(i), this.setupCustomDisplay(i), se.defs("EPSG:2056", "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs"), AM(se), this.view = new ii({
       projection: "EPSG:2056",
-      center: i.defaultCenter,
-      zoom: i.zoom,
+      center: t.readonly && t.currentSelections && t.currentSelections.length == 1 ? t.currentSelections[0] : i.defaultCenter,
+      zoom: t.readonly && t.currentSelections && t.currentSelections.length == 1 ? i.maxZoom : i.zoom,
       minZoom: i.minZoom,
       maxZoom: i.maxZoom,
       enableRotation: i.interaction.enableRotation
@@ -22330,7 +22330,7 @@ let Xe = class extends At {
       projection: this.view.getProjection()
     })), new HM(n)), i.search.displaySearch && i.mode.type !== "target" && !e && n.addControl(new zM(this.store, n)), i.mode.type === "target" && (this.modeControllers.push(new ZM(this.renderUtils)), e || (n.addControl(new J3(this.store)), i.geolocationInformation.displayBox && n.addControl(
       new $3(this.store)
-    ))), i.wmts.length > 0 && new l3(this.store), i.interaction.displayScaleLine && n.addControl(new Cm({ units: "metric" })), i.border.url !== "" && new FM(this.store), i.inclusionArea.url !== "" && (this.inclusionArea = new M3(this.store)), i.mode.type === "select" && i.wfs.url != "" && this.modeControllers.push(new Nc(this.renderUtils, t, this.store)), i.mode.type === "create" && this.modeControllers.push(new nu(this.mapElement, this.inclusionArea, this.renderUtils, t, this.store)), i.mode.type === "mix" && i.wfs.url != "" && (this.modeControllers.push(new Nc(this.renderUtils, t, this.store)), this.modeControllers.push(new nu(this.mapElement, this.inclusionArea, this.renderUtils, t, this.store))), e || new g3(this.store), Wt.setCursorEvent(n);
+    ))), i.wmts.length > 0 && new l3(this.store), i.interaction.displayScaleLine && n.addControl(new Cm({ units: "metric" })), i.border.url !== "" && new FM(this.store, t), i.inclusionArea.url !== "" && (this.inclusionArea = new M3(this.store)), i.mode.type === "select" && i.wfs.url != "" && this.modeControllers.push(new Nc(this.renderUtils, t, this.store)), i.mode.type === "create" && this.modeControllers.push(new nu(this.mapElement, this.inclusionArea, this.renderUtils, t, this.store)), i.mode.type === "mix" && i.wfs.url != "" && (this.modeControllers.push(new Nc(this.renderUtils, t, this.store)), this.modeControllers.push(new nu(this.mapElement, this.inclusionArea, this.renderUtils, t, this.store))), e || new g3(this.store), Wt.setCursorEvent(n);
   }
   updated(i) {
     var t, e, n, s, r, o, a, l;
